@@ -1,0 +1,41 @@
+﻿@page "/reservations"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Dinesaur.Domain
+@using Dinesaur.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="reservations/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Reservation">
+    <PropertyColumn Property="reservation => reservation.Date" />
+    <PropertyColumn Property="reservation => reservation.Location" />
+    <PropertyColumn Property="reservation => reservation.Remarks" />
+    <PropertyColumn Property="reservation => reservation.CustomerID" />
+    <PropertyColumn Property="reservation => reservation.RestaurantID" />
+    <PropertyColumn Property="reservation => reservation.StaffID" />
+
+    <TemplateColumn Context="reservation">
+        <a href="@($"reservations/edit?reservationid={reservation.ReservationID}")">Edit</a> |
+        <a href="@($"reservations/details?reservationid={reservation.ReservationID}")">Details</a> |
+        <a href="@($"reservations/delete?reservationid={reservation.ReservationID}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private DinesaurContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
