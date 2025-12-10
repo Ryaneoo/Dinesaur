@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Dinesaur.Domain;
+using Dinesaur.Configurations.Entities;
 
 namespace Dinesaur.Data
 {
@@ -22,6 +23,22 @@ namespace Dinesaur.Data
         public DbSet<Dinesaur.Domain.Reservation> Reservation { get; set; } = default!;
         public DbSet<Dinesaur.Domain.Restaurant> Restaurant { get; set; } = default!;
         public DbSet<Dinesaur.Domain.Review> Review { get; set; } = default!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfiguration(new CustomerSeeding());
+            modelBuilder.ApplyConfiguration(new FoodSeeding());
+            modelBuilder.ApplyConfiguration(new MenuSeeding());
+            modelBuilder.ApplyConfiguration(new PreOrderItemSeeding());
+            modelBuilder.ApplyConfiguration(new PreorderSeeding());
+            modelBuilder.ApplyConfiguration(new ReservationSeeding());
+            modelBuilder.ApplyConfiguration(new RestaurantSeeding());
+            modelBuilder.ApplyConfiguration(new ReviewsSeeding());
+
+
+        }
         
     }
 }
