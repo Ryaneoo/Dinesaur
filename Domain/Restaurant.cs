@@ -2,7 +2,7 @@
 {
     public class Restaurant:BaseDomainModel
     {
-        public int RestaurantId { get; set; }
+        public int RestaurantID { get; set; }
 
         public string? RestaurantName { get; set; }
         public string? Location { get; set; }
