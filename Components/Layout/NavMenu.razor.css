@@ -1,0 +1,32 @@
+
+
+    /* Style the links inside the navigation bar */
+    .topnav a {
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 15.5px 15px;
+        text-decoration: none;
+        font-size: 17px;
+    }
+
+        /* Change the color of links on hover */
+        .topnav a:hover {
+            background-color: #f2f2f2;
+            color: black;
+            
+        }
+
+.top-row {
+    height: 3.5rem;
+    
+    background-color: darkblue;
+}
+
+
+
+
+
+
+
+
