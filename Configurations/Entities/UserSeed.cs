@@ -1,0 +1,50 @@
+﻿using Dinesaur.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Dinesaur.Configurations.Entities
+{
+    public class UserSeed : IEntityTypeConfiguration<DinesaurUser>
+    {
+        public void Configure(EntityTypeBuilder<DinesaurUser> builder)
+        {
+            var hasher = new PasswordHasher<DinesaurUser>();
+            builder.HasData(
+            new DinesaurUser
+            {
+                Id = "1",
+                Email = "admin@localhost.com",
+                NormalizedEmail = "ADMIN@LOCALHOST.COM",
+                FirstName = "Admin",
+                LastName = "User",
+                Contact = 91234567,
+                PasswordHash = hasher.HashPassword(null, "P@ssword1"),
+                EmailConfirmed = true // Set to true, otherwise you won't be able to login
+            },
+            new DinesaurUser
+            {
+                Id = "2",
+                Email = "user@localhost.com",
+                NormalizedEmail = "USER@LOCALHOST.COM",
+                FirstName = "User",
+                LastName = "User",
+                Contact = 91234568,
+                PasswordHash = hasher.HashPassword(null, "P@ssword1"),
+                EmailConfirmed = true // Set to true, otherwise you won't be able to login
+            },
+            new DinesaurUser
+            {
+                Id = "3",
+                Email = "restaurantstaff@localhost.com",
+                NormalizedEmail = "RESTAURANTSTAFF@LOCALHOST.COM",
+                FirstName = "Restaurant",
+                LastName = "Staff",
+                Contact = 91234560,
+                PasswordHash = hasher.HashPassword(null, "P@ssword1"),
+                EmailConfirmed = true // Set to true, otherwise you won't be able to login
+            }
+            );
+        }
+    }
+}
