@@ -1,0 +1,50 @@
+﻿@page "/preorderitems/details"
+@using Microsoft.EntityFrameworkCore
+@using Dinesaur.Domain
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>PreOrderItem</h2>
+    <hr />
+    @if (preorderitem is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Quantity</dt>
+            <dd class="col-sm-10">@preorderitem.Quantity</dd>
+            <dt class="col-sm-2">PreOrderID</dt>
+            <dd class="col-sm-10">@preorderitem.PreOrderID</dd>
+            <dt class="col-sm-2">FoodID</dt>
+            <dd class="col-sm-10">@preorderitem.FoodID</dd>
+        </dl>
+        <div>
+            <a href="@($"/preorderitems/edit?preorderitemid={preorderitem.PreorderItemID}")">Edit</a> |
+            <a href="@($"/preorderitems")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private PreOrderItem? preorderitem;
+
+    [SupplyParameterFromQuery]
+    private int PreorderItemID { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        preorderitem = await context.PreOrderItem.FirstOrDefaultAsync(m => m.PreorderItemID == PreorderItemID);
+
+        if (preorderitem is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

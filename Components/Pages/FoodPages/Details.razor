@@ -1,0 +1,56 @@
+﻿@page "/foods/details"
+@using Microsoft.EntityFrameworkCore
+@using Dinesaur.Domain
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Food</h2>
+    <hr />
+    @if (food is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">FoodName</dt>
+            <dd class="col-sm-10">@food.FoodName</dd>
+            <dt class="col-sm-2">Cost</dt>
+            <dd class="col-sm-10">@food.Cost</dd>
+            <dt class="col-sm-2">Description</dt>
+            <dd class="col-sm-10">@food.Description</dd>
+            <dt class="col-sm-2">PreOrderID</dt>
+            <dd class="col-sm-10">@food.PreOrderID</dd>
+            <dt class="col-sm-2">StaffID</dt>
+            <dd class="col-sm-10">@food.StaffID</dd>
+            <dt class="col-sm-2">MenuID</dt>
+            <dd class="col-sm-10">@food.MenuID</dd>
+        </dl>
+        <div>
+            <a href="@($"/foods/edit?foodid={food.FoodID}")">Edit</a> |
+            <a href="@($"/foods")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Food? food;
+
+    [SupplyParameterFromQuery]
+    private int FoodID { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        food = await context.Food.FirstOrDefaultAsync(m => m.FoodID == FoodID);
+
+        if (food is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

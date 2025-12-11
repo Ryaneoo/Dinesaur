@@ -1,0 +1,54 @@
+﻿@page "/preorderitems/create"
+@using Microsoft.EntityFrameworkCore
+@using Dinesaur.Domain
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>PreOrderItem</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="PreOrderItem" OnValidSubmit="AddPreOrderItem" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity:</label> 
+                <InputNumber id="quantity" @bind-Value="PreOrderItem.Quantity" class="form-control" /> 
+                <ValidationMessage For="() => PreOrderItem.Quantity" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="preorderid" class="form-label">PreOrderID:</label> 
+                <InputNumber id="preorderid" @bind-Value="PreOrderItem.PreOrderID" class="form-control" /> 
+                <ValidationMessage For="() => PreOrderItem.PreOrderID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="foodid" class="form-label">FoodID:</label> 
+                <InputNumber id="foodid" @bind-Value="PreOrderItem.FoodID" class="form-control" /> 
+                <ValidationMessage For="() => PreOrderItem.FoodID" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/preorderitems">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private PreOrderItem PreOrderItem { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddPreOrderItem()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.PreOrderItem.Add(PreOrderItem);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/preorderitems");
+    }
+}

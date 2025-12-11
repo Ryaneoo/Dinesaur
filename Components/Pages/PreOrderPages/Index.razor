@@ -1,0 +1,38 @@
+﻿@page "/preorders"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Dinesaur.Domain
+@using Dinesaur.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="preorders/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.PreOrder">
+    <PropertyColumn Property="preorder => preorder.Cost" />
+    <PropertyColumn Property="preorder => preorder.MenuID" />
+    <PropertyColumn Property="preorder => preorder.RestaurantID" />
+
+    <TemplateColumn Context="preorder">
+        <a href="@($"preorders/edit?preorderid={preorder.PreOrderID}")">Edit</a> |
+        <a href="@($"preorders/details?preorderid={preorder.PreOrderID}")">Details</a> |
+        <a href="@($"preorders/delete?preorderid={preorder.PreOrderID}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private DinesaurContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

@@ -1,0 +1,69 @@
+﻿@page "/foods/create"
+@using Microsoft.EntityFrameworkCore
+@using Dinesaur.Domain
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Food</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Food" OnValidSubmit="AddFood" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="foodname" class="form-label">FoodName:</label> 
+                <InputText id="foodname" @bind-Value="Food.FoodName" class="form-control" /> 
+                <ValidationMessage For="() => Food.FoodName" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="cost" class="form-label">Cost:</label> 
+                <InputNumber id="cost" @bind-Value="Food.Cost" class="form-control" /> 
+                <ValidationMessage For="() => Food.Cost" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label> 
+                <InputText id="description" @bind-Value="Food.Description" class="form-control" /> 
+                <ValidationMessage For="() => Food.Description" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="preorderid" class="form-label">PreOrderID:</label> 
+                <InputNumber id="preorderid" @bind-Value="Food.PreOrderID" class="form-control" /> 
+                <ValidationMessage For="() => Food.PreOrderID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="staffid" class="form-label">StaffID:</label> 
+                <InputNumber id="staffid" @bind-Value="Food.StaffID" class="form-control" /> 
+                <ValidationMessage For="() => Food.StaffID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="menuid" class="form-label">MenuID:</label> 
+                <InputNumber id="menuid" @bind-Value="Food.MenuID" class="form-control" /> 
+                <ValidationMessage For="() => Food.MenuID" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/foods">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Food Food { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddFood()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Food.Add(Food);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/foods");
+    }
+}

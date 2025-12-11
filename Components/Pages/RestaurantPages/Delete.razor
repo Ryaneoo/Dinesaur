@@ -1,0 +1,75 @@
+﻿@page "/restaurants/delete"
+@using Microsoft.EntityFrameworkCore
+@using Dinesaur.Domain
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete</PageTitle>
+
+<h1>Delete</h1>
+
+<p>Are you sure you want to delete this?</p>
+<div>
+    <h2>Restaurant</h2>
+    <hr />
+    @if (restaurant is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">RestaurantName</dt>
+            <dd class="col-sm-10">@restaurant.RestaurantName</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Location</dt>
+            <dd class="col-sm-10">@restaurant.Location</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Category</dt>
+            <dd class="col-sm-10">@restaurant.Category</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">AdminID</dt>
+            <dd class="col-sm-10">@restaurant.AdminID</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Contact</dt>
+            <dd class="col-sm-10">@restaurant.Contact</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@restaurant.Email</dd>
+        </dl>
+        <EditForm method="post" Model="restaurant" OnValidSubmit="DeleteRestaurant" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(restaurant is null)">Delete</button> |
+            <a href="/restaurants">Back to List</a>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private Restaurant? restaurant;
+
+    [SupplyParameterFromQuery]
+    private int RestaurantID { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        restaurant = await context.Restaurant.FirstOrDefaultAsync(m => m.RestaurantID == RestaurantID);
+
+        if (restaurant is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteRestaurant()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Restaurant.Remove(restaurant!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/restaurants");
+    }
+}
