@@ -35,6 +35,7 @@ builder.Services.AddAuthentication(options =>
     .AddIdentityCookies();
 
 builder.Services.AddIdentityCore<DinesaurUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DinesaurContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
