@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Dinesaur.Configurations.Entities;
+using Dinesaur.Data;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Dinesaur.Domain;
-using Dinesaur.Configurations.Entities;
 
 namespace Dinesaur.Data
 {
-    public class DinesaurContext : DbContext
+    public class DinesaurContext(DbContextOptions<DinesaurContext> options) : IdentityDbContext<DinesaurUser>(options)
     {
-        public DinesaurContext (DbContextOptions<DinesaurContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<Dinesaur.Domain.Customer> Customer { get; set; } = default!;
         public DbSet<Dinesaur.Domain.Food> Food { get; set; } = default!;
         public DbSet<Dinesaur.Domain.Menu> Menu { get; set; } = default!;
@@ -36,9 +28,12 @@ namespace Dinesaur.Data
             modelBuilder.ApplyConfiguration(new ReservationSeeding());
             modelBuilder.ApplyConfiguration(new RestaurantSeeding());
             modelBuilder.ApplyConfiguration(new ReviewsSeeding());
+            modelBuilder.ApplyConfiguration(new UserRoleSeed());
+            modelBuilder.ApplyConfiguration(new UserSeed());
+            modelBuilder.ApplyConfiguration(new RoleSeed());
 
 
         }
-        
+
     }
 }

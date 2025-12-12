@@ -1,12 +1,18 @@
-﻿
-<div class="top-row">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Dinesaur</a>
-        <a href="#news">News</a>
-        <a href="#contact">Contact</a>
-        <a href="#about">About</a>
+﻿@inject NavigationManager NavigationManager
+@implements IDisposable 
+<nav style="background-color: #386641; display: flex; justify-content: space-between; width: 100%">
+    <div>
+        <a class="navbar-brand" , href="/">Dinesaur</a>
+        <a href="/Account/register">About Us</a>
+       
     </div>
-</div>
+   
+    <div>
+        
+        <a href="/Account/register">Sign Up</a>
+        <a href="/Account/login">Login</a>
+    </div>
+</nav>
 
 @code {
     private string? currentUrl;

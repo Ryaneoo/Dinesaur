@@ -4,14 +4,8 @@ using Dinesaur.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("IdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'IdentityContextConnection' not found.");;
-
-builder.Services.AddDbContext<IdentityContext>(options => options.UseSqlServer(connectionString));
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.DependencyInjection;
-using Dinesaur.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContextFactory<DinesaurContext>(options =>
@@ -41,7 +35,8 @@ builder.Services.AddAuthentication(options =>
     .AddIdentityCookies();
 
 builder.Services.AddIdentityCore<DinesaurUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<IdentityContext>()
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<DinesaurContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
