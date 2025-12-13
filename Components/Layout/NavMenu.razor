@@ -3,15 +3,32 @@
 <nav style="background-color: #386641; display: flex; justify-content: space-between; width: 100%">
     <div>
         <a class="navbar-brand" , href="/">Dinesaur</a>
-        <a href="/Account/register">About Us</a>
-       
+        <a href="#ourhistory">About Us</a>
     </div>
-   
+    <AuthorizeView>
+        <Authorized>
+    <div>
+
+        <a href="/Account/Manage"> @context.User.Identity?.Name</a>
+    </div>
+            <div class="nav-item">
+                    <form action="Account/Logout" method="post">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                    <button type="submit" class="nav-link">
+                          <span aria-hidden="true"></span> Log Out
+                    </button>
+                </form>
+    </div>
+    </Authorized>
+   <NotAuthorized>
     <div>
         
         <a href="/Account/register">Sign Up</a>
         <a href="/Account/login">Login</a>
     </div>
+    </NotAuthorized>
+    </AuthorizeView>
 </nav>
 
 @code {

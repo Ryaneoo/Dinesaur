@@ -1,32 +1,38 @@
 ﻿
-
-    /* Style the links inside the navigation bar */
-    .topnav a {
-        float: left;
-        color: #f2f2f2;
-        text-align: center;
-        padding: 15.5px 15px;
-        text-decoration: none;
-        font-size: 17px;
+.nav-item ::deep .nav-link {
+    
+    background: none;
+    border: none;
+   
+    display: flex;
+    align-items: center;
+    float: left;
+    color: #f2f2f2;
+    padding: 15.5px 15px;
+    text-decoration: none;
+    font-size: 17px;
+}
+    .nav-item ::deep .nav-link :hover {
+        background-color: #f2f2f2;
+        color: black;
     }
+/* Style the links inside the navigation bar */
+.topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 15.5px 15px;
+    text-decoration: none;
+    font-size: 17px;
+}
 
-        /* Change the color of links on hover */
-        .topnav a:hover {
-            background-color: #f2f2f2;
-            color: black;
-            
-        }
+    /* Change the color of links on hover */
+    .topnav a:hover {
+        background-color: #f2f2f2;
+        color: black;
+    }
 
 .top-row {
     height: 3.5rem;
-    
     background-color: darkblue;
 }
-
-
-
-
-
-
-
-
