@@ -1,5 +1,9 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   background-image: url('Images/DinesaurLandingPageTranslucent.jpg'); 
+   background-size: cover; 
+   background-repeat: no-repeat;
+   height: 200px;
 }
 
 a, .btn-link {

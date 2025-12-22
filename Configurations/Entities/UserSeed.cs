@@ -19,6 +19,8 @@ namespace Dinesaur.Configurations.Entities
                 FirstName = "Admin",
                 LastName = "User",
                 Contact = 91234567,
+                UserName = "admin@localhost.com",
+                NormalizedUserName = "ADMIN@LOCALHOST.COM",
                 PasswordHash = hasher.HashPassword(null, "P@ssword1"),
                 EmailConfirmed = true // Set to true, otherwise you won't be able to login
             },
@@ -30,6 +32,8 @@ namespace Dinesaur.Configurations.Entities
                 FirstName = "User",
                 LastName = "User",
                 Contact = 91234568,
+                UserName = "user@localhost.com",
+                NormalizedUserName = "USER@LOCALHOST.COM",
                 PasswordHash = hasher.HashPassword(null, "P@ssword1"),
                 EmailConfirmed = true // Set to true, otherwise you won't be able to login
             },
@@ -41,6 +45,8 @@ namespace Dinesaur.Configurations.Entities
                 FirstName = "Restaurant",
                 LastName = "Staff",
                 Contact = 91234560,
+                UserName = "restaurantstaff@localhost.com",
+                NormalizedUserName = "RESTAURANTSTAFF@LOCALHOST.COM",
                 PasswordHash = hasher.HashPassword(null, "P@ssword1"),
                 EmailConfirmed = true // Set to true, otherwise you won't be able to login
             }
