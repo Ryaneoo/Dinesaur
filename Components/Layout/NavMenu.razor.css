@@ -45,3 +45,17 @@
     height: 3.5rem;
     background-color: darkblue;
 }
+.nav-link {
+    background-color: #386641;
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 15.5px 15px;
+    text-decoration: none;
+    font-size: 17px;
+    border:hidden;
+}
+.nav-link:hover {
+        background-color: #f2f2f2;
+        color: black;
+}

@@ -5,6 +5,11 @@
         <a class="navbar-brand" , href="/">Dinesaur</a>
         <a href="#ourhistory">About Us</a>
     </div>
+    <AuthorizeView Roles="@($"RestaurantStaff,Administrator")">
+        <div>
+            <a href="#Resturant"> Restaurant </a>
+        </div>
+    </AuthorizeView>
     <AuthorizeView>
         <Authorized>
     <div>
