@@ -44,17 +44,14 @@ namespace Dinesaur.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -100,90 +97,90 @@ namespace Dinesaur.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3d61a6ca-2a61-4a54-a786-9b8cc49dabc9",
+                            ConcurrencyStamp = "676767d0-99a5-4159-a0ab-ac3c5df98518",
                             Contact = 91234567,
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
-                            FirstName = "Admin",
-                            LastName = "User",
                             LockoutEnabled = false,
+                            Name = "Admin",
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP6p4aUNOY0GWnwKqJphA1zvuN9odKwvwakZe/a0F6SgecHW5+nwriCtzkd8WEzB9w==",
+                            NormalizedUserName = "ADMIN@LOCALHOST.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGRi2jqzy6qyU7OCFaSz4BtvSBHRdXIp7w7AH/07hO5Yje8gRy+3hu2BnF3XUwCLCA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "bd69b398-ea46-4fce-9710-06bf5f508687",
-                            TwoFactorEnabled = false
+                            SecurityStamp = "5b62f25f-4aff-40bd-b28f-9c149c42bdf8",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@localhost.com"
                         },
                         new
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7d39a36e-db74-477e-a840-6108d169d901",
+                            ConcurrencyStamp = "79713a76-7e6c-4137-9c42-d9c44348e662",
                             Contact = 91234568,
                             Email = "user@localhost.com",
                             EmailConfirmed = true,
-                            FirstName = "User",
-                            LastName = "User",
                             LockoutEnabled = false,
+                            Name = "User",
                             NormalizedEmail = "USER@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIbEUxkFQfqisoGLdKX1WC49Fi7u/4hFEnOB/zf8NnNzfhj4PhmnIiNM5qbTrlXnBw==",
+                            NormalizedUserName = "USER@LOCALHOST.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOgGrQ4VwTL9aQjP15DqBattCmEUn7FqZRjxwyK4xYYnJSf8rJ8ISRc8OXvto1VX2A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4d6d467c-0571-4caf-a457-9a1cc924f30b",
-                            TwoFactorEnabled = false
+                            SecurityStamp = "302640a3-5062-480c-b027-57add4d44749",
+                            TwoFactorEnabled = false,
+                            UserName = "user@localhost.com"
                         },
                         new
                         {
                             Id = "3",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "def44cfa-4d7d-4071-acfb-17f81d637705",
+                            ConcurrencyStamp = "1569b036-0168-4a15-8fa5-ad843dbc54ef",
                             Contact = 91234560,
                             Email = "restaurantstaff@localhost.com",
                             EmailConfirmed = true,
-                            FirstName = "Restaurant",
-                            LastName = "Staff",
                             LockoutEnabled = false,
+                            Name = "RestaurantStaff",
                             NormalizedEmail = "RESTAURANTSTAFF@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELsYJ6ooxYdxJC7zZu1iUZROjG+i/uiQiNliZGsn/PXluhvOBIXBSdHvL1ED+c2n1A==",
+                            NormalizedUserName = "RESTAURANTSTAFF@LOCALHOST.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGXHbVHw2rV+wqXI2V11c11qfryId0aBfsVuhrn+6M/PADFFpeNqBeFujJt5DhCcJg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "71a8dfce-966d-4747-ab57-98505f6cb508",
-                            TwoFactorEnabled = false
+                            SecurityStamp = "b57eb7b5-b4e8-431d-8b42-7a51ba50ffbb",
+                            TwoFactorEnabled = false,
+                            UserName = "restaurantstaff@localhost.com"
                         });
                 });
 
-            modelBuilder.Entity("Dinesaur.Domain.Customer", b =>
+            modelBuilder.Entity("Dinesaur.Domain.DinesaurUserModel", b =>
                 {
-                    b.Property<int>("CustomerID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("Contact")
                         .HasColumnType("int");
 
-                    b.Property<string>("CustomerName")
+                    b.Property<string>("DinesaurUserID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DinesaurUserName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CustomerID");
+                    b.HasKey("Id");
 
-                    b.ToTable("Customer");
+                    b.ToTable("DinesaurUser");
 
                     b.HasData(
                         new
                         {
-                            CustomerID = 1,
-                            Contact = 99999999,
-                            CustomerName = "Ryan",
-                            Email = "banana@gmail.com"
-                        },
-                        new
-                        {
-                            CustomerID = 2,
-                            Contact = 123456789,
-                            CustomerName = "Oliver",
-                            Email = "Oliver23@gmail.com"
+                            Id = 1,
+                            Contact = 91234568,
+                            DinesaurUserID = "2",
+                            DinesaurUserName = "User User",
+                            Email = "user@localhost.com"
                         });
                 });
 
@@ -356,14 +353,11 @@ namespace Dinesaur.Migrations
 
             modelBuilder.Entity("Dinesaur.Domain.Reservation", b =>
                 {
-                    b.Property<int>("ReservationID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationID"));
-
-                    b.Property<int>("CustomerID")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -374,34 +368,37 @@ namespace Dinesaur.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ReservationID")
+                        .HasColumnType("int");
+
                     b.Property<int>("RestaurantID")
                         .HasColumnType("int");
 
                     b.Property<int>("StaffID")
                         .HasColumnType("int");
 
-                    b.HasKey("ReservationID");
+                    b.HasKey("Id");
 
                     b.ToTable("Reservation");
 
                     b.HasData(
                         new
                         {
-                            ReservationID = 1,
-                            CustomerID = 1,
-                            Date = new DateTime(2025, 12, 11, 22, 16, 3, 808, DateTimeKind.Local).AddTicks(7560),
+                            Id = 1,
+                            Date = new DateTime(2025, 12, 23, 22, 3, 43, 48, DateTimeKind.Local).AddTicks(7516),
                             Location = "Orchard",
                             Remarks = "Null",
+                            ReservationID = 1,
                             RestaurantID = 1,
                             StaffID = 1
                         },
                         new
                         {
-                            ReservationID = 2,
-                            CustomerID = 2,
-                            Date = new DateTime(2025, 12, 11, 22, 16, 3, 808, DateTimeKind.Local).AddTicks(7579),
+                            Id = 2,
+                            Date = new DateTime(2025, 12, 23, 22, 3, 43, 48, DateTimeKind.Local).AddTicks(7528),
                             Location = "Novena",
                             Remarks = "Null",
+                            ReservationID = 2,
                             RestaurantID = 2,
                             StaffID = 2
                         });
@@ -450,14 +447,11 @@ namespace Dinesaur.Migrations
 
             modelBuilder.Entity("Dinesaur.Domain.Review", b =>
                 {
-                    b.Property<int>("ReviewID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
-
-                    b.Property<int>("CustomerID")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -474,23 +468,26 @@ namespace Dinesaur.Migrations
                     b.Property<int>("RestaurantID")
                         .HasColumnType("int");
 
+                    b.Property<int>("ReviewID")
+                        .HasColumnType("int");
+
                     b.Property<string>("ReviewTitle")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ReviewID");
+                    b.HasKey("Id");
 
                     b.ToTable("Review");
 
                     b.HasData(
                         new
                         {
-                            ReviewID = 1,
-                            CustomerID = 1,
-                            Date = new DateTime(2025, 12, 11, 22, 16, 3, 808, DateTimeKind.Local).AddTicks(7813),
+                            Id = 1,
+                            Date = new DateTime(2025, 12, 23, 22, 3, 43, 48, DateTimeKind.Local).AddTicks(7653),
                             Description = "Bad",
                             Location = "Orchard",
                             Rating = 2.5,
                             RestaurantID = 1,
+                            ReviewID = 1,
                             ReviewTitle = "Bad"
                         });
                 });

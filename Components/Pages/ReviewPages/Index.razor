@@ -21,7 +21,7 @@
     <PropertyColumn Property="review => review.Rating" />
     <PropertyColumn Property="review => review.Description" />
     <PropertyColumn Property="review => review.RestaurantID" />
-    <PropertyColumn Property="review => review.CustomerID" />
+    <PropertyColumn Property="review => review.Id" />
 
     <TemplateColumn Context="review">
         <a href="@($"reviews/edit?reviewid={review.ReviewID}")">Edit</a> |
