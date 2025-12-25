@@ -3,6 +3,7 @@ using Dinesaur.Data;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Dinesaur.Data
 {
     public class DinesaurContext(DbContextOptions<DinesaurContext> options) : IdentityDbContext<DinesaurUser>(options)

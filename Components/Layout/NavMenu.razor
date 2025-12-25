@@ -3,10 +3,11 @@
 @implements IDisposable 
 @inject AuthenticationStateProvider Auth
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
-<nav style="background-color: #386641; display: flex; justify-content: space-between; width: 100%">
+<nav style="background-color: #386641; display: flex; justify-content: space-between; width: 100%;  z-index: 1000; position: fixed">
     <div>
         <a class="navbar-brand" , href="/">Dinesaur</a>
-        <a href="#ourhistory">About Us</a>
+        <a class="nav-link" href="/User/Home">Home</a>
+        <a class="nav-link" href="#ourhistory">About Us</a>
     </div>
     <AuthorizeView Roles="@($"RestaurantStaff,Administrator")">
         <div>
