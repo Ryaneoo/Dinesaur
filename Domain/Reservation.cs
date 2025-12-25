@@ -9,7 +9,7 @@
 
         public string? Remarks { get; set; }
 
-        public int CustomerID { get; set; }
+        public int Id { get; set; }
 
         public int RestaurantID { get; set; }
 

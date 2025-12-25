@@ -19,7 +19,7 @@ namespace Dinesaur.Configurations.Entities
                     Rating = 2.5,
                     Description = "Bad",
                     RestaurantID = 1,
-                    CustomerID = 1
+                    Id = 1
                 });
         }
     }
