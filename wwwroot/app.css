@@ -1,9 +1,14 @@
+* {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-   background-image: url('Images/DinesaurLandingPageTranslucent.jpg'); 
-   background-size: cover; 
-   background-repeat: no-repeat;
-   height: 200px;
+    background-image: url('Images/DinesaurLandingPageTranslucent.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 200px;
 }
 
 a, .btn-link {
@@ -52,4 +57,40 @@ h1:focus {
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+
+.nav-link {
+    font-family: 'Calisto MT';
+    font-weight: bold;
+    font-size: 20px;
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    display: inline-block;
+    transition: background 0.3s, color 0.3s;
+}
+
+    .nav-link:hover {
+        background-color: white; 
+        color: black; 
+        cursor: pointer;
+    }
+    .nav-link.active {
+        background-color: #222;
+        color: #ffd700;
+    }
+
+* {
+    font-family: "Calisto MT", serif;
+}
+
+h1 {
+    color: #88E788;
+    font-family: 'Bauhaus 93';
+    text-align: center;
+    font-size: 125px;
+}
+
+h1, h2{
+    font-weight: bold;
 }

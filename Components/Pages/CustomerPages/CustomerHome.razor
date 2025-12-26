@@ -1,0 +1,160 @@
+﻿@*Main Page For Dinesaur Customers*@
+
+
+@page "/User/Home"
+@using Dinesaur.Domain
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavigationManager
+@implements IDisposable
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject Dinesaur.Data.DinesaurContext DbContext
+<div style="display: grid; grid-template-columns: 15% 1fr; height: 100vh;">
+    <div>
+        <div style="position: fixed; left: 0; top: 55px; background-color: black; width: 15%; height: 100%">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a class="nav-link" href="/">My Bookings</a>
+                <a class="nav-link" href="/Account/Manage">Settings</a>
+            </div>
+        </div>
+    </div>
+    <div style="
+         width: 100%;
+         color: white;
+         padding: 50px;
+         align-items: center;">
+        <div style="display: flex; gap: 75px; height: 400px; align-items: center; justify-content: space-evenly">
+            <div style>
+                <h1 style="text-align: left"> Welcome,</h1>
+                <h1 style="text-align: left"> @displayName!</h1>
+            </div>
+            
+            <form method="get">
+                <input type="text"
+                       name="searchTerm"
+                       placeholder="Search Restaurants"
+                       style="height: 50px; width: 300px;"
+                        />
+                <button type="submit"
+                        style="padding: 12px 18px; font-size: 16px;">
+                    Search
+                </button>
+            </form>
+        </div>
+        <div>
+            <h3 style="margin-left: 150px;">Favourite Restaurants</h3>
+            <div style="display: flex; gap: 25px; justify-content: center">
+                @if (restaurants == null)
+                {
+                    <p><em>Loading...</em></p>
+                }
+                else
+                {
+                    var random = new Random();
+                    var randomRestaurants = restaurants
+                    .OrderBy(r => random.Next())
+                    .Take(5)
+                    .ToList();
+                    @foreach( var restaurant in randomRestaurants)
+                    {
+                        <div> 
+                            <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
+
+                            </div>
+                            <h4> @restaurant.RestaurantName</h4>
+                            <p> @restaurant.Location</p>
+                   
+                        </div>
+
+                    }
+                }
+            </div>
+        </div>
+        <div>
+            <h3 style="margin-left: 150px;">Nearby Restaurants</h3>
+            <div style="display: flex; gap: 25px;justify-content: center">
+                @if (restaurants == null)
+                {
+                    <p><em>Loading...</em></p>
+                }
+                else
+                {
+                    var random = new Random();
+                    var randomRestaurants = restaurants
+                    .OrderBy(r => random.Next())
+                    .Take(5)
+                    .ToList();
+                    @foreach (var restaurant in randomRestaurants)
+                    {
+                        <div>
+                            <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
+                            </div>
+                            <h4> @restaurant.RestaurantName</h4>
+                            <p> @restaurant.Location</p>
+
+                        </div>
+
+                    }
+                }
+            </div>
+        </div>
+        <div>
+            <h3 style="margin-left: 150px;">Top Rated Restaurants</h3>
+            <div style="display: flex; gap: 25px;justify-content: center">
+                @if (restaurants == null)
+                {
+                    <p><em>Loading...</em></p>
+                }
+                else
+                {
+                    var random = new Random();
+                    var randomRestaurants = restaurants
+                    .OrderBy(r => random.Next())
+                    .Take(5)
+                    .ToList();
+                    @foreach (var restaurant in randomRestaurants)
+                    {
+                        <div>
+                            <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
+                            </div>
+                            <h4> @restaurant.RestaurantName</h4>
+                            <p> @restaurant.Location</p>
+
+                        </div>
+
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private string? displayName;
+    private List<Restaurant> restaurants;
+    public void Dispose()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await Auth.GetAuthenticationStateAsync()).User;
+        if (!user.Identity?.IsAuthenticated ?? true) return;
+
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var identityUser = await db.Users
+            .Where(u => u.Id == aspNetUserId)
+            .Select(u => u.Name)
+            .SingleOrDefaultAsync();
+
+        displayName = identityUser ?? user.Identity?.Name;
+        restaurants = await DbContext.Restaurant.ToListAsync();
+    }
+    
+
+
+}
