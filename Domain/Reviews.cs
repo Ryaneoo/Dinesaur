@@ -11,6 +11,6 @@
         public string? Description { get; set; }
         public int RestaurantID { get; set; } /*Foreign key*/
 
-        public int CustomerID { get; set; } /*Foreign key*/
+        public int Id { get; set; } /*Foreign key*/
     }
 }

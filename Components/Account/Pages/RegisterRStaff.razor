@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using Dinesaur.Data
+@using Microsoft.EntityFrameworkCore
 
 @inject UserManager<DinesaurUser> UserManager
 @inject IUserStore<DinesaurUser> UserStore
@@ -15,7 +16,7 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject RoleManager<IdentityRole> RoleManager
-
+@inject DinesaurContext DbContext
 <PageTitle>Register as Staff</PageTitle>
 
 <h1 style="text-align:center; font-weight:bold; color:lightgreen">Register as a Restaurant Owner</h1>
@@ -34,17 +35,12 @@
                 <ValidationMessage For = "() => InputRStaff.Email" class= "text-danger" />
             </div >
             <div class= "form-floating mb-3" >
-                <InputText @bind-Value = "InputRStaff.FirstName" class= "form-control"
+                <InputText @bind-Value = "InputRStaff.Name" class= "form-control"
                            autocomplete = "firstname" aria - required = "true" placeholder = "Bill" />
-                <label for= "email" > First Name </label >
-                <ValidationMessage For = "() => InputRStaff.FirstName" class= "text-danger" />
+                <label for= "email" > Name </label >
+                <ValidationMessage For = "() => InputRStaff.Name" class= "text-danger" />
             </div >
-            <div class= "form-floating mb-3" >
-                <InputText @bind-Value = "InputRStaff.LastName" class= "form-control"
-                           autocomplete = "lastname" aria - required = "true" placeholder = "Gates" />
-                <label for= "email" > Last Name </label >
-                <ValidationMessage For = "() => InputRStaff.LastName" class= "text-danger" />
-            </div >
+            
 
 
             <div class= "form-floating mb-3" >
@@ -97,8 +93,8 @@ public async Task RegisterUser(EditContext editContext)
     var emailStore = GetEmailStore();
     await emailStore.SetEmailAsync(user, InputRStaff.Email, CancellationToken.None);
 
-    user.FirstName = InputRStaff.FirstName;
-    user.LastName = InputRStaff.LastName;
+    user.Name = InputRStaff.Name;
+    
 
     var result = await UserManager.CreateAsync(user, InputRStaff.Password);
 
@@ -122,8 +118,15 @@ public async Task RegisterUser(EditContext editContext)
 
 
     Logger.LogInformation("User created a new account with password.");
-
-    var userId = await UserManager.GetUserIdAsync(user);
+        var appUser = new Dinesaur.Domain.DinesaurUserModel
+        {
+            DinesaurUserID = user.Id,
+            DinesaurUserName = InputRStaff.Name,
+            Email = InputRStaff.Email
+        };
+        DbContext.DinesaurUser.Add(appUser);
+        await DbContext.SaveChangesAsync();
+        var userId = await UserManager.GetUserIdAsync(user);
     var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
     var callbackUrl = NavigationManager.GetUriWithQueryParameters(
@@ -168,12 +171,10 @@ private IUserEmailStore<DinesaurUser> GetEmailStore()
 private sealed class InputModelRStaff
 {
     [Required]
-    [Display(Name = "First Name")]
-    public string FirstName { get; set; } = "";
+    [Display(Name = "Name")]
+    public string Name { get; set; } = "";
 
-    [Required]
-    [Display(Name = "Last Name")]
-    public string LastName { get; set; } = "";
+ 
 
     [Required]
     [EmailAddress]

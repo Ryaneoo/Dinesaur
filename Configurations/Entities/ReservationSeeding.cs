@@ -16,7 +16,7 @@ namespace Dinesaur.Configurations.Entities
                     Date = DateTime.Now,
                     Location = "Orchard",
                     Remarks = "Null",
-                    CustomerID = 1,
+                    Id = 1,
                     RestaurantID = 1,
                     StaffID = 1
 
@@ -27,7 +27,7 @@ namespace Dinesaur.Configurations.Entities
                     Date = DateTime.Now,
                     Location = "Novena",
                     Remarks = "Null",
-                    CustomerID = 2,
+                    Id = 2,
                     RestaurantID = 2,
                     StaffID = 2
                 }

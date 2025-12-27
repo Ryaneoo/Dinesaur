@@ -1,9 +1,13 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavigationManager
 @implements IDisposable 
-<nav style="background-color: #386641; display: flex; justify-content: space-between; width: 100%">
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+<nav style="background-color: #386641; display: flex; justify-content: space-between; width: 100%;  z-index: 1000; position: fixed">
     <div>
         <a class="navbar-brand" , href="/">Dinesaur</a>
-        <a href="#ourhistory">About Us</a>
+        <a class="nav-link" href="/User/Home">Home</a>
+        <a class="nav-link" href="#ourhistory">About Us</a>
     </div>
     <AuthorizeView Roles="@($"RestaurantStaff,Administrator")">
         <div>
@@ -14,7 +18,7 @@
         <Authorized>
     <div>
 
-        <a href="/Account/Manage"> @context.User.Identity?.Name</a>
+        <a href="/Account/Manage"> @displayName</a>
     </div>
             <div class="nav-item">
                     <form action="Account/Logout" method="post">
@@ -47,10 +51,23 @@
 
 @code {
     private string? currentUrl;
-    protected override void OnInitialized()
+    private string? displayName;
+    protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
+        var user = (await Auth.GetAuthenticationStateAsync()).User;
+        if (!user.Identity?.IsAuthenticated ?? true) return;
+
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var identityUser = await db.Users
+            .Where(u => u.Id == aspNetUserId)
+            .Select(u => u.Name)
+            .SingleOrDefaultAsync();
+
+        displayName = identityUser ?? user.Identity?.Name;
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
