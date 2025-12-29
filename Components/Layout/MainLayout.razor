@@ -3,13 +3,43 @@
     <NavMenu />
 </div>
 <div class="page">
-    
-
     <main>
+        <AuthorizeView>
+            <Authorized>
+                <div style="display: grid; grid-template-columns: 15% 1fr; height: 100vh; text-align: left">
+                    <div>
+                        <div style="position: fixed; left: 0; top: 55px; background-color: black; width: 15%; height: 100%">
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
 
-        <article class="content">
-            @Body
-        </article>
+                                @* Admin Menu *@
+                                <AuthorizeView Roles="Administrator" Context="adminAuth">
+                                    <Authorized Context="adminAuth">
+                                        <a class="nav-link" href="/">Customer Reviews</a>
+                                        <a class="nav-link" href="/restaurant/manage">Restaurants</a>
+                                        <a class="nav-link" href="/Account/Manage">Settings</a>
+                                    </Authorized>
+                                </AuthorizeView>
+
+                                @* Normal User Menu (only if NOT admin) *@
+                                <AuthorizeView Roles="Administrator" Context="userAuth">
+                                    <NotAuthorized Context="userAuth">
+                                        <a class="nav-link" href="/">My Bookings</a>
+                                        <a class="nav-link" href="/restaurant">Restaurant</a>
+                                        <a class="nav-link" href="/Account/Manage">Settings</a>
+                                    </NotAuthorized>
+                                </AuthorizeView>
+
+                            </div>
+                        </div>
+                    </div>
+                    @Body
+                </div>
+            </Authorized>
+
+            <NotAuthorized>
+                @Body
+            </NotAuthorized>
+        </AuthorizeView>
     </main>
 </div>
 

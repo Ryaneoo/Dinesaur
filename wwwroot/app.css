@@ -94,3 +94,20 @@ h1 {
 h1, h2{
     font-weight: bold;
 }
+
+a {
+    font-size: 20px;
+    font-family: "Calisto MT", serif;
+    color: white;
+    text-decoration: none;
+}
+
+    a:hover {
+        font-size: 20px;
+        color: white;
+        text-decoration: none;
+    }
+
+h2, h3, h4, h5, h6 {
+    color: white
+}

@@ -9,21 +9,13 @@
 @inject AuthenticationStateProvider Auth
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject Dinesaur.Data.DinesaurContext DbContext
-<div style="display: grid; grid-template-columns: 15% 1fr; height: 100vh;">
-    <div>
-        <div style="position: fixed; left: 0; top: 55px; background-color: black; width: 15%; height: 100%">
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <a class="nav-link" href="/">My Bookings</a>
-                <a class="nav-link" href="/Account/Manage">Settings</a>
-            </div>
-        </div>
-    </div>
+
     <div style="
          width: 100%;
          color: white;
          padding: 50px;
          align-items: center;">
-        <div style="display: flex; gap: 75px; height: 400px; align-items: center; justify-content: space-evenly">
+        <div style="display: flex; gap: 100px; height: 400px; align-items: center; justify-content: left">
             <div style>
                 <h1 style="text-align: left"> Welcome,</h1>
                 <h1 style="text-align: left"> @displayName!</h1>
@@ -42,8 +34,8 @@
             </form>
         </div>
         <div>
-            <h3 style="margin-left: 150px;">Favourite Restaurants</h3>
-            <div style="display: flex; gap: 25px; justify-content: center">
+            <h3>Favourite Restaurants</h3>
+            <div style="display: flex; gap: 25px; justify-content: left">
                 @if (restaurants == null)
                 {
                     <p><em>Loading...</em></p>
@@ -57,22 +49,22 @@
                     .ToList();
                     @foreach( var restaurant in randomRestaurants)
                     {
-                        <div> 
-                            <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
-
-                            </div>
-                            <h4> @restaurant.RestaurantName</h4>
-                            <p> @restaurant.Location</p>
-                   
-                        </div>
+                        <a href="/Restaurants/@restaurant.RestaurantID">
+                            <div style="z-index: 1000; position: relative; cursor: pointer;">
+                                <div style="width: 250px; height: 250px; background-color: black; border-radius: 15px; pointer-events: none;">
+                                </div>
+                                <h4>@restaurant.RestaurantName</h4>
+                                <p>@restaurant.Location</p>
+                                </div>
+                        </a>
 
                     }
                 }
             </div>
         </div>
         <div>
-            <h3 style="margin-left: 150px;">Nearby Restaurants</h3>
-            <div style="display: flex; gap: 25px;justify-content: center">
+            <h3>Nearby Restaurants</h3>
+            <div style="display: flex; gap: 25px;justify-content: left">
                 @if (restaurants == null)
                 {
                     <p><em>Loading...</em></p>
@@ -86,21 +78,23 @@
                     .ToList();
                     @foreach (var restaurant in randomRestaurants)
                     {
-                        <div>
-                            <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
-                            </div>
-                            <h4> @restaurant.RestaurantName</h4>
-                            <p> @restaurant.Location</p>
+                        <a href="/Restaurants/@restaurant.RestaurantID">
+                            <div>
+                                <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
+                                </div>
+                                <h4> @restaurant.RestaurantName</h4>
+                                <p> @restaurant.Location</p>
 
-                        </div>
+                            </div>
+                        </a>
 
                     }
                 }
             </div>
         </div>
         <div>
-            <h3 style="margin-left: 150px;">Top Rated Restaurants</h3>
-            <div style="display: flex; gap: 25px;justify-content: center">
+            <h3>Rated Restaurants</h3>
+            <div style="display: flex; gap: 25px;justify-content: left">
                 @if (restaurants == null)
                 {
                     <p><em>Loading...</em></p>
@@ -114,20 +108,21 @@
                     .ToList();
                     @foreach (var restaurant in randomRestaurants)
                     {
-                        <div>
-                            <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
+                        <a href="/Restaurants/@restaurant.RestaurantID">
+                            <div>
+                                <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
+                                </div>
+                                <h4> @restaurant.RestaurantName</h4>
+                                <p> @restaurant.Location</p>
+
                             </div>
-                            <h4> @restaurant.RestaurantName</h4>
-                            <p> @restaurant.Location</p>
-
-                        </div>
-
+                        </a>
                     }
                 }
             </div>
         </div>
     </div>
-</div>
+
 
 
 @code {
@@ -155,6 +150,11 @@
         restaurants = await DbContext.Restaurant.ToListAsync();
     }
     
+    void displayRestaurant(Restaurant restaurant)
+    {
 
+        Console.WriteLine("CLICK REGISTERED");
+        NavigationManager.NavigateTo($"/Restaurants/{restaurant.RestaurantID}");
+    }
 
 }

@@ -1,0 +1,80 @@
+﻿@* Admin Home Page *@
+@page "/Admin/Home"
+@using Microsoft.AspNetCore.Identity
+@using Dinesaur.Domain
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject Dinesaur.Data.DinesaurContext DbContext
+@inject UserManager<Dinesaur.Data.DinesaurUser> UserManager
+
+  
+        <!-- MAIN PANEL -->
+        <div style="
+         width: 100%;
+         color: white;
+         padding: 50px;
+         align-items: center;">
+            <div style="display: flex; gap: 25px; height: 400px; align-items: center; justify-content: left">
+                <div style>
+                    <h1 style="text-align: left"> Welcome,</h1>
+                    <h1 style="text-align: left"> @displayName!</h1>
+                </div>
+
+        <div style="
+        color:white;
+        font-size:90px;
+        line-height:1.6;
+        margin-top:850px;
+        transform: translateX(-550px);">
+            There are “@NewUsersCount” New Users<br/>
+            There are “ ” New Ratings for review<br/>
+            There are “ ” New Restaurants for review
+        </div>
+    </div>
+    </div>
+
+@code {
+    private string? displayName;
+    private int NewUsersCount;
+    private DateTime? sinceUtc;
+    public void Dispose()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await Auth.GetAuthenticationStateAsync()).User;
+        if (!user.Identity?.IsAuthenticated ?? true) return;
+
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var identityUser = await db.Users
+            .Where(u => u.Id == aspNetUserId)
+            .Select(u => u.Name)
+            .SingleOrDefaultAsync();
+
+        displayName = identityUser ?? user.Identity?.Name;
+        
+
+        var admin = await db.Users.SingleAsync(u => u.Id == aspNetUserId);
+
+        
+        sinceUtc = admin.PreviousLoginAtUtc;
+
+        
+        if (sinceUtc != null)
+        {
+            NewUsersCount = await db.Users
+                .CountAsync(u => u.CreatedAtUtc > sinceUtc.Value);
+        }
+        else
+        {
+            NewUsersCount = 0;
+    }
+
+}
+}
