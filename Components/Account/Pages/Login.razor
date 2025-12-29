@@ -12,7 +12,7 @@
 
 <PageTitle>Log in</PageTitle>
 <link href="home.css" rel="stylesheet" />
-<body style="background-image: url('Images/DinesaurLandingPageTranslucent.jpg'); background-size: cover; background-repeat: no-repeat; height: 200px;">
+<body>
     <h1 style="text-align:center; font-weight:bold; color:lightgreen">Log in</h1>
     <div class="row">
         <div class="col-md-6 offset-md-3">
@@ -89,7 +89,7 @@
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo(ReturnUrl); //need to add a page after successful login
+            RedirectManager.RedirectTo("/User/Home");
         }
         else if (result.RequiresTwoFactor)
         {

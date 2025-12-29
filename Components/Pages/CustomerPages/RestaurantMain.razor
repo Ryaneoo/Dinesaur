@@ -1,0 +1,109 @@
+﻿@*Home Page For Dinesaur Restaurants*@
+
+
+@page "/Restaurants/{id:int}"
+@using Dinesaur.Domain
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject Dinesaur.Data.DinesaurContext DbContext
+<div style="display: flex; flex-direction:column">
+<div style="background-color: dimgrey; height: 60vh; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
+    <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant.RestaurantName</h1>
+    <div style="display: flex; padding-top: 50px;">
+        <div>
+            <h3>Category: @selectedRestaurant.Category</h3>
+            <h3>Description</h3>
+            <h3>Address: @selectedRestaurant.Location</h3>
+        </div>
+        <div style="padding-left: 100px;">
+            <h3>Hours: 9am-9pm (Placeholder)</h3>
+            <h3>Contact: @selectedRestaurant.Contact</h3>
+            <h3>Email: @selectedRestaurant.Email</h3>
+        </div>
+        <div>
+            <a style="padding: 20px; margin: 300px 50px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="#Reservation"> Book Now</a>
+
+        </div>
+    </div>
+</div>
+<div style="margin: 20px 80px;">
+    <h3>Top Selling Dishes</h3>
+    <div style="display: flex; gap: 25px; justify-content: left">
+        @if (foods == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            var random = new Random();
+            
+            @foreach (var food in foods)
+            {
+                
+                <a href="/Restaurants/@food.FoodName">
+                    <div style="z-index: 1000; position: relative; cursor: pointer;">
+                        <div style="width: 250px; height: 250px; background-color: black; border-radius: 15px; pointer-events: none;">
+                        </div>
+                        <h4>@food.FoodName</h4>
+                        <p>$@($"{food.Cost:F2}")</p>
+
+                    </div>
+                </a>
+
+            }
+        }
+    </div>
+</div>
+    <div style="margin: 20px 80px;">
+        <h3>Recent Reviews</h3>
+        <div style="display: flex; gap: 25px; justify-content: left">
+            @if (foods == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                var random = new Random();
+
+                @foreach (var review in reviews)
+                {
+
+                    <a href="/Restaurants/@review.RestaurantID">
+                        <div style="z-index: 1000; position: relative; cursor: pointer;">
+                            <div style="width: 500px; height: 250px; background-color: black; border-radius: 15px; pointer-events: none;">
+                            </div>
+                            <h4>@review.ReviewTitle</h4>
+                            <p>@review.Date</p>
+
+                        </div>
+                    </a>
+
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    Restaurant? selectedRestaurant;
+    private List<Food> foods;
+    private List<Review> reviews;
+
+    protected override void OnInitialized()
+    {
+        selectedRestaurant = DbContext.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+       
+        foods = await DbContext.Food.ToListAsync();
+        reviews = await DbContext.Review.ToListAsync();
+    }
+}

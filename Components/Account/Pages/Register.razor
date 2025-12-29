@@ -15,7 +15,7 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject RoleManager<IdentityRole> RoleManager
-
+@inject DinesaurContext DbContext
 <PageTitle>Register</PageTitle>
 
 <h1 style="text-align:center; font-weight:bold; color:lightgreen">Register</h1>
@@ -34,17 +34,12 @@
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.FirstName" class="form-control"
-                           autocomplete="firstname" aria-required="true" placeholder="Bill" />
-                <label for="email">First Name</label>
-                <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+                <InputText @bind-Value="Input.Name" class="form-control"
+                           autocomplete="name" aria-required="true" placeholder="Bill" />
+                <label for="email">Name</label>
+                <ValidationMessage For="() => Input.Name" class="text-danger" />
             </div>
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.LastName" class="form-control"
-                           autocomplete="lastname" aria-required="true" placeholder="Gates" />
-                <label for="email">Last Name</label>
-                <ValidationMessage For="() => Input.LastName" class="text-danger" />
-            </div>
+           
 
             <div class="form-floating mb-3">
                 <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
@@ -81,8 +76,8 @@
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
-        user.FirstName = Input.FirstName;
-        user.LastName = Input.LastName;
+        user.Name = Input.Name;
+
 
         var result = await UserManager.CreateAsync(user, Input.Password);
 
@@ -105,7 +100,14 @@
 
 
         Logger.LogInformation("User created a new account with password.");
-
+        var appUser = new Dinesaur.Domain.DinesaurUserModel
+            {
+                DinesaurUserID = user.Id,
+                DinesaurUserName = Input.Name,
+                Email = Input.Email
+            };
+        DbContext.DinesaurUser.Add(appUser);
+        await DbContext.SaveChangesAsync();
         var userId = await UserManager.GetUserIdAsync(user);
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -151,12 +153,10 @@
     private sealed class InputModel
     {
         [Required]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; } = "";
+        [Display(Name = "Name")]
+        public string Name { get; set; } = "";
 
-        [Required]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; } = "";
+     
 
         [Required]
         [EmailAddress]

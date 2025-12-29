@@ -3,19 +3,23 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Dinesaur.Domain
 @using Dinesaur.Data
+@using System.ComponentModel.DataAnnotations.Schema;
 @implements IAsyncDisposable
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
-
+@rendermode InteractiveServer
 <PageTitle>Index</PageTitle>
 
 <h1>Index</h1>
-
+<div class="content px-4">
+    <></>
+    <></>
+</div>
 <p>
     <a href="restaurants/create">Create New</a>
 </p>
 
 <QuickGrid Class="table" Items="context.Restaurant">
-    <PropertyColumn Property="restaurant => restaurant.RestaurantName" />
+    <PropertyColumn Property="restaurant => restaurant.RestaurantName">  </PropertyColumn>
     <PropertyColumn Property="restaurant => restaurant.Location" />
     <PropertyColumn Property="restaurant => restaurant.Category" />
     <PropertyColumn Property="restaurant => restaurant.AdminID" />
@@ -30,11 +34,24 @@
 </QuickGrid>
 
 @code {
+    @inject AuthenticationStateProvider authenticationStateProvider
     private DinesaurContext context = default!;
-
-    protected override void OnInitialized()
+    private string? userId = "Default";
+    PaginationState paginationState = new PaginationState { ItemsPerPage = 10 };
+    protected override async void OnInitialized()
     {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
         context = DbFactory.CreateDbContext();
+
+        var userIdClaim = user.FindFirst("userId");
+
+        if (userIdClaim != null)
+        {
+            userId = userIdClaim.Value;
+        }
+
+
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();

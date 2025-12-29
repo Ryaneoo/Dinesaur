@@ -6,10 +6,32 @@
     
 
     <main>
-
-        <article class="content">
+        <AuthorizeView>
+        <NotAuthorized>
             @Body
-        </article>
+        </NotAuthorized>
+        <Authorized>
+            <div style="display: grid; grid-template-columns: 15% 1fr; height: 100vh; text-align: left">
+            
+                
+                <div>
+                    <div style="position: fixed; left: 0; top: 55px; background-color: black; width: 15%; height: 100%">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <a class="nav-link" href="/">My Bookings</a>
+                            <a class="nav-link" href="/restaurant">Restaurant</a>
+                            <a class="nav-link" href="/Account/Manage">Settings</a>
+                        </div>
+                    </div>
+                </div>
+                    @Body
+                </div>
+            
+        </Authorized>
+        </AuthorizeView>
+           
+            
+        
+        
     </main>
 </div>
 
@@ -18,3 +40,4 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
