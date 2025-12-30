@@ -6,7 +6,7 @@
 <nav style="background-color: #386641; display: flex; justify-content: space-between; width: 100%;  z-index: 1000; position: fixed">
     <div>
         <a class="navbar-brand" , href="/">Dinesaur</a>
-        <a class="nav-link" href="/User/Home">Home</a>
+        <a class="nav-link" href=@link >Home</a>
         <a class="nav-link" href="#ourhistory">About Us</a>
     </div>
     <AuthorizeView Roles="@($"RestaurantStaff,Administrator")">
@@ -23,7 +23,7 @@
             <div class="nav-item">
                     <form action="Account/Logout" method="post">
                     <AntiforgeryToken />
-                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                    <input type="hidden" name="ReturnUrl" value="@url" />
                     <button type="submit" class="nav-link">
                           <span aria-hidden="true"></span> Log Out
                     </button>
@@ -50,13 +50,23 @@
 </nav>
 
 @code {
-    private string? currentUrl;
+    private string? url = "";
+    private string? link;
+    private string? currentUrl ;
     private string? displayName;
     protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
         var user = (await Auth.GetAuthenticationStateAsync()).User;
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            link = "Account/login";
+        }
+        else
+        {
+            link = "User/Home";
+        }
         if (!user.Identity?.IsAuthenticated ?? true) return;
 
         var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -68,6 +78,7 @@
             .SingleOrDefaultAsync();
 
         displayName = identityUser ?? user.Identity?.Name;
+        
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
