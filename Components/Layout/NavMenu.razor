@@ -9,9 +9,9 @@
         <a class="nav-link" href=@link >Home</a>
         <a class="nav-link" href="#ourhistory">About Us</a>
     </div>
-    <AuthorizeView Roles="@($"RestaurantStaff,Administrator")">
+    <AuthorizeView Roles="@($"RestaurantStaff")">
         <div>
-            <a href="#Resturant"> Restaurant </a>
+            <a href="/restaurants"> Restaurant </a>
         </div>
     </AuthorizeView>
     <AuthorizeView>

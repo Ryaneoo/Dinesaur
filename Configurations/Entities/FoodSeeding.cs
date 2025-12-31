@@ -19,7 +19,8 @@ namespace Dinesaur.Configurations.Entities
                     Description = "White meat",
                     PreOrderID = 1,
                     StaffID = 1,
-                    MenuID = 1
+                    MenuID = 1,
+                    Image = new List<string>()
                 },
                 new Food
                 {
@@ -29,7 +30,8 @@ namespace Dinesaur.Configurations.Entities
                     Description = "Saba",
                     PreOrderID = 2,
                     StaffID = 2,
-                    MenuID = 2
+                    MenuID = 2,
+                    Image = new List<string>()
                 });
         }
     }
