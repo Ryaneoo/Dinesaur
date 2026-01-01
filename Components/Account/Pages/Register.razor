@@ -18,7 +18,7 @@
 @inject DinesaurContext DbContext
 <PageTitle>Register</PageTitle>
 
-<h1 style="text-align:center; font-weight:bold; color:lightgreen">Register</h1>
+<h1 style="text-align:center; font-weight:bold; color:lightgreen;margin-top:40px">Register</h1>
 
 <div class="row">
     <div class="col-md-6 offset-md-3">
@@ -71,6 +71,8 @@
     public async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
+
+        user.CreatedAtUtc = DateTime.UtcNow;
 
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();

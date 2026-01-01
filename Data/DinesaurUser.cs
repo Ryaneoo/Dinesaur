@@ -10,5 +10,11 @@ namespace Dinesaur.Data
 
         public int? Contact { get; set; }
 
+        public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+
+
+        public DateTime? LastLoginAtUtc { get; set; }
+
+        public DateTime? PreviousLoginAtUtc { get; set; }
     }
 }

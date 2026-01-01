@@ -1,69 +1,166 @@
 ﻿@page "/restaurants/create"
 @using Microsoft.EntityFrameworkCore
 @using Dinesaur.Domain
+@using System.Security.Claims
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider authenticationStateProvider
 @rendermode InteractiveServer
 <PageTitle>Create</PageTitle>
-
-<h1>Create</h1>
+<container style="text-align:center">
+<h1 style="margin-top:40px">Create</h1>
 
 <h2>Restaurant</h2>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+    <div class="row justify-content-center">
+        
         <EditForm method="post" Model="Restaurant" OnValidSubmit="AddRestaurant" FormName="create" Enhance>
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert"/>
+            <div class="col-md-4" style="margin-left: 80px;" > 
             <div class="mb-3">
-                <label for="restaurantname" class="form-label">RestaurantName:</label> 
+                    <label for="restaurantname" class="form-label" style="color:white;">Restaurant Name:</label>
                 <InputText id="restaurantname" @bind-Value="Restaurant.RestaurantName" class="form-control" /> 
                 <ValidationMessage For="() => Restaurant.RestaurantName" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="location" class="form-label">Location:</label> 
+                    <label for="location" class="form-label" style="color:white;"> Exact Location/Address:</label>
                 <InputText id="location" @bind-Value="Restaurant.Location" class="form-control" /> 
                 <ValidationMessage For="() => Restaurant.Location" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="category" class="form-label">Category:</label> 
-                <InputText id="category" @bind-Value="Restaurant.Category" class="form-control" /> 
+                    <label for="category" class="form-label" style="color:white;">Category:</label>
+                    <InputSelect id="itemcategory" @bind-Value="Restaurant.Category" class="form-select">
+                        @foreach (string category in Categories)
+                        {
+                            <option value="@category">@category</option>
+                        }
+
+                    </InputSelect>
                 <ValidationMessage For="() => Restaurant.Category" class="text-danger" /> 
             </div>        
-            <div class="mb-3">
+            <div class="mb-3" hidden>
                 <label for="adminid" class="form-label">AdminID:</label> 
                 <InputNumber id="adminid" @bind-Value="Restaurant.AdminID" class="form-control" /> 
                 <ValidationMessage For="() => Restaurant.AdminID" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="contact" class="form-label">Contact:</label> 
+                <label for="contact" class="form-label" style="color:white;">Contact:</label> 
                 <InputNumber id="contact" @bind-Value="Restaurant.Contact" class="form-control" /> 
                 <ValidationMessage For="() => Restaurant.Contact" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="email" class="form-label">Email:</label> 
+                <label for="email" class="form-label" style="color:white;">Email:</label> 
                 <InputText id="email" @bind-Value="Restaurant.Email" class="form-control" /> 
                 <ValidationMessage For="() => Restaurant.Email" class="text-danger" /> 
-            </div>        
-            <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+            </div>
+            <h3> Note: Your Restaurant will be checked by Admins and will be removed if deemed inappropriate.</h3>
+            <h3> By creating a restaurant, you agree to the site's terms and conditions.</h3>
+            <container style="position:relative; bottom:510px; left: 700px;">
+                <div class="col-md-4" >
+                    <label for="logo" class="form-label" style="color:white;"> Upload Logo: </label>
+                    <InputFile id="image" OnChange="@LoadFiles" class="form-control" />
+                </div>
+                @if (FileErrors.Any())
+                {
+                    <br />
+                    <div class="alert alert-danger col-4 mb-3" role="alert" style="">
+                        **Errors in Uploading Logo:**
+                        <ul>
+                            @foreach (var error in FileErrors)
+                            {
+                                <li>@error</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                @if (Restaurant.Logo.Any())
+                {
+                    <br />
+                    
+                    <div class="d-flex flex_wrap gap-3">
+
+                    <div class="card p-2" style="width: 480px">
+                        <img src="@Restaurant.Logo.FirstOrDefault()" style="width: 100%; height: auto; object-fit: cover" alt="Uploaded Image" />
+                    </div>
+
+                </div>
+                
+                }
+            </container>
+            <button type="submit" class="btn btn-primary" style="position:absolute; right:70px; bottom:10px; padding: 15px 32px;">Create</button>
         </EditForm>
-    </div>
+        
 </div>
-
+<br />
 <div>
-    <a href="/restaurants">Back to List</a>
+        <a href="/restaurants" class="btn-primary" style="padding: 15px 32px; position:absolute; bottom:5px; left:350px;">Back</a>
 </div>
-
+</container>
 @code {
     [SupplyParameterFromForm]
     private Restaurant Restaurant { get; set; } = new();
+    private const int maxLogoFileSize = 5242880;
+    private List<string> FileErrors = new List<string>();
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        FileErrors.Clear();
+        var files = e.GetMultipleFiles();
+        var Logo = files.FirstOrDefault();
+        if (Logo.Size > maxLogoFileSize)
+        {
+            FileErrors.Add($"File {Logo.Name} exceeds the maximum size of {maxLogoFileSize} bytes.");
 
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+        }
+
+        if (!Logo.ContentType.StartsWith("image/"))
+        {
+            FileErrors.Add($"File {Logo.Name} is not a supported image format.");
+        }
+        using (var ms = new MemoryStream())
+        {
+            await Logo.OpenReadStream(maxLogoFileSize).CopyToAsync(ms);
+            var fileBytes = ms.ToArray();
+            String base64String = Convert.ToBase64String(fileBytes);
+            string imageUri = $"data:{Logo.ContentType};base64,{base64String}";
+            if (Restaurant.Logo.Count() > 0)
+            {
+                Restaurant.Logo.Clear();
+            }
+            Restaurant.Logo.Add(imageUri);
+        }
+        StateHasChanged();
+    }
     private async Task AddRestaurant()
     {
+        Restaurant.RestaurantOwnerID = Id;
+        Restaurant.AdminID = 0; // Yet to be approved by Admin
+
         using var context = DbFactory.CreateDbContext();
         context.Restaurant.Add(Restaurant);
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/restaurants");
+    }
+    private List<String> Categories = new List<String>
+    {
+         "",
+         "Western",
+         "Fine Dining",
+         "Dessert",
+         "Vegetarian",
+         "HotPot",
+         "Others",
+    };
+    private string Id = "System";
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim != null)
+        {
+            Id = userIdClaim.Value;
+        }
     }
 }

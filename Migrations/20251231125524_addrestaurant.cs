@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Dinesaur.Migrations
 {
     /// <inheritdoc />
-    public partial class AddDatabase : Migration
+    public partial class addrestaurant : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,6 +34,9 @@ namespace Dinesaur.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Contact = table.Column<int>(type: "int", nullable: true),
+                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastLoginAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PreviousLoginAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -81,7 +84,8 @@ namespace Dinesaur.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PreOrderID = table.Column<int>(type: "int", nullable: false),
                     StaffID = table.Column<int>(type: "int", nullable: false),
-                    MenuID = table.Column<int>(type: "int", nullable: false)
+                    MenuID = table.Column<int>(type: "int", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -157,10 +161,12 @@ namespace Dinesaur.Migrations
                 {
                     RestaurantID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RestaurantName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RestaurantName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AdminID = table.Column<int>(type: "int", nullable: false),
+                    Logo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RestaurantOwnerID = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Contact = table.Column<int>(type: "int", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -306,12 +312,12 @@ namespace Dinesaur.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Contact", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Contact", "CreatedAtUtc", "Email", "EmailConfirmed", "LastLoginAtUtc", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PreviousLoginAtUtc", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "1", 0, "3a082656-4b73-4e65-aaf4-3d1b4e2d5ac4", 91234567, "admin@localhost.com", true, false, null, "Admin", "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEHhJznUEvg+iZkyaxgBL7lMp5f9rQIGnqMNcNo0KLS59ljQVa5vASIEIcbpmyp8UHA==", null, false, "c3c6894e-c6b5-481c-b026-0bd3c2ee95ed", false, "admin@localhost.com" },
-                    { "2", 0, "731c799e-7290-441c-a802-8734c3441a22", 91234568, "user@localhost.com", true, false, null, "User", "USER@LOCALHOST.COM", "USER@LOCALHOST.COM", "AQAAAAIAAYagAAAAEEZWwtyOjwpGAdV1iPAb0rby9+KknSHUiU+g9g3I+EMD1AsDMPaIH4y8HLQO7eRiDQ==", null, false, "a57c211b-51b2-4715-b114-20adb0767b14", false, "user@localhost.com" },
-                    { "3", 0, "8e167ef7-f5aa-4a32-bd2f-3de33cbcb406", 91234560, "restaurantstaff@localhost.com", true, false, null, "RestaurantStaff", "RESTAURANTSTAFF@LOCALHOST.COM", "RESTAURANTSTAFF@LOCALHOST.COM", "AQAAAAIAAYagAAAAEPi21ZSrHB4dmeLAzqAUS/IzjLZ2ExHl6zoNOYkpR3vmFqcKbKx8qCQFtcsJpxCSRQ==", null, false, "aa23b4d2-1e20-4321-84cb-2c58bd41f785", false, "restaurantstaff@localhost.com" }
+                    { "1", 0, "61d06ced-2000-4518-af2d-92eece1538e0", 91234567, new DateTime(2025, 12, 31, 12, 55, 23, 473, DateTimeKind.Utc).AddTicks(2948), "admin@localhost.com", true, null, false, null, "Admin", "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEI0xVi7RcqvmxqbbN68fW3Ef94RRH51VujfFUvZxWv7ubKgMSZ6bN6bYrAavqxaFKQ==", null, false, null, "a0d6b238-9756-4372-9858-d765743b321f", false, "admin@localhost.com" },
+                    { "2", 0, "d2b22ce8-1ed7-4b3d-8c70-d2206e553eeb", 91234568, new DateTime(2025, 12, 31, 12, 55, 23, 516, DateTimeKind.Utc).AddTicks(6577), "user@localhost.com", true, null, false, null, "User", "USER@LOCALHOST.COM", "USER@LOCALHOST.COM", "AQAAAAIAAYagAAAAECrqQDlbCJbB8A5U6MFpuVwxfCISp2niRIZqTUdHYhJnFrA3Ou0cApvZ2XpC9SFOvQ==", null, false, null, "dc4e3179-6258-4ed9-846b-e42412c47279", false, "user@localhost.com" },
+                    { "3", 0, "33a8392b-8248-499a-a09f-2295eb389473", 91234560, new DateTime(2025, 12, 31, 12, 55, 23, 555, DateTimeKind.Utc).AddTicks(9788), "restaurantstaff@localhost.com", true, null, false, null, "RestaurantStaff", "RESTAURANTSTAFF@LOCALHOST.COM", "RESTAURANTSTAFF@LOCALHOST.COM", "AQAAAAIAAYagAAAAELsEXuJqzKE6ksxCB/YFORANvIpt8dlR2fjf4wuSctaaeUj8xq9WhEZwqLMn4l2gGQ==", null, false, null, "7e757830-699a-49b0-b9ec-f9ecd93c7a94", false, "restaurantstaff@localhost.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -321,11 +327,11 @@ namespace Dinesaur.Migrations
 
             migrationBuilder.InsertData(
                 table: "Food",
-                columns: new[] { "FoodID", "Cost", "Description", "FoodName", "MenuID", "PreOrderID", "StaffID" },
+                columns: new[] { "FoodID", "Cost", "Description", "FoodName", "Image", "MenuID", "PreOrderID", "StaffID" },
                 values: new object[,]
                 {
-                    { 1, 3.5, "White meat", "Chicken", 1, 1, 1 },
-                    { 2, 4.0, "Saba", "Fish", 2, 2, 2 }
+                    { 1, 3.5, "White meat", "Chicken", "[]", 1, 1, 1 },
+                    { 2, 4.0, "Saba", "Fish", "[]", 2, 2, 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -360,19 +366,19 @@ namespace Dinesaur.Migrations
                 columns: new[] { "Id", "Date", "Location", "Remarks", "ReservationID", "RestaurantID", "StaffID" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 12, 25, 19, 48, 53, 564, DateTimeKind.Local).AddTicks(9834), "Orchard", "Null", 1, 1, 1 },
-                    { 2, new DateTime(2025, 12, 25, 19, 48, 53, 564, DateTimeKind.Local).AddTicks(9849), "Novena", "Null", 2, 2, 2 }
+                    { 1, new DateTime(2025, 12, 31, 20, 55, 23, 473, DateTimeKind.Local).AddTicks(2657), "Orchard", "Null", 1, 1, 1 },
+                    { 2, new DateTime(2025, 12, 31, 20, 55, 23, 473, DateTimeKind.Local).AddTicks(2668), "Novena", "Null", 2, 2, 2 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Restaurant",
-                columns: new[] { "RestaurantID", "AdminID", "Category", "Contact", "Email", "Location", "RestaurantName" },
-                values: new object[] { 1, 1, "Western", null, null, "Orchard", "WesternBanana" });
+                columns: new[] { "RestaurantID", "AdminID", "Category", "Contact", "Email", "Location", "Logo", "RestaurantName", "RestaurantOwnerID" },
+                values: new object[] { 1, 1, "Western", null, null, "Orchard", "[]", "WesternBanana", "3" });
 
             migrationBuilder.InsertData(
                 table: "Review",
                 columns: new[] { "Id", "Date", "Description", "Location", "Rating", "RestaurantID", "ReviewID", "ReviewTitle" },
-                values: new object[] { 1, new DateTime(2025, 12, 25, 19, 48, 53, 565, DateTimeKind.Local).AddTicks(83), "Bad", "Orchard", 2.5, 1, 1, "Bad" });
+                values: new object[] { 1, new DateTime(2025, 12, 31, 20, 55, 23, 473, DateTimeKind.Local).AddTicks(2806), "Bad", "Orchard", 2.5, 1, 1, "Bad" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",

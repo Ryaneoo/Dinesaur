@@ -15,5 +15,7 @@
         public int StaffID { get; set; }
 
         public int MenuID { get; set; }
+
+        public List<string> Image { get; set; } = new List<string>();
     }
 }
