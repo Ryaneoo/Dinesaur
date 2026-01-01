@@ -21,9 +21,9 @@
                                 </AuthorizeView>
 
                                 @* Normal User Menu (only if NOT admin) *@
-                                <AuthorizeView Roles="Administrator" Context="userAuth">
+                                <AuthorizeView Roles="Administrator" Context="userAuth"> 
                                     <NotAuthorized Context="userAuth">
-                                        <a class="nav-link" href="/">My Bookings</a>
+                                        <a class="nav-link" href="/MyBookings">My Bookings</a>
                                         <a class="nav-link" href="/restaurant">Restaurant</a>
                                         <a class="nav-link" href="/Account/Manage">Settings</a>
                                     </NotAuthorized>

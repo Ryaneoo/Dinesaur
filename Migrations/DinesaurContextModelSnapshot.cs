@@ -106,18 +106,30 @@ namespace Dinesaur.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
+<<<<<<< Updated upstream
                             ConcurrencyStamp = "61d06ced-2000-4518-af2d-92eece1538e0",
                             Contact = 91234567,
                             CreatedAtUtc = new DateTime(2025, 12, 31, 12, 55, 23, 473, DateTimeKind.Utc).AddTicks(2948),
+=======
+                            ConcurrencyStamp = "c863616c-748c-4406-a06a-b64986b14066",
+                            Contact = 91234567,
+                            CreatedAtUtc = new DateTime(2026, 1, 1, 16, 58, 41, 631, DateTimeKind.Utc).AddTicks(1267),
+>>>>>>> Stashed changes
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "Admin",
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
+<<<<<<< Updated upstream
                             PasswordHash = "AQAAAAIAAYagAAAAEI0xVi7RcqvmxqbbN68fW3Ef94RRH51VujfFUvZxWv7ubKgMSZ6bN6bYrAavqxaFKQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "a0d6b238-9756-4372-9858-d765743b321f",
+=======
+                            PasswordHash = "AQAAAAIAAYagAAAAEF4C7w/2THB8HFCRMNY8ESmqBUoHUO/qxlImxinwLkgyd0fV9wkXyGhaVN63qq+8wg==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "a4c151e1-5175-4190-b0f4-6c12ceeca479",
+>>>>>>> Stashed changes
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         },
@@ -125,18 +137,30 @@ namespace Dinesaur.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
+<<<<<<< Updated upstream
                             ConcurrencyStamp = "d2b22ce8-1ed7-4b3d-8c70-d2206e553eeb",
                             Contact = 91234568,
                             CreatedAtUtc = new DateTime(2025, 12, 31, 12, 55, 23, 516, DateTimeKind.Utc).AddTicks(6577),
+=======
+                            ConcurrencyStamp = "a6fd98ee-aa33-4294-a543-3bb8be3400ac",
+                            Contact = 91234568,
+                            CreatedAtUtc = new DateTime(2026, 1, 1, 16, 58, 41, 692, DateTimeKind.Utc).AddTicks(598),
+>>>>>>> Stashed changes
                             Email = "user@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "User",
                             NormalizedEmail = "USER@LOCALHOST.COM",
                             NormalizedUserName = "USER@LOCALHOST.COM",
+<<<<<<< Updated upstream
                             PasswordHash = "AQAAAAIAAYagAAAAECrqQDlbCJbB8A5U6MFpuVwxfCISp2niRIZqTUdHYhJnFrA3Ou0cApvZ2XpC9SFOvQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "dc4e3179-6258-4ed9-846b-e42412c47279",
+=======
+                            PasswordHash = "AQAAAAIAAYagAAAAEAbNWG7vVT/GTQN7PJO+QtPyh8lCwciKwr8SlJkAizfQwk/H+RQvDaT6sk48oXz+7A==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "1add1c19-01d3-4ae5-833e-21cd83e9d8e3",
+>>>>>>> Stashed changes
                             TwoFactorEnabled = false,
                             UserName = "user@localhost.com"
                         },
@@ -144,18 +168,30 @@ namespace Dinesaur.Migrations
                         {
                             Id = "3",
                             AccessFailedCount = 0,
+<<<<<<< Updated upstream
                             ConcurrencyStamp = "33a8392b-8248-499a-a09f-2295eb389473",
                             Contact = 91234560,
                             CreatedAtUtc = new DateTime(2025, 12, 31, 12, 55, 23, 555, DateTimeKind.Utc).AddTicks(9788),
+=======
+                            ConcurrencyStamp = "eedb95af-85d5-42bd-89e0-ca7589287915",
+                            Contact = 91234560,
+                            CreatedAtUtc = new DateTime(2026, 1, 1, 16, 58, 41, 788, DateTimeKind.Utc).AddTicks(7213),
+>>>>>>> Stashed changes
                             Email = "restaurantstaff@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "RestaurantStaff",
                             NormalizedEmail = "RESTAURANTSTAFF@LOCALHOST.COM",
                             NormalizedUserName = "RESTAURANTSTAFF@LOCALHOST.COM",
+<<<<<<< Updated upstream
                             PasswordHash = "AQAAAAIAAYagAAAAELsEXuJqzKE6ksxCB/YFORANvIpt8dlR2fjf4wuSctaaeUj8xq9WhEZwqLMn4l2gGQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "7e757830-699a-49b0-b9ec-f9ecd93c7a94",
+=======
+                            PasswordHash = "AQAAAAIAAYagAAAAEODT9Kge6CkUy6Xs6eUp1hxHb3AyiCcgh6qEgk0DUfj+GZ74XBXMln4Juos5wNXE4A==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "dbeb48a6-6aa9-4a48-819e-8134d25c961a",
+>>>>>>> Stashed changes
                             TwoFactorEnabled = false,
                             UserName = "restaurantstaff@localhost.com"
                         });
@@ -371,23 +407,24 @@ namespace Dinesaur.Migrations
 
             modelBuilder.Entity("Dinesaur.Domain.Reservation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ReservationID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationID"));
 
-                    b.Property<DateTime>("Date")
+                    b.Property<string>("CustomerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Location")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Pax")
+                        .HasColumnType("int");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ReservationID")
-                        .HasColumnType("int");
 
                     b.Property<int>("RestaurantID")
                         .HasColumnType("int");
@@ -395,30 +432,48 @@ namespace Dinesaur.Migrations
                     b.Property<int>("StaffID")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ReservationID");
 
                     b.ToTable("Reservation");
 
                     b.HasData(
                         new
                         {
+<<<<<<< Updated upstream
                             Id = 1,
                             Date = new DateTime(2025, 12, 31, 20, 55, 23, 473, DateTimeKind.Local).AddTicks(2657),
                             Location = "Orchard",
                             Remarks = "Null",
+=======
+>>>>>>> Stashed changes
                             ReservationID = 1,
+                            CustomerID = "1",
+                            EndDate = new DateTime(2026, 1, 2, 2, 58, 41, 631, DateTimeKind.Local).AddTicks(924),
+                            Pax = 0,
                             RestaurantID = 1,
-                            StaffID = 1
+                            StaffID = 1,
+                            StartDate = new DateTime(2026, 1, 2, 0, 58, 41, 631, DateTimeKind.Local).AddTicks(912)
                         },
                         new
                         {
+<<<<<<< Updated upstream
                             Id = 2,
                             Date = new DateTime(2025, 12, 31, 20, 55, 23, 473, DateTimeKind.Local).AddTicks(2668),
                             Location = "Novena",
                             Remarks = "Null",
+=======
+>>>>>>> Stashed changes
                             ReservationID = 2,
+                            CustomerID = "1",
+                            EndDate = new DateTime(2026, 1, 2, 2, 58, 41, 631, DateTimeKind.Local).AddTicks(929),
+                            Pax = 0,
+                            Remarks = "Null",
                             RestaurantID = 2,
-                            StaffID = 2
+                            StaffID = 2,
+                            StartDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
@@ -512,7 +567,11 @@ namespace Dinesaur.Migrations
                         new
                         {
                             Id = 1,
+<<<<<<< Updated upstream
                             Date = new DateTime(2025, 12, 31, 20, 55, 23, 473, DateTimeKind.Local).AddTicks(2806),
+=======
+                            Date = new DateTime(2026, 1, 2, 0, 58, 41, 631, DateTimeKind.Local).AddTicks(1100),
+>>>>>>> Stashed changes
                             Description = "Bad",
                             Location = "Orchard",
                             Rating = 2.5,

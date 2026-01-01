@@ -8,12 +8,15 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 builder.Services.AddDbContextFactory<DinesaurContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DinesaurContext") ?? throw new InvalidOperationException("Connection string 'DinesaurContext' not found.")));
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

@@ -3,16 +3,12 @@
     public class Reservation
     {
         public int ReservationID { get; set; }
-
-        public DateTime Date { get; set; }
-        public string? Location { get; set; }
-
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int Pax { get; set; }
         public string? Remarks { get; set; }
-
-        public int Id { get; set; }
-
+        public string CustomerID { get; set; }
         public int RestaurantID { get; set; }
-
         public int StaffID { get; set; } 
     }
 }
