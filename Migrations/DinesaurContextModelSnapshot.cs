@@ -106,30 +106,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-<<<<<<< Updated upstream
-                            ConcurrencyStamp = "61d06ced-2000-4518-af2d-92eece1538e0",
+                            ConcurrencyStamp = "7ef7c00b-430b-416e-9bfb-b1de0eba1f36",
                             Contact = 91234567,
-                            CreatedAtUtc = new DateTime(2025, 12, 31, 12, 55, 23, 473, DateTimeKind.Utc).AddTicks(2948),
-=======
-                            ConcurrencyStamp = "c863616c-748c-4406-a06a-b64986b14066",
-                            Contact = 91234567,
-                            CreatedAtUtc = new DateTime(2026, 1, 1, 16, 58, 41, 631, DateTimeKind.Utc).AddTicks(1267),
->>>>>>> Stashed changes
+                            CreatedAtUtc = new DateTime(2026, 1, 1, 19, 37, 13, 644, DateTimeKind.Utc).AddTicks(5619),
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "Admin",
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-<<<<<<< Updated upstream
-                            PasswordHash = "AQAAAAIAAYagAAAAEI0xVi7RcqvmxqbbN68fW3Ef94RRH51VujfFUvZxWv7ubKgMSZ6bN6bYrAavqxaFKQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMPRWujUJGOAzh3SqozZlIgY4iJgL6rWwwvCxMN7Cvoi2keLMxMSiplGxygYOxFB/g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a0d6b238-9756-4372-9858-d765743b321f",
-=======
-                            PasswordHash = "AQAAAAIAAYagAAAAEF4C7w/2THB8HFCRMNY8ESmqBUoHUO/qxlImxinwLkgyd0fV9wkXyGhaVN63qq+8wg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "a4c151e1-5175-4190-b0f4-6c12ceeca479",
->>>>>>> Stashed changes
+                            SecurityStamp = "9ff8b963-a61b-44c4-b73c-13feb149d0a6",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         },
@@ -137,30 +125,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-<<<<<<< Updated upstream
-                            ConcurrencyStamp = "d2b22ce8-1ed7-4b3d-8c70-d2206e553eeb",
+                            ConcurrencyStamp = "26d75678-c9f4-4d13-b4bc-2152f98e98dd",
                             Contact = 91234568,
-                            CreatedAtUtc = new DateTime(2025, 12, 31, 12, 55, 23, 516, DateTimeKind.Utc).AddTicks(6577),
-=======
-                            ConcurrencyStamp = "a6fd98ee-aa33-4294-a543-3bb8be3400ac",
-                            Contact = 91234568,
-                            CreatedAtUtc = new DateTime(2026, 1, 1, 16, 58, 41, 692, DateTimeKind.Utc).AddTicks(598),
->>>>>>> Stashed changes
+                            CreatedAtUtc = new DateTime(2026, 1, 1, 19, 37, 13, 708, DateTimeKind.Utc).AddTicks(502),
                             Email = "user@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "User",
                             NormalizedEmail = "USER@LOCALHOST.COM",
                             NormalizedUserName = "USER@LOCALHOST.COM",
-<<<<<<< Updated upstream
-                            PasswordHash = "AQAAAAIAAYagAAAAECrqQDlbCJbB8A5U6MFpuVwxfCISp2niRIZqTUdHYhJnFrA3Ou0cApvZ2XpC9SFOvQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMuV2grTIR4gneQONuc6iTMFHGW4OwhQ25ZHf5Vf7DQHE5XcrZ8Rf/7wAbR9C71NOg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "dc4e3179-6258-4ed9-846b-e42412c47279",
-=======
-                            PasswordHash = "AQAAAAIAAYagAAAAEAbNWG7vVT/GTQN7PJO+QtPyh8lCwciKwr8SlJkAizfQwk/H+RQvDaT6sk48oXz+7A==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "1add1c19-01d3-4ae5-833e-21cd83e9d8e3",
->>>>>>> Stashed changes
+                            SecurityStamp = "19642275-8a0f-4149-8781-7237b145e02e",
                             TwoFactorEnabled = false,
                             UserName = "user@localhost.com"
                         },
@@ -168,30 +144,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "3",
                             AccessFailedCount = 0,
-<<<<<<< Updated upstream
-                            ConcurrencyStamp = "33a8392b-8248-499a-a09f-2295eb389473",
+                            ConcurrencyStamp = "4db28a40-a33d-4697-9248-ecfa595257c2",
                             Contact = 91234560,
-                            CreatedAtUtc = new DateTime(2025, 12, 31, 12, 55, 23, 555, DateTimeKind.Utc).AddTicks(9788),
-=======
-                            ConcurrencyStamp = "eedb95af-85d5-42bd-89e0-ca7589287915",
-                            Contact = 91234560,
-                            CreatedAtUtc = new DateTime(2026, 1, 1, 16, 58, 41, 788, DateTimeKind.Utc).AddTicks(7213),
->>>>>>> Stashed changes
+                            CreatedAtUtc = new DateTime(2026, 1, 1, 19, 37, 13, 768, DateTimeKind.Utc).AddTicks(1827),
                             Email = "restaurantstaff@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "RestaurantStaff",
                             NormalizedEmail = "RESTAURANTSTAFF@LOCALHOST.COM",
                             NormalizedUserName = "RESTAURANTSTAFF@LOCALHOST.COM",
-<<<<<<< Updated upstream
-                            PasswordHash = "AQAAAAIAAYagAAAAELsEXuJqzKE6ksxCB/YFORANvIpt8dlR2fjf4wuSctaaeUj8xq9WhEZwqLMn4l2gGQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEH2VvLlTf3taerB7daR8kVHB9CEvPAUEB4t3fOU3vV1U+KkFgj5Eb9uUYjxjFMWnyQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7e757830-699a-49b0-b9ec-f9ecd93c7a94",
-=======
-                            PasswordHash = "AQAAAAIAAYagAAAAEODT9Kge6CkUy6Xs6eUp1hxHb3AyiCcgh6qEgk0DUfj+GZ74XBXMln4Juos5wNXE4A==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "dbeb48a6-6aa9-4a48-819e-8134d25c961a",
->>>>>>> Stashed changes
+                            SecurityStamp = "42031294-da3a-4d1c-b6bd-71c4bf3add23",
                             TwoFactorEnabled = false,
                             UserName = "restaurantstaff@localhost.com"
                         });
@@ -442,33 +406,19 @@ namespace Dinesaur.Migrations
                     b.HasData(
                         new
                         {
-<<<<<<< Updated upstream
-                            Id = 1,
-                            Date = new DateTime(2025, 12, 31, 20, 55, 23, 473, DateTimeKind.Local).AddTicks(2657),
-                            Location = "Orchard",
-                            Remarks = "Null",
-=======
->>>>>>> Stashed changes
                             ReservationID = 1,
                             CustomerID = "1",
-                            EndDate = new DateTime(2026, 1, 2, 2, 58, 41, 631, DateTimeKind.Local).AddTicks(924),
+                            EndDate = new DateTime(2026, 1, 2, 5, 37, 13, 644, DateTimeKind.Local).AddTicks(5207),
                             Pax = 0,
                             RestaurantID = 1,
                             StaffID = 1,
-                            StartDate = new DateTime(2026, 1, 2, 0, 58, 41, 631, DateTimeKind.Local).AddTicks(912)
+                            StartDate = new DateTime(2026, 1, 2, 3, 37, 13, 644, DateTimeKind.Local).AddTicks(5193)
                         },
                         new
                         {
-<<<<<<< Updated upstream
-                            Id = 2,
-                            Date = new DateTime(2025, 12, 31, 20, 55, 23, 473, DateTimeKind.Local).AddTicks(2668),
-                            Location = "Novena",
-                            Remarks = "Null",
-=======
->>>>>>> Stashed changes
                             ReservationID = 2,
                             CustomerID = "1",
-                            EndDate = new DateTime(2026, 1, 2, 2, 58, 41, 631, DateTimeKind.Local).AddTicks(929),
+                            EndDate = new DateTime(2026, 1, 2, 5, 37, 13, 644, DateTimeKind.Local).AddTicks(5214),
                             Pax = 0,
                             Remarks = "Null",
                             RestaurantID = 2,
@@ -567,11 +517,7 @@ namespace Dinesaur.Migrations
                         new
                         {
                             Id = 1,
-<<<<<<< Updated upstream
-                            Date = new DateTime(2025, 12, 31, 20, 55, 23, 473, DateTimeKind.Local).AddTicks(2806),
-=======
-                            Date = new DateTime(2026, 1, 2, 0, 58, 41, 631, DateTimeKind.Local).AddTicks(1100),
->>>>>>> Stashed changes
+                            Date = new DateTime(2026, 1, 2, 3, 37, 13, 644, DateTimeKind.Local).AddTicks(5402),
                             Description = "Bad",
                             Location = "Orchard",
                             Rating = 2.5,
