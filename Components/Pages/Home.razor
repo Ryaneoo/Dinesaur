@@ -1,5 +1,7 @@
 ﻿@page "/"
-
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 <PageTitle>Dinesaur Home</PageTitle>
 <style>
     h1 {
@@ -39,8 +41,9 @@
 </style>
 <body style="background-image: url('Images/DinesaurLandingPageTranslucent.jpg'); background-size: cover; background-repeat: no-repeat; height: 200px; text-align: center">
     <h1 style="margin-top: 150px;font-size: 150px">Dinesaur</h1>
-    <h2>Dining In Made Easier</h2>
-    <a href="Account/login", class="btn"; >View Restaurants Near You</a>
+    <h2 > Dining In Made Easier</h2>
+   
+    <a href=@url class="btn"; >View Restaurants</a>
 
     
    
@@ -48,3 +51,18 @@
 
 <hr style="margin-top:500px;" />
 
+@code {
+    private string? url;
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await Auth.GetAuthenticationStateAsync()).User;
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            url = "Account/login";
+        }
+        else
+        {
+            url = "User/Home";
+        }
+    }
+}

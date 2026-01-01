@@ -15,7 +15,9 @@ namespace Dinesaur.Configurations.Entities
                     RestaurantName = "WesternBanana",
                     Location = "Orchard",
                     Category = "Western",
-                    AdminID = 1
+                    AdminID = 1,
+                    Logo = new List<string>(),
+                    RestaurantOwnerID = "3"
                 });
         }
     }

@@ -4,7 +4,6 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using Dinesaur.Data
-
 @inject SignInManager<DinesaurUser> SignInManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
@@ -13,7 +12,7 @@
 <PageTitle>Log in</PageTitle>
 <link href="home.css" rel="stylesheet" />
 <body>
-    <h1 style="text-align:center; font-weight:bold; color:lightgreen">Log in</h1>
+    <h1 style="text-align:center; font-weight:bold; color:lightgreen; margin-top:40px">Log in</h1>
     <div class="row">
         <div class="col-md-6 offset-md-3">
             <section>
@@ -90,6 +89,7 @@
         {
             Logger.LogInformation("User logged in.");
             RedirectManager.RedirectTo("/User/Home");
+            
         }
         else if (result.RequiresTwoFactor)
         {

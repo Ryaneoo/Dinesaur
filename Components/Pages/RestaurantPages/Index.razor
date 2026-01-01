@@ -1,4 +1,5 @@
 ﻿@page "/restaurants"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Dinesaur.Domain
@@ -7,18 +8,29 @@
 @implements IAsyncDisposable
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @rendermode InteractiveServer
-<PageTitle>Index</PageTitle>
 
-<h1>Index</h1>
-<div class="content px-4">
-    <></>
-    <></>
-</div>
-<p>
-    <a href="restaurants/create">Create New</a>
-</p>
+<PageTitle>Restaurant</PageTitle>
+<container style="text-align:center;">
+<h1 style="margin-top:40px">My Restaurant</h1>
+@if(HasRestaurant == true)
+{
+    <h2> @RestaurantName </h2>
+    <h2> @Contact </h2>
+    <div class="card p-2" style="width: 480px">
+    <img src="@Lo" style="width: 100%; height: auto; object-fit: cover" alt="Uploaded Image" />
+    </div>
+    
+   <h2> @Contact </h2>
+}
+else
+{
+        <h2 style="color: #88E788;"> You do not have a Restaurant</h2>
+        <br />
+        <a href="/restaurants/create" class="btn-primary" style="padding: 15px 32px;">Create Restaurant</a>
+}
+</container>
 
-<QuickGrid Class="table" Items="context.Restaurant">
+@* <QuickGrid Class="table" Items="context.Restaurant">
     <PropertyColumn Property="restaurant => restaurant.RestaurantName">  </PropertyColumn>
     <PropertyColumn Property="restaurant => restaurant.Location" />
     <PropertyColumn Property="restaurant => restaurant.Category" />
@@ -31,27 +43,68 @@
         <a href="@($"restaurants/details?restaurantid={restaurant.RestaurantID}")">Details</a> |
         <a href="@($"restaurants/delete?restaurantid={restaurant.RestaurantID}")">Delete</a>
     </TemplateColumn>
-</QuickGrid>
+</QuickGrid> *@
 
 @code {
+    private bool HasRestaurant;
+    private string? RestaurantName,Lo;
+    private int? Contact;
+    
+    
     @inject AuthenticationStateProvider authenticationStateProvider
     private DinesaurContext context = default!;
     private string? userId = "Default";
     PaginationState paginationState = new PaginationState { ItemsPerPage = 10 };
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         context = DbFactory.CreateDbContext();
-
+        await using var db = await DbFactory.CreateDbContextAsync();
         var userIdClaim = user.FindFirst("userId");
 
         if (userIdClaim != null)
         {
             userId = userIdClaim.Value;
         }
+        var CheckForRestaurantId = await db.Restaurant
+        .Where(r => r.RestaurantOwnerID == aspNetUserId)
+        .Select(r=> r.RestaurantOwnerID)
+        .SingleOrDefaultAsync();
+        
+        if(CheckForRestaurantId == null)
+        {
+            HasRestaurant = false;
+        }
+        else
+        {
+            HasRestaurant = true;
+        }
+        if (HasRestaurant == true)
+        {
+            var Details = await db.Restaurant
+            .Where(d => d.RestaurantOwnerID == aspNetUserId)
+              .Select(d => new
+              {
+                  
+                  d.RestaurantName,
+                  d.Category,
+                  d.Contact,
+                  d.Email,
+                  d.Location
+              }).SingleOrDefaultAsync();
+            RestaurantName = Details.RestaurantName;
+            Contact = Details.Contact;
 
+            var Logo = await db.Restaurant
+            .Where(l => l.RestaurantOwnerID == aspNetUserId)
+            .Select(l => l.Logo)
+            .FirstOrDefaultAsync();
 
+            Lo = Logo.First();
+        }
+        
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
