@@ -1,0 +1,90 @@
+﻿@*Users View Their Bookings*@
+
+
+@page "/MyBookings"
+@using Dinesaur.Domain
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject Dinesaur.Data.DinesaurContext DbContext
+<div style="display: flex; flex-direction:column">
+    <div style="background-color: dimgrey; height: 40vh; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
+        <h1 style="padding-top: 100px; text-align: left">My Bookings</h1>
+    </div>
+    <div style="display: flex; gap: 25px; flex-direction: column; padding: 50px;">
+        @if (userBookings.Count == 0)
+        {
+            <h2><em>No Bookings</em></h2>
+            <a style="padding: 20px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/User/Home"> Find Restaurants</a>
+                
+        }
+        else
+        {
+            @foreach (var booking in userBookings)
+            {
+                var restaurant = restaurants.Find(r => r.RestaurantID == booking.RestaurantID);
+                <a href="#Reservation">
+                    <div style="z-index: 1000; position: relative; cursor: pointer;">
+                        <div style="width: 100%; height: 100px; background-color: #386641; border-radius: 15px; pointer-events: none; padding: 20px;">
+                            <div style="display: grid; grid-template-columns: 90% 1fr;">
+                                <div>
+                                    <h4>@restaurant.RestaurantName (@restaurant.Location)</h4>
+                                    <p>@booking.StartDate.ToString("dd MMMM h tt")</p>
+
+                                </div>
+                               
+                                <a style=" width; 10%; height: 100% padding: 20px; font-size: 20px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/Restaurants">View</a>
+                                
+                               
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                </a>
+
+            }
+        }
+    </div>
+</div>
+
+@code {
+
+    private List<Reservation> userBookings = new();
+    private List<Reservation> reservations;
+    private List<Restaurant> restaurants;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await Auth.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+
+            NavigationManager.NavigateTo("/Account/Login");
+            return;
+        }
+
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        reservations = await DbContext.Reservation.ToListAsync();
+        restaurants = await DbContext.Restaurant.ToListAsync();
+
+        foreach (var reservation in reservations)
+        {
+            if (reservation.CustomerID == aspNetUserId)
+            {
+                userBookings.Add(reservation);
+            }
+        }
+    }
+
+    void displayRestaurant(Restaurant restaurant)
+    {
+        NavigationManager.NavigateTo($"/Restaurants/{restaurant.RestaurantID}");
+    }
+
+}
