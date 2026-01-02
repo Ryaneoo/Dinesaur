@@ -13,10 +13,9 @@ namespace Dinesaur.Configurations.Entities
                 new Reservation
                 {
                     ReservationID = 1,
-                    Date = DateTime.Now,
-                    Location = "Orchard",
-                    Remarks = "Null",
-                    Id = 1,
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddHours(2),
+                    CustomerID = "1",
                     RestaurantID = 1,
                     StaffID = 1
 
@@ -24,10 +23,9 @@ namespace Dinesaur.Configurations.Entities
                 new Reservation
                 {
                     ReservationID = 2,
-                    Date = DateTime.Now,
-                    Location = "Novena",
+                    EndDate = DateTime.Now.AddHours(2),
                     Remarks = "Null",
-                    Id = 2,
+                    CustomerID = "1",
                     RestaurantID = 2,
                     StaffID = 2
                 }

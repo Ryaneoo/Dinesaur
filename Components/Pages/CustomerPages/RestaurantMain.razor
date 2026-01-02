@@ -11,7 +11,7 @@
 <div style="display: flex; flex-direction:column">
 <div style="background-color: dimgrey; height: 60vh; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
     <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant.RestaurantName</h1>
-    <div style="display: flex; padding-top: 50px;">
+    <div style="display: flex; padding-top: 20px;">
         <div>
             <h3>Category: @selectedRestaurant.Category</h3>
             <h3>Description</h3>
@@ -23,7 +23,7 @@
             <h3>Email: @selectedRestaurant.Email</h3>
         </div>
         <div>
-            <a style="padding: 20px; margin: 300px 50px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="#Reservation"> Book Now</a>
+            <a style="padding: 20px; margin: 300px 50px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/Reservation/Create/@selectedRestaurant.RestaurantID"> Book Now</a>
 
         </div>
     </div>

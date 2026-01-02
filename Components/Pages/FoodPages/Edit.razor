@@ -37,11 +37,7 @@ else
                     <InputText id="description" @bind-Value="Food.Description" class="form-control" />
                     <ValidationMessage For="() => Food.Description" class="text-danger" />
                 </div>
-                <div class="mb-3">
-                    <label for="preorderid" class="form-label">PreOrderID:</label>
-                    <InputNumber id="preorderid" @bind-Value="Food.PreOrderID" class="form-control" />
-                    <ValidationMessage For="() => Food.PreOrderID" class="text-danger" />
-                </div>
+                
                 <div class="mb-3">
                     <label for="staffid" class="form-label">StaffID:</label>
                     <InputNumber id="staffid" @bind-Value="Food.StaffID" class="form-control" />

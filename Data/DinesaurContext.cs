@@ -14,6 +14,7 @@ namespace Dinesaur.Data
         public DbSet<Dinesaur.Domain.PreOrder> PreOrder { get; set; } = default!;
         public DbSet<Dinesaur.Domain.PreOrderItem> PreOrderItem { get; set; } = default!;
         public DbSet<Dinesaur.Domain.Reservation> Reservation { get; set; } = default!;
+
         public DbSet<Dinesaur.Domain.Restaurant> Restaurant { get; set; } = default!;
         public DbSet<Dinesaur.Domain.Review> Review { get; set; } = default!;
 

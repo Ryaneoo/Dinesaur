@@ -15,9 +15,8 @@
 </p>
 
 <QuickGrid Class="table" Items="context.Menu">
-    <PropertyColumn Property="menu => menu.Cost" />
-    <PropertyColumn Property="menu => menu.FoodID" />
-    <PropertyColumn Property="menu => menu.ReservationID" />
+    
+    <PropertyColumn Property="menu => menu.RestaurantID" />
 
     <TemplateColumn Context="menu">
         <a href="@($"menus/edit?menuid={menu.MenuID}")">Edit</a> |
