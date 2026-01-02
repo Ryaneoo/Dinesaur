@@ -61,8 +61,6 @@
     public DateTime Date { get; set; }
     public TimeSpan Time { get; set; }
 
-
-
     public Reservation Reservation { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {
@@ -85,9 +83,6 @@
         Reservation.CustomerID = aspNetUserId;
     }
 
-
-
-
     private async Task AddReservation()
     {
         //Assign Values to properties in Reservation
@@ -98,7 +93,8 @@
         using var context = DbFactory.CreateDbContext();
         context.Reservation.Add(Reservation);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo($"/Reservation/Create/PreOrder/{Reservation.ReservationID}");
+       
     }
 
     private string FormatHour(int hour)

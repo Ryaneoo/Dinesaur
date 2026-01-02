@@ -12,16 +12,12 @@ namespace Dinesaur.Configurations.Entities
                 new Menu
                 {
                     MenuID = 1,
-                    Cost = 3.50,
-                    FoodID = 1,
-                    ReservationID = 1
+                    RestaurantID = 1
                 },
                 new Menu
                 {
                     MenuID = 2,
-                    Cost = 4,
-                    FoodID = 2,
-                    ReservationID = 2
+                    RestaurantID = 2
                 });
 
         }
