@@ -8,6 +8,7 @@
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject UserManager<DinesaurUser> UserManager
 
 <PageTitle>Log in</PageTitle>
 <link href="home.css" rel="stylesheet" />
@@ -18,7 +19,7 @@
             <section>
                 
                 <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                    <DataAnnotationsValidator />
+                    <DataAnnotationsValidator/>
                     <h2 style="text-align:center; font-weight:bold; color:lightgreen">Login with your email and password.</h2>
                     <StatusMessage Message="@errorMessage" />
                     <hr />
@@ -88,8 +89,15 @@
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo("/User/Home");
-            
+            var user = await UserManager.FindByEmailAsync(Input.Email);
+            if (await UserManager.IsInRoleAsync(user, "Administrator"))
+            {
+                RedirectManager.RedirectTo("/Admin/Home");
+            }
+            else
+            {
+                RedirectManager.RedirectTo("/User/Home");
+            }
         }
         else if (result.RequiresTwoFactor)
         {
