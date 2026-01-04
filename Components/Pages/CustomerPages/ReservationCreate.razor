@@ -1,0 +1,108 @@
+﻿@*Home Page For Dinesaur Restaurants*@
+
+
+@page "/Reservation/Create/{id:int}"
+@using Dinesaur.Domain
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject Dinesaur.Data.DinesaurContext DbContext
+<div style="display: flex; flex-direction:column">
+    <div style="background-color: dimgrey; height: 40vh; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
+        <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant.RestaurantName</h1>
+                <h2>Book a Reservation</h2>
+    </div>
+    <div style="padding: 50px 100px">
+        <div>
+            <EditForm Model="@Reservation" OnValidSubmit="AddReservation" FormName="ReservationForm">
+                <div class="mb-3">
+                    <h4>Date:</h4>
+                    <InputDate @bind-Value="Date"
+                               class="form-control" />
+
+                    <h4 class="mt-2">Time:</h4>
+                    <select class="form-control" @bind="Time">
+                        @for (int h = 0; h < 24; h++)
+                        {
+                            var startHour = h;
+                            var endHour = (h + 1) % 24;
+
+                            <option value="@TimeSpan.FromHours(startHour)">
+                                @FormatHour(startHour) – @FormatHour(endHour)
+                            </option>
+                        }
+                    </select>
+
+                    <h4 class="mt-2">Diners (Pax):</h4>
+                    <InputNumber @bind-Value="Reservation.Pax" class="form-control" />
+
+                    <h4 class="mt-2">Remarks:</h4>
+                    <InputText @bind-Value="Reservation.Remarks" class="form-control" />
+                    
+                    
+                </div>
+                
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </EditForm>
+
+        </div>
+    </div>
+    
+</div>
+
+@code {
+    Restaurant? selectedRestaurant;
+    [Parameter]
+    public int id { get; set; }
+
+    public DateTime Date { get; set; }
+    public TimeSpan Time { get; set; }
+
+    public Reservation Reservation { get; set; } = new();
+    protected override async Task OnInitializedAsync()
+    {
+        selectedRestaurant = DbContext.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
+        Date = DateTime.Today;
+        Time = TimeSpan.FromHours(DateTime.Now.Hour); 
+
+        var authState = await Auth.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+           
+            NavigationManager.NavigateTo("/Account/Login");
+            return;
+        }
+
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        Reservation.CustomerID = aspNetUserId;
+    }
+
+    private async Task AddReservation()
+    {
+        //Assign Values to properties in Reservation
+        Reservation.StartDate = Date.Date + Time;
+        Reservation.EndDate = Reservation.StartDate + TimeSpan.FromHours(1);
+        Reservation.RestaurantID = selectedRestaurant.RestaurantID;
+        Reservation.StaffID = 1; // Placeholder StaffID
+        using var context = DbFactory.CreateDbContext();
+        context.Reservation.Add(Reservation);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo($"/Reservation/Create/PreOrder/{Reservation.ReservationID}");
+       
+    }
+
+    private string FormatHour(int hour)
+    {
+        var displayHour = hour % 12 == 0 ? 12 : hour % 12;
+        var period = hour < 12 ? "AM" : "PM";
+        return $"{displayHour} {period}";
+    }
+
+    
+}

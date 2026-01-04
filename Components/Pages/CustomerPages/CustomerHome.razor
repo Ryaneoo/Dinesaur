@@ -36,7 +36,7 @@
         <div>
             <h3>Favourite Restaurants</h3>
             <div style="display: flex; gap: 25px; justify-content: left">
-                @if (restaurants == null)
+                @if (restaurants.Count == 0)
                 {
                     <p><em>Loading...</em></p>
                 }
@@ -65,7 +65,7 @@
         <div>
             <h3>Nearby Restaurants</h3>
             <div style="display: flex; gap: 25px;justify-content: left">
-                @if (restaurants == null)
+                @if (restaurants.Count == 0)
                 {
                     <p><em>Loading...</em></p>
                 }
@@ -95,7 +95,7 @@
         <div>
             <h3>Rated Restaurants</h3>
             <div style="display: flex; gap: 25px;justify-content: left">
-                @if (restaurants == null)
+                @if (restaurants.Count == 0)
                 {
                     <p><em>Loading...</em></p>
                 }
@@ -127,7 +127,7 @@
 
 @code {
     private string? displayName;
-    private List<Restaurant> restaurants;
+    private List<Restaurant> restaurants = new();
     public void Dispose()
     {
         throw new NotImplementedException();

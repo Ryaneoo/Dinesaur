@@ -13,14 +13,19 @@
 <container style="text-align:center;">
 <h1 style="margin-top:40px">My Restaurant</h1>
 @if(HasRestaurant == true)
-{
-    <h2> @RestaurantName </h2>
-    <h2> @Contact </h2>
-    <div class="card p-2" style="width: 480px">
-    <img src="@Lo" style="width: 100%; height: auto; object-fit: cover" alt="Uploaded Image" />
+{   
+    <br />
+    <h2> Restaurant Logo:</h2>
+    <div class="card p-2" style="width: 480px;  display:flex; justify-content:flex-end;">
+            <img src="@Lo" style="width: 100%; height: auto; object-fit: cover;" alt="Uploaded Image" />
     </div>
-    
-   <h2> @Contact </h2>
+        <h2> Restaurant Name:  @RestaurantName </h2>
+        <h2> Restaurant Contact Number: @Contact </h2>
+        <h2> Restaurant Location: @Location </h2>
+        <h2> Restaurant Category: @Catergory </h2>
+        <h2> Restaurant Email: @Email </h2>
+        <br />
+        <a href="/menus/create" class="btn-primary" style="padding: 15px 32px;">Restaurant's Menu</a>
 }
 else
 {
@@ -47,10 +52,10 @@ else
 
 @code {
     private bool HasRestaurant;
-    private string? RestaurantName,Lo;
+    private string? RestaurantName,Lo,Email,Location;
     private int? Contact;
-    
-    
+    private string? Catergory;
+
     @inject AuthenticationStateProvider authenticationStateProvider
     private DinesaurContext context = default!;
     private string? userId = "Default";
@@ -96,6 +101,9 @@ else
               }).SingleOrDefaultAsync();
             RestaurantName = Details.RestaurantName;
             Contact = Details.Contact;
+            Catergory = Details.Category;
+            Email = Details.Email;
+            Location = Details.Location;
 
             var Logo = await db.Restaurant
             .Where(l => l.RestaurantOwnerID == aspNetUserId)
