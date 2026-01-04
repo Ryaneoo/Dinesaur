@@ -14,12 +14,10 @@ namespace Dinesaur.Configurations.Entities
                 {
                     ReviewTitle = "Bad",
                     ReviewID = 1,
-                    Location = "Orchard",
                     Date = DateTime.Now,
                     Rating = 2.5,
                     Description = "Bad",
-                    RestaurantID = 1,
-                    Id = 1
+                    RestaurantID = 1
                 });
         }
     }

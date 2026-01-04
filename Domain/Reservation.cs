@@ -9,6 +9,6 @@
         public string? Remarks { get; set; }
         public string CustomerID { get; set; }
         public int RestaurantID { get; set; }
-        public int StaffID { get; set; } 
+        public string Status { get; set; }
     }
 }
