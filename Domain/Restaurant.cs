@@ -2,7 +2,7 @@
 
 namespace Dinesaur.Domain
 {
-    public class Restaurant:BaseDomainModel
+    public class Restaurant : BaseDomainModel
     {
         public int RestaurantID { get; set; }
 
@@ -19,5 +19,13 @@ namespace Dinesaur.Domain
         public List<string> Logo { get; set; } = new List<string>();
 
         public string? RestaurantOwnerID { get; set; }
+
+        public enum ApprovalStatus
+        {
+            Pending = 0,
+            Approved = 1,
+            Rejected = 2,
+        }
+        public ApprovalStatus Status { get; set; } = ApprovalStatus.Pending;
     }
 }

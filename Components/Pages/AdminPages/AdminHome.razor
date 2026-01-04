@@ -1,5 +1,6 @@
 ﻿@* Admin Home Page *@
 @page "/Admin/Home"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Dinesaur.Domain
 @using Microsoft.EntityFrameworkCore
@@ -9,36 +10,57 @@
 @inject Dinesaur.Data.DinesaurContext DbContext
 @inject UserManager<Dinesaur.Data.DinesaurUser> UserManager
 
-  
+<AuthorizeView Roles="Administrator">
+    <Authorized>
         <!-- MAIN PANEL -->
         <div style="
-         width: 100%;
-         color: white;
-         padding: 50px;
-         align-items: center;">
+            width: 100%;
+            color: white;
+            padding: 50px;
+            align-items: center;">
+
             <div style="display: flex; gap: 25px; height: 400px; align-items: center; justify-content: left">
-                <div style>
-                    <h1 style="text-align: left"> Welcome,</h1>
-                    <h1 style="text-align: left"> @displayName!</h1>
+                <div>
+                    <h1 style="text-align: left">Welcome,</h1>
+                    <h1 style="text-align: left">@displayName!</h1>
                 </div>
 
-        <div style="
-        color:white;
-        font-size:90px;
-        line-height:1.6;
-        margin-top:850px;
-        transform: translateX(-550px);">
-            There are “@NewUsersCount” New Users<br/>
-            There are “ ” New Ratings for review<br/>
-            There are “ ” New Restaurants for review
+                <div style="
+                    color:white;
+                    font-size:90px;
+                    line-height:1.6;
+                    margin-top:1025px;
+                    transform: translateX(-550px);">
+                    There are “@NewUsersCount” New Users<br />
+                    There are “@pendingReviews” New Reviews for review<br />
+                    There are “@pendingRestaurants” New Restaurants for review
+                </div>
+            </div>
         </div>
-    </div>
-    </div>
+    </Authorized>
+
+    <NotAuthorized>
+        <div style="
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        height:95vh;
+        color:white;
+        text-align:center;">
+
+            <h1 style="font-size:140px;">Access Denied</h1>
+            <p style="font-size:90px;">You must be an admin to view this page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private string? displayName;
     private int NewUsersCount;
     private DateTime? sinceUtc;
+    private int pendingRestaurants;
+    private int pendingReviews;
     public void Dispose()
     {
         throw new NotImplementedException();
@@ -58,14 +80,14 @@
             .SingleOrDefaultAsync();
 
         displayName = identityUser ?? user.Identity?.Name;
-        
+
 
         var admin = await db.Users.SingleAsync(u => u.Id == aspNetUserId);
 
-        
+
         sinceUtc = admin.PreviousLoginAtUtc;
 
-        
+
         if (sinceUtc != null)
         {
             NewUsersCount = await db.Users
@@ -74,7 +96,11 @@
         else
         {
             NewUsersCount = 0;
-    }
+        }
+        pendingRestaurants = await db.Restaurant
+            .CountAsync(r => r.Status == Restaurant.ApprovalStatus.Pending);
+        pendingReviews = await db.Review
+            .CountAsync(rev => rev.Status == Review.ApprovalStatusReviews.Pending);
 
 }
 }

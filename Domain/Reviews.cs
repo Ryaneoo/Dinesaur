@@ -12,5 +12,14 @@
         public int RestaurantID { get; set; } /*Foreign key*/
 
         public int Id { get; set; } /*Foreign key*/
+
+        public enum ApprovalStatusReviews
+        {
+            Pending = 0,
+            Approved = 1,
+            Rejected = 2
+        }
+
+        public ApprovalStatusReviews Status { get; set; } = ApprovalStatusReviews.Pending;
     }
 }
