@@ -1,5 +1,5 @@
 ﻿@*Admin Restaurant Approval Page*@
-@page "/Admin/restaurant/manage"
+@page "/Admin/Reviews/manage"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -27,54 +27,57 @@
                 </div>
             </div>
             <div style="margin-top:40px;">
-                <h2 style="font-size:70px;">Pending Restaurants</h2>
+                <h2 style="font-size:70px;">Pending Reviews</h2>
 
                 @if (isLoading)
                 {
                     <p style="font-size:50px;">Loading...</p>
                 }
-                else if (pendingRestaurants.Count == 0)
+                else if (pendingReviews.Count == 0)
                 {
-                    <p style="font-size:50px;">No restaurants awaiting approval.</p>
+                    <p style="font-size:50px;">No reviews awaiting approval.</p>
                 }
                 else
                 {
                     <table style="width:100%; border-collapse:collapse; margin-top:20px;">
                         <thead>
                             <tr style="border-bottom:2px solid #444; font-size:35px;">
-                                <th style="padding:14px; text-align:left;">Name</th>
+                                <th style="padding:14px; text-align:left;">Review Title</th>
+                                <th style="padding:14px; text-align:left;">Description</th>
                                 <th style="padding:14px; text-align:left;">Location</th>
-                                <th style="padding:14px; text-align:left;">Category</th>
+                                <th style="padding:14px; text-align:left;">Rating</th>
                                 <th style="padding:14px; text-align:left;">Actions</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            @foreach (var r in pendingRestaurants)
+                            @foreach (var r in pendingReviews)
                             {
                                 <tr style="border-bottom:1px solid #333; font-size:32px;">
-                                    <td style="padding:14px;">@r.RestaurantName</td>
+                                    <td style="padding:14px;">@r.ReviewTitle</td>
+                                    <td style="padding:14px;">@r.Description</td>
                                     <td style="padding:14px;">@r.Location</td>
-                                    <td style="padding:14px;">@r.Category</td>
+                                    <td style="padding:14px;">@r.Rating ⭐</td>
+
 
                                     <td style="padding:20px;">
                                         <div style=" display:flex; gap:30px">
-                                            <button style="padding:12px 16px; font-size:25px; cursor:pointer; margin-right:10px;"
-                                                    disabled="@busyIds.Contains(r.RestaurantID)"
-                                                    @onclick="() => SetStatusAsync(r.RestaurantID, Restaurant.ApprovalStatus.Approved)">
+                                        <button style="padding:12px 16px; font-size:25px; cursor:pointer; margin-right:10px;"
+                                                    disabled="@busyIds.Contains(r.ReviewID)"
+                                                    @onclick="() => SetStatusAsync(r.ReviewID, Review.ApprovalStatusReviews.Approved)">
                                                 Approve
-                                            </button>
+                                        </button>
 
-                                            <button style="padding:12px 16px; font-size:25px; cursor:pointer;"
-                                                    disabled="@busyIds.Contains(r.RestaurantID)"
-                                                    @onclick="() => SetStatusAsync(r.RestaurantID, Restaurant.ApprovalStatus.Rejected)">
+                                        <button style="padding:12px 16px; font-size:25px; cursor:pointer;"
+                                                    disabled="@busyIds.Contains(r.ReviewID)"
+                                                    @onclick="() => SetStatusAsync(r.ReviewID, Review.ApprovalStatusReviews.Rejected)">
                                                 Reject
-                                            </button>
+                                        </button>
 
-                                            <button style="padding:12px 16px; font-size:25px; cursor:pointer;"
-                                                    @onclick="() => MoreDetails(r.RestaurantID)">
-                                                More Details
-                                            </button>
+                                        <button style="padding:12px 16px; font-size:25px; cursor:pointer;"
+                                                @onclick="() => MoreDetails(r.ReviewID)">
+                                            More Details
+                                        </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -112,7 +115,7 @@
     private bool isLoading = true;
     private string? message;
 
-    private List<Restaurant> pendingRestaurants = new();
+    private List<Review> pendingReviews = new();
     private HashSet<int> busyIds = new();
 
     protected override async Task OnInitializedAsync()
@@ -130,54 +133,52 @@
 
         displayName = identityUser ?? user.Identity?.Name;
 
-        await LoadPendingRestaurantsAsync();
+        await LoadPendingReviewsAsync();
 
     }
-    private async Task LoadPendingRestaurantsAsync()
+    private async Task LoadPendingReviewsAsync()
     {
         isLoading = true;
         message = null;
 
         await using var db = await DbFactory.CreateDbContextAsync();
 
-        pendingRestaurants = await db.Restaurant
-            .Where(r => r.Status == Restaurant.ApprovalStatus.Pending)
-            .OrderByDescending(r => r.RestaurantID)
+        pendingReviews = await db.Review
+            .Where(r => r.Status == Review.ApprovalStatusReviews.Pending)
+            .OrderByDescending(r => r.ReviewID)
             .ToListAsync();
 
         isLoading = false;
     }
 
 
-    private async Task SetStatusAsync(int restaurantId, Restaurant.ApprovalStatus newStatus)
+    private async Task SetStatusAsync(int reviewId, Review.ApprovalStatusReviews newStatus)
     {
-        busyIds.Add(restaurantId);
+        busyIds.Add(reviewId);
         message = null;
 
         try
         {
             await using var db = await DbFactory.CreateDbContextAsync();
 
-            var restaurant = await db.Restaurant
-                .FirstOrDefaultAsync(r => r.RestaurantID == restaurantId);
+            var review = await db.Review
+                .FirstOrDefaultAsync(r => r.ReviewID == reviewId);
 
-            if (restaurant is null)
+            if (review is null)
             {
-                message = "Restaurant not found (it may have been processed already).";
-                await LoadPendingRestaurantsAsync();
+                message = "Review not found.";
+                await LoadPendingReviewsAsync();
                 return;
             }
 
-            restaurant.Status = newStatus;
+            review.Status = newStatus;
             await db.SaveChangesAsync();
 
+            pendingReviews.RemoveAll(r => r.ReviewID == reviewId);
 
-            // Remove from UI list immediately
-            pendingRestaurants.RemoveAll(r => r.RestaurantID == restaurantId);
-
-            message = newStatus == Restaurant.ApprovalStatus.Approved
-                ? "Restaurant approved."
-                : "Restaurant rejected.";
+            message = newStatus == Review.ApprovalStatusReviews.Approved
+                ? "Review approved."
+                : "Review rejected.";
         }
         catch (Exception ex)
         {
@@ -185,13 +186,14 @@
         }
         finally
         {
-            busyIds.Remove(restaurantId);
+            busyIds.Remove(reviewId);
+            await InvokeAsync(StateHasChanged);
         }
     }
-    private void MoreDetails(int restaurantId)
-    {
 
-        NavigationManager.NavigateTo("/Admin/Restaurant/Details/{restaurantId}");
+    private void MoreDetails(int reviewId)
+    {
+        NavigationManager.NavigateTo($"/Admin/Review/Details/{reviewId}");
     }
 }
-}
+
