@@ -96,15 +96,15 @@ h1, h2{
 }
 
 a {
-    font-size: 20px;
+    font-size: 15px;
     font-family: "Calisto MT", serif;
     color: white;
     text-decoration: none;
 }
 
     a:hover {
-        font-size: 20px;
-        color: white;
+        font-size: 15px;
+        color: black;
         text-decoration: none;
     }
 
@@ -131,3 +131,275 @@ h2, h3, h4, h5, h6 {
     z-index: 9999;
     text-decoration: none;
 }
+.modal-backdrop {
+    position: fixed; /* <-- needed to cover viewport */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6); /* translucent overlay */
+    display: flex;
+    justify-content: center; /* horizontal center */
+    align-items: center; /* vertical center */
+    z-index: 1000;
+}
+
+.modal-card {
+    position: relative;
+    background-color: #386641; /* single background color */
+    padding: 25px 30px;
+    border-radius: 12px;
+    width: 600px;
+    max-width: 90%;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    /* Animation for smooth pop-out */
+    animation: modalIn 0.2s ease-out;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: white;
+}
+
+    .close-btn:hover {
+        color: #ff4d4f;
+    }
+
+.reservation-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    color: white;
+}
+
+    .reservation-detail:last-child {
+        border-bottom: none;
+    }
+
+.reservation-label {
+    font-weight: 600;
+    color: white;
+}
+
+.reservation-value {
+    color: white;
+    text-align: right;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.primary-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.secondary-btn {
+    background-color: #ddd;
+    color: #333;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.danger-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .danger-btn:hover {
+        opacity: 0.85;
+    }
+
+.confirm-overlay {
+    position: fixed; /* stay fixed on viewport */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* translucent dark */
+    display: flex; /* use flex to center modal */
+    justify-content: center; /* center horizontally */
+    align-items: center; /* center vertically */
+    z-index: 2000; /* must be above everything else */
+}
+
+/* The modal card itself */
+.confirm-modal {
+    background-color: #386641;
+    color: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    width: 600px;
+    max-width: 90%;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: modalIn 0.2s ease-out;
+}
+
+    /* Buttons inside the confirmation modal */
+    .confirm-modal .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .confirm-modal button {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .confirm-modal .secondary-btn {
+        background-color: #ddd;
+        color: #333;
+    }
+
+    .confirm-modal .danger-btn {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .confirm-modal button:hover {
+        opacity: 0.85;
+    }
+
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Overlay */
+.confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+/* Modal */
+.confirm-modal {
+    position: relative;
+    background-color: #386641;
+    color: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    width: 1000px;
+    max-width: 90%;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    animation: modalIn 0.2s ease-out;
+}
+
+/* Close button */
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: white;
+}
+
+    .close-btn:hover {
+        color: #ff4d4f;
+    }
+
+/* Stars */
+.stars .star {
+    font-size: 2rem;
+    margin-right: 5px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Buttons */
+.primary-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+    .primary-btn:hover {
+        opacity: 0.85;
+    }
+
+.rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    font-size: 2.5rem;
+}
+
+    .rating input {
+        display: none;
+    }
+
+    .rating label {
+        cursor: pointer;
+        color: #ccc;
+    }
+
+        .rating label.full::before {
+            content: "?";
+        }
+
+        .rating label.half::before {
+            content: "?";
+            position: absolute;
+            width: 50%;
+            overflow: hidden;
+        }
+
+    .rating input:checked ~ label {
+        color: #FFD700;
+    }
+
+    .rating label {
+        position: relative;
+    }

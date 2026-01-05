@@ -10,14 +10,14 @@
 @rendermode InteractiveServer
 
 <PageTitle>Restaurant</PageTitle>
-<container style="text-align:center;">
+<container style="text-align: center;">
 <h1 style="margin-top:40px">My Restaurant</h1>
 @if(HasRestaurant == true)
 {   
     <br />
     <h2> Restaurant Logo:</h2>
-    <div class="card p-2" style="width: 480px;  display:flex; justify-content:flex-end;">
-            <img src="@Lo" style="width: 100%; height: auto; object-fit: cover;" alt="Uploaded Image" />
+    <div style="width: 100%;  display: flex; justify-content: center; align-items: center; color: none">
+            <img src="@Lo" style="width: 50%; height: auto; align-content: center; border: 5px solid white; border-radius: 5px;" alt="Uploaded Image" />
     </div>
         <h2> Restaurant Name:  @RestaurantName </h2>
         <h2> Restaurant Contact Number: @Contact </h2>

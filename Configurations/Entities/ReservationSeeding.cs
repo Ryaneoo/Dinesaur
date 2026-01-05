@@ -17,7 +17,7 @@ namespace Dinesaur.Configurations.Entities
                     EndDate = DateTime.Now.AddHours(2),
                     CustomerID = "1",
                     RestaurantID = 1,
-                    StaffID = 1
+                    Status = "Pending"
 
                 },
                 new Reservation
@@ -27,7 +27,7 @@ namespace Dinesaur.Configurations.Entities
                     Remarks = "Null",
                     CustomerID = "1",
                     RestaurantID = 2,
-                    StaffID = 2
+                    Status = "Completed"
                 }
             );
         }
