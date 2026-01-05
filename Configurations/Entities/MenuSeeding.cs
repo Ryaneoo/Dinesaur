@@ -12,12 +12,16 @@ namespace Dinesaur.Configurations.Entities
                 new Menu
                 {
                     MenuID = 1,
-                    RestaurantID = 1
+                    RestaurantID = 999,
+                    Category = "",
+                    Catergories = new List<string>()
                 },
                 new Menu
                 {
                     MenuID = 2,
-                    RestaurantID = 2
+                    RestaurantID = 9998,
+                    Category = "",
+                    Catergories = new List<string>()
                 });
 
         }

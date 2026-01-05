@@ -1,45 +1,120 @@
 ﻿@page "/menus/create"
 @using Microsoft.EntityFrameworkCore
 @using Dinesaur.Domain
+@using System.Security.Claims
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject NavigationManager NavigationManager
-
+@inject AuthenticationStateProvider authenticationStateProvider
 <PageTitle>Create</PageTitle>
+<container style="text-align: center;">
+<h1 style="margin-top:40px;">Create Menu</h1>
 
-<h1>Create</h1>
 
-<h2>Menu</h2>
 <hr />
-<div class="row">
+     <div class="row justify-content-center">
     <div class="col-md-4">
-        <EditForm method="post" Model="Menu" OnValidSubmit="AddMenu" FormName="create" Enhance>
+        <EditForm method="post" Model="Menu" OnValidSubmit="AddItemtoMenu" FormName="create" Enhance>
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert"/>
-            
-            <div class="mb-3">
-                <label for="restaurantid" class="form-label">RestaurantID:</label> 
-                <InputNumber id="reservationid" @bind-Value="Menu.RestaurantID" class="form-control" /> 
+                <div class="mb-3">
+                    <label for="Categoryid" class="form-label" style="color:white;">Create Category for Menu: (Insert one at a time)</label>
+                    <InputText id="Categoryid" @bind-Value="Menu.Category" class="form-control" />
+                    <ValidationMessage For="() => Menu.Category" class="text-danger" />
+                </div>
+                 <div class="mb-3" hidden>
+                <label for="menurestaurantid" class="form-label">RestaurantID:</label> 
+                <InputNumber id="menurestaurantid" @bind-Value="Menu.RestaurantID" class="form-control" /> 
                 <ValidationMessage For="() => Menu.RestaurantID" class="text-danger" /> 
-            </div>        
+            </div>         
             <button type="submit" class="btn btn-primary">Create</button>
-        </EditForm>
-    </div>
+        </EditForm> 
+    </div> 
+        @if (Catergoriess.Any()){
+         <div class="alert alert-danger col-4 mb-3" role="alert" style="">
+            Categories in your Restaurant Menu:
+            <ul>
+                @foreach (var cat in Catergoriess)
+                {
+                    <li>@cat</li>
+                }
+            </ul>
+        </div> 
+        }
 </div>
-
-<div>
-    <a href="/menus">Back to List</a>
-</div>
+</container>
 
 @code {
     [SupplyParameterFromForm]
     private Menu Menu { get; set; } = new();
-
+    private List<string?> Catergoriess = new List<string?>();
+    private int RestaurantId,MenuId;
+    private bool MenuExist;
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
-    private async Task AddMenu()
+    private async Task AddItemtoMenu()
     {
+        await using var db = await DbFactory.CreateDbContextAsync();
         using var context = DbFactory.CreateDbContext();
-        context.Menu.Add(Menu);
+        if (MenuExist == false)
+        {
+            Menu.RestaurantID = RestaurantId;
+            Menu.Catergories = [];
+            context.Menu.Add(Menu);
+            StateHasChanged();
+            Menu.Catergories.Add(Menu.Category);
+        }
+        else
+        {
+            var existingMenu = await context.Menu
+                .FirstOrDefaultAsync(m => m.MenuID == MenuId);
+            if (existingMenu != null)
+            {
+                existingMenu.Catergories.Add(Menu.Category);
+            }
+        }
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/menus");
+        //NavigationManager.NavigateTo("/menus");
+        
+        var ListofCatergories = await db.Menu
+        .Where(m => m.MenuID == MenuId)
+        .Select(m => m.Catergories)
+        .FirstOrDefaultAsync();
+        if (ListofCatergories != null)
+        {
+            Catergoriess = ListofCatergories;
+        }
+        StateHasChanged();
     }
+    protected override async Task OnInitializedAsync()
+    {
+
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var CheckForRestaurantId = await db.Restaurant
+        .Where(r => r.RestaurantOwnerID == aspNetUserId)
+        .Select(r => r.RestaurantID)
+        .SingleOrDefaultAsync();
+        RestaurantId = CheckForRestaurantId;
+        var CheckForMenu = await db.Menu
+        .Where(m => m.RestaurantID == RestaurantId)
+        .Select(m => m.MenuID)
+        .SingleOrDefaultAsync();
+        MenuId = CheckForMenu;
+        if(MenuId != 0)
+        {
+            MenuExist = true;
+        }
+        else
+        {
+            MenuExist = false;
+        }
+        var ListofCatergories = await db.Menu
+        .Where(m => m.MenuID == MenuId)
+        .Select(m => m.Catergories)
+        .FirstOrDefaultAsync();
+        if(ListofCatergories!= null){
+        Catergoriess = ListofCatergories;
+        }
+}
 }

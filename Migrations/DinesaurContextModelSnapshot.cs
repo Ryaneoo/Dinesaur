@@ -106,18 +106,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7d8fb78b-5afd-4eae-8575-fcd0ff160a48",
+                            ConcurrencyStamp = "09a3cc02-313a-42ec-bfba-d171dafab39e",
                             Contact = 91234567,
-                            CreatedAtUtc = new DateTime(2026, 1, 5, 3, 48, 39, 580, DateTimeKind.Utc).AddTicks(4093),
+                            CreatedAtUtc = new DateTime(2026, 1, 5, 9, 30, 45, 385, DateTimeKind.Utc).AddTicks(1265),
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "Admin",
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENUJXVMT5f5o/kH8FqAhfb+FyRN3VWH7oOJ1OZ1zZmKvk5j6KlzjHku7bRpIXmydAw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECXEh/aZDpJiv0nWLaZaVD+1jZ3iEENAs1YlnVI3xXJP+S3Fl+PysmEx7YDAh8XuBw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b2043ff8-6339-472b-8c19-58f43da683d9",
+                            SecurityStamp = "0f59b782-09f4-4697-b848-27c9938365af",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         },
@@ -125,18 +125,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7b8710de-9f21-4f97-b6f7-9287f2a14b67",
+                            ConcurrencyStamp = "49cab15c-ee5c-42a9-abef-b998c93adedb",
                             Contact = 91234568,
-                            CreatedAtUtc = new DateTime(2026, 1, 5, 3, 48, 39, 620, DateTimeKind.Utc).AddTicks(8449),
+                            CreatedAtUtc = new DateTime(2026, 1, 5, 9, 30, 45, 430, DateTimeKind.Utc).AddTicks(7146),
                             Email = "user@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "User",
                             NormalizedEmail = "USER@LOCALHOST.COM",
                             NormalizedUserName = "USER@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBtDh8gMvE8avqaPLQZGFuKeU0jsRdB9rlEosVph4GhbMJt1nTMiIAOPDIPAY3bDaA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBEx/dKnEPmUEBDD9Bf5m8vnPKgjema3fV0RuKf8FQsO3JTWGx45SvDoidQOo0xpaQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2e1f6ec9-222e-48fc-9ebf-90eff8ada192",
+                            SecurityStamp = "26266a7f-dda1-4f2c-9511-a071011152fd",
                             TwoFactorEnabled = false,
                             UserName = "user@localhost.com"
                         },
@@ -144,18 +144,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "3",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4be20846-682a-4863-85e7-779c5f2d3fec",
+                            ConcurrencyStamp = "ea8b6b30-9fd7-4c3b-9811-7e6e5d78d76a",
                             Contact = 91234560,
-                            CreatedAtUtc = new DateTime(2026, 1, 5, 3, 48, 39, 661, DateTimeKind.Utc).AddTicks(8493),
+                            CreatedAtUtc = new DateTime(2026, 1, 5, 9, 30, 45, 475, DateTimeKind.Utc).AddTicks(8128),
                             Email = "restaurantstaff@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "RestaurantStaff",
                             NormalizedEmail = "RESTAURANTSTAFF@LOCALHOST.COM",
                             NormalizedUserName = "RESTAURANTSTAFF@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP5+3zfjepRduPv2+DevEIrXypNasuhMa3buXMNS0v1qIkrUB+9hKdkCS6iSEFowHQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKvNdQ3G8a5iRtPN393WrObR0JeC9OIYALk0RDB1ngsdU21nidxxFt+Fv6F1CiVpEg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0dd268c8-f43e-4bc5-bb5e-2560ad018bd7",
+                            SecurityStamp = "7f32b7ca-6ce5-443c-9c0c-1673d131aaaa",
                             TwoFactorEnabled = false,
                             UserName = "restaurantstaff@localhost.com"
                         });
@@ -204,13 +204,19 @@ namespace Dinesaur.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FoodID"));
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("Cost")
                         .HasColumnType("float");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FoodName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
@@ -231,22 +237,24 @@ namespace Dinesaur.Migrations
                         new
                         {
                             FoodID = 1,
+                            Category = "Meat",
                             Cost = 3.5,
                             Description = "White meat",
                             FoodName = "Chicken",
                             Image = "[]",
-                            MenuID = 1,
-                            StaffID = 1
+                            MenuID = 9999,
+                            StaffID = 999
                         },
                         new
                         {
                             FoodID = 2,
+                            Category = "Seafood",
                             Cost = 4.0,
                             Description = "Saba",
                             FoodName = "Fish",
                             Image = "[]",
-                            MenuID = 2,
-                            StaffID = 2
+                            MenuID = 999,
+                            StaffID = 9999
                         });
                 });
 
@@ -257,6 +265,13 @@ namespace Dinesaur.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MenuID"));
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Catergories")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RestaurantID")
                         .HasColumnType("int");
@@ -269,12 +284,16 @@ namespace Dinesaur.Migrations
                         new
                         {
                             MenuID = 1,
-                            RestaurantID = 1
+                            Category = "",
+                            Catergories = "[]",
+                            RestaurantID = 999
                         },
                         new
                         {
                             MenuID = 2,
-                            RestaurantID = 2
+                            Category = "",
+                            Catergories = "[]",
+                            RestaurantID = 9998
                         });
                 });
 
@@ -394,17 +413,17 @@ namespace Dinesaur.Migrations
                         {
                             ReservationID = 1,
                             CustomerID = "1",
-                            EndDate = new DateTime(2026, 1, 5, 13, 48, 39, 580, DateTimeKind.Local).AddTicks(3815),
+                            EndDate = new DateTime(2026, 1, 5, 19, 30, 45, 385, DateTimeKind.Local).AddTicks(969),
                             Pax = 0,
                             RestaurantID = 1,
-                            StartDate = new DateTime(2026, 1, 5, 11, 48, 39, 580, DateTimeKind.Local).AddTicks(3805),
+                            StartDate = new DateTime(2026, 1, 5, 17, 30, 45, 385, DateTimeKind.Local).AddTicks(958),
                             Status = "Pending"
                         },
                         new
                         {
                             ReservationID = 2,
                             CustomerID = "1",
-                            EndDate = new DateTime(2026, 1, 5, 13, 48, 39, 580, DateTimeKind.Local).AddTicks(3823),
+                            EndDate = new DateTime(2026, 1, 5, 19, 30, 45, 385, DateTimeKind.Local).AddTicks(976),
                             Pax = 0,
                             Remarks = "Null",
                             RestaurantID = 2,
@@ -504,7 +523,7 @@ namespace Dinesaur.Migrations
                         new
                         {
                             ReviewID = 1,
-                            Date = new DateTime(2026, 1, 5, 11, 48, 39, 580, DateTimeKind.Local).AddTicks(3951),
+                            Date = new DateTime(2026, 1, 5, 17, 30, 45, 385, DateTimeKind.Local).AddTicks(1118),
                             Description = "Bad",
                             Rating = 2.5,
                             RestaurantID = 1,
