@@ -9,7 +9,12 @@
         public double Rating { get; set; }
         public string? Description { get; set; }
         public int RestaurantID { get; set; } /*Foreign key*/
-
-        public string Status { get; set; } = "Pending";
+        public enum ApprovalStatusReviews
+        {
+            Pending = 0,
+            Approved = 1,
+            Rejected = 2,
+        }
+        public ApprovalStatusReviews Status { get; set; } = ApprovalStatusReviews.Pending;
     }
 }

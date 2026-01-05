@@ -331,7 +331,7 @@
     {
         review.Date = DateTime.Now;
         review.RestaurantID = SelectedRestaurant.RestaurantID;
-        review.Status = "Pending";
+        review.Status = Review.ApprovalStatusReviews.Pending;
 
         using var context = DbFactory.CreateDbContext();
         context.Review.Add(review);
