@@ -9,6 +9,7 @@
 @inject AuthenticationStateProvider Auth
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject Dinesaur.Data.DinesaurContext DbContext
+
 <div style="display: flex; flex-direction:column">
     <div style="background-color: dimgrey; height: auto; text-align: left; display: flex; flex-direction: column; padding: 10px 30px;">
         <h1 style="padding-top: 100px; text-align: left">Pre - Order</h1>
@@ -34,9 +35,9 @@
                         <h5> $10.00</h5>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30px, 1fr)); background-color: grey; border-radius: 10px; text-align:center; ">
-                        <a style="background-color: green; height: 100%; border-radius: 10px 0px 0px 10px; padding-top: 3px; font-weight: bold; z-index: 1000; cursor: pointer;" @onclick="() => itemCount++">+</a>
+                        <a style="background-color:red; height: 100%; border-radius: 10px 0px 0px 10px; padding-top: 5px; font-weight: bold; z-index: 1000; cursor: pointer;" @onclick="() => itemCount = Math.Max(itemCount-1,0)">-</a>
                         <h5 style="background-color: white; color: black; height: 100%; padding-top: 5px; font-weight: bold">@itemCount</h5>
-                        <a style="background-color: red; height: 100%; border-radius: 0px 10px 10px 0px; padding-top: 3px; font-weight: bold; z-index: 1000; cursor: pointer;" @onclick="() => itemCount = itemCount - 1">-</a>
+                        <a style="background-color: green; height: 100%; border-radius: 0px 10px 10px 0px; padding-top: 7px; font-weight: bold; z-index: 1000; cursor: pointer;" @onclick="() => itemCount++">+</a>
                     </div>
                     
                 </div>
@@ -44,16 +45,29 @@
         </div>
     </div>
     <a href="#"
-       class="floating-btn"
-       @onclick="() => itemCount++"
+       style="
+       display:block;
+       width: 200px;
+       text-align:center;
+       padding:12px 0;
+       background-color:green;
+       color:white;
+       font-weight:bold;
+       border-radius:10px;
+       cursor:pointer;
+       text-decoration:none;
+       margin:20px auto;"
+       @onclick="() => GoToOrderList(id)"
        @onclick:preventDefault="true">
         Order List
     </a>
+
+
 </div>
 
 @code {
     public int itemCount = 0;
-    
+
     [Parameter]
     public int id { get; set; }
 
@@ -82,6 +96,11 @@
 
         Reservation.CustomerID = aspNetUserId;
 
+    }
+
+    private void GoToOrderList(int id)
+    {
+        NavigationManager.NavigateTo($"/Reservation/OrderList/{id}");
     }
 
   

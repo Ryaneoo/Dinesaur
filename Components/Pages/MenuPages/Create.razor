@@ -49,7 +49,6 @@
     private List<string?> Catergoriess = new List<string?>();
     private int RestaurantId,MenuId;
     private bool MenuExist;
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddItemtoMenu()
     {
         await using var db = await DbFactory.CreateDbContextAsync();
@@ -72,7 +71,6 @@
             }
         }
         await context.SaveChangesAsync();
-        //NavigationManager.NavigateTo("/menus");
         
         var ListofCatergories = await db.Menu
         .Where(m => m.MenuID == MenuId)
