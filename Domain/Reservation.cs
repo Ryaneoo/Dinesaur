@@ -9,6 +9,13 @@
         public string? Remarks { get; set; }
         public string CustomerID { get; set; }
         public int RestaurantID { get; set; }
-        public string Status { get; set; }
+        public enum ReservationStatus
+        {
+            Pending = 0,
+            Confirmed = 1,
+            Completed = 2,
+            Rejected = 3,
+        }
+        public ReservationStatus Status{ get; set; } = ReservationStatus.Pending;
     }
 }
