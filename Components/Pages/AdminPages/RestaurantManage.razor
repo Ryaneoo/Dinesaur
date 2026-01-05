@@ -29,6 +29,70 @@
             <div style="margin-top:40px;">
                 <h2 style="font-size:70px;">Pending Restaurants</h2>
 
+                @if (showDetailsModal && selectedRestaurant != null)
+                {
+                    <div style="
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.7);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            z-index:1000;">
+
+                        <div style="
+                background:#1e1e1e;
+                color:white;
+                width:60%;
+                max-width:900px;
+                padding:40px;
+                border-radius:12px;
+                box-shadow:0 0 30px rgba(0,0,0,0.6);">
+
+                            <h2 style="font-size:48px; margin-bottom:25px;">
+                                @selectedRestaurant.RestaurantName
+                            </h2>
+
+                            <p style="font-size:28px; margin-top:15px;">
+                                <strong>Location:</strong><br />
+                                @selectedRestaurant.Location
+                            </p>
+
+                            <p style="font-size:28px; margin-top:15px;">
+                                <strong>Category:</strong><br />
+                                @selectedRestaurant.Category
+                            </p>
+
+                            @if (selectedRestaurant.Logo?.Count > 0)
+                            {
+                                <p style="font-size:28px; margin-top:25px;">
+                                    <strong>Logos:</strong>
+                                </p>
+
+                                <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:10px;">
+                                    @foreach (var logoUrl in selectedRestaurant.Logo)
+                                    {
+                                        <img src="@logoUrl"
+                                             style="max-height:240px; border-radius:8px;" />
+                                    }
+                                </div>
+                            }
+
+                            <div style="
+                    margin-top:40px;
+                    display:flex;
+                    justify-content:flex-end;
+                    gap:20px;">
+
+                                <button style="font-size:26px; padding:12px 24px;"
+                                        @onclick="CloseModal">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 @if (isLoading)
                 {
                     <p style="font-size:50px;">Loading...</p>
@@ -75,6 +139,7 @@
                                                     @onclick="() => MoreDetails(r.RestaurantID)">
                                                 More Details
                                             </button>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -89,6 +154,9 @@
                 }
             </div>
         </div>
+
+
+        
     </Authorized>
 
     <NotAuthorized>
@@ -105,12 +173,15 @@
             <p style="font-size:90px;">You must be an admin to view this page</p>
         </div>
     </NotAuthorized>
+
 </AuthorizeView>
 
 @code {
     private string? displayName;
     private bool isLoading = true;
     private string? message;
+    private bool showDetailsModal = false;
+    private Restaurant? selectedRestaurant;
 
     private List<Restaurant> pendingRestaurants = new();
     private HashSet<int> busyIds = new();
@@ -188,10 +259,22 @@
             busyIds.Remove(restaurantId);
         }
     }
-    private void MoreDetails(int restaurantId)
+    private async Task MoreDetails(int restaurantId)
     {
+        await using var db = await DbFactory.CreateDbContextAsync();
 
-        NavigationManager.NavigateTo("/Admin/Restaurant/Details/{restaurantId}");
+        selectedRestaurant = await db.Restaurant
+        .FirstOrDefaultAsync(r => r.RestaurantID == restaurantId);
+
+        if (selectedRestaurant != null)
+        {
+            showDetailsModal = true;
+        }
+    }
+    private void CloseModal()
+    {
+        showDetailsModal = false;
+        selectedRestaurant = null;
     }
 }
-}
+
