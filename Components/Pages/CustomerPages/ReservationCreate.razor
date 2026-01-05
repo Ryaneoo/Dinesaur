@@ -89,7 +89,7 @@
         Reservation.StartDate = Date.Date + Time;
         Reservation.EndDate = Reservation.StartDate + TimeSpan.FromHours(1);
         Reservation.RestaurantID = selectedRestaurant.RestaurantID;
-        Reservation.Status = "Pending";
+        Reservation.Status = Reservation.ReservationStatus.Pending;
         using var context = DbFactory.CreateDbContext();
         context.Reservation.Add(Reservation);
         await context.SaveChangesAsync();
