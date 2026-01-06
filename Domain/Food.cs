@@ -14,7 +14,7 @@ namespace Dinesaur.Domain
         [Required]
         public string? Category { get; set; }
 
-        public int StaffID { get; set; }
+        public string? StaffID { get; set; }
 
         public int MenuID { get; set; }
         [Required]

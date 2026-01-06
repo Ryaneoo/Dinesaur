@@ -56,7 +56,7 @@
         if (MenuExist == false)
         {
             Menu.RestaurantID = RestaurantId;
-            Menu.Catergories = [];
+            Menu.Catergories = [""];
             context.Menu.Add(Menu);
             StateHasChanged();
             Menu.Catergories.Add(Menu.Category);
