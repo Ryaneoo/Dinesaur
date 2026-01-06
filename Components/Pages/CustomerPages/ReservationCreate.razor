@@ -10,7 +10,7 @@
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject Dinesaur.Data.DinesaurContext DbContext
 <div style="display: flex; flex-direction:column">
-    <div style="background-color: dimgrey; height: 40vh; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
+    <div style="background-color: dimgrey; height: auto; text-align: left; display: flex; flex-direction: column; padding: 20px;">
         <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant.RestaurantName</h1>
                 <h2>Book a Reservation</h2>
     </div>
@@ -44,8 +44,12 @@
                     
                 </div>
                 
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <a class="secondary-btn" href="/Restaurants/@id#start">Back</a>\
+                    <button type="submit" class="primary-btn">Book</button>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                
             </EditForm>
 
         </div>
@@ -64,7 +68,8 @@
     public Reservation Reservation { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {
-        selectedRestaurant = DbContext.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
+        using var context = DbFactory.CreateDbContext();
+        selectedRestaurant = context.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
         Date = DateTime.Today;
         Time = TimeSpan.FromHours(DateTime.Now.Hour); 
 

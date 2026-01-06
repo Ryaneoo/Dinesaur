@@ -1,0 +1,243 @@
+﻿@*Edit / Delete Reservation*@
+
+
+@page "/Reservation/Edit/{id:int}"
+@using Dinesaur.Domain
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+<div style="display: flex; flex-direction:column">
+    <div style="background-color: dimgrey; height: auto; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
+        <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant?.RestaurantName</h1>
+                <h2>Edit Reservation</h2>
+    </div>
+    <div style="padding: 50px 100px">
+        <div>
+            
+            <EditForm Model="selectedReservation"OnValidSubmit="EditReservation" FormName="ReservationForm">
+                <div class="mb-3">
+                    <h4>Date:</h4>
+                    <InputDate @bind-Value="    Date"
+                               class="form-control" />
+
+                    <h4 class="mt-2">Time:</h4>
+                    <select class="form-control" @bind="Time">
+                        @for (int h = 0; h < 24; h++)
+                        {
+                            var startHour = h;
+                            var endHour = (h + 1) % 24;
+
+                            <option value="@TimeSpan.FromHours(startHour)">
+                                @FormatHour(startHour) – @FormatHour(endHour)
+                            </option>
+                        }
+                    </select>
+                    
+                    <h4 class="mt-2">Diners (Pax):</h4>
+                    <InputNumber @bind-Value="Pax" class="form-control" />
+
+                    <h4 class="mt-2">Remarks:</h4>
+                    <InputText @bind-Value="Remarks" class="form-control" />
+                    
+                    
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end">
+                    <a class="secondary-btn" href="/MyBookings">Back</a>
+                    <button type="submit" class="primary-btn">Update</button>
+                    <a class="danger-btn" @onclick="ShowCancelConfirm">Cancel Booking</a>
+                </div>
+                
+            </EditForm>
+            
+        </div>
+    </div>
+    
+</div>
+
+@if (reservationPopUp)
+{
+    <div class="modal-backdrop">
+
+        <div class="modal-card" @onclick:stopPropagation>
+            <h3>Reservation Updated</h3>
+            <h4 style="color: #88E788">@selectedRestaurant?.RestaurantName</h4>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Location:</span>
+                <span class="reservation-value">@selectedRestaurant.Location</span>
+            </div>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Timing:</span>
+                <span class="reservation-value">
+                    @selectedReservation.StartDate.ToString("dd MMM yyyy : h:mm tt") -
+                    @selectedReservation.EndDate.ToString("h:mm tt")
+                </span>
+            </div>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Status:</span>
+                <span class="reservation-value">@selectedReservation.Status</span>
+            </div>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Number of People:</span>
+                <span class="reservation-value">@selectedReservation.Pax</span>
+            </div>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Remarks:</span>
+                <span class="reservation-value">
+                    @(string.IsNullOrWhiteSpace(selectedReservation.Remarks) ? "NIL" : selectedReservation.Remarks)
+                </span>
+            </div>
+
+            <div class="modal-buttons">
+                <a class="secondary-btn" href="/MyBookings">
+                    Back
+                </a>
+            </div>
+        </div>
+    </div>
+            
+
+            
+}
+
+@*Show Cancel Pop Up*@  
+@if (showCancelConfirm)
+{
+    <div class="modal-backdrop" @onclick="CloseCancelConfirm">
+
+        <div class="modal-card" @onclick:stopPropagation>
+            <button class="close-btn" @onclick="CloseCancelConfirm">✕</button>
+            <h3>Cancel Booking:</h3>
+            <p style="color:white">Are you sure of cancelling this booking?</p>
+            <div class="modal-buttons">
+                <button class="danger-btn" @onclick="ConfirmCancel">Yes</button>
+                <button class="secondary-btn" @onclick="CloseCancelConfirm">No</button>
+            </div>
+        </div>
+    </div>
+
+}
+
+@code {
+    Restaurant? selectedRestaurant;
+    Reservation? selectedReservation;
+
+    [Parameter]
+    public int id { get; set; }
+
+    public DateTime Date { get; set; }
+    public TimeSpan Time { get; set; } = TimeSpan.FromHours(0);
+    public int Pax { get; set; }
+    public string? Remarks { get; set; }    
+
+    protected override async Task OnParametersSetAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        selectedReservation = context.Reservation.FirstOrDefault(m => m.ReservationID == id);
+
+        if (selectedReservation is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+            return;
+        }
+
+        selectedRestaurant = context.Restaurant.FirstOrDefault(x => x.RestaurantID == selectedReservation.RestaurantID);
+
+        if (selectedRestaurant is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+            return;
+        }
+
+        Date = selectedReservation.StartDate.Date;
+        Time = selectedReservation.StartDate.TimeOfDay;
+        Pax = selectedReservation.Pax;
+        Remarks = selectedReservation.Remarks;
+    }
+
+    public bool reservationPopUp = false;
+    private void OpenReservationPopUp()
+    {
+        reservationPopUp = true;
+    }
+
+    private void CloseReservationPopUp()
+    {
+        reservationPopUp = false;
+        NavigationManager.NavigateTo("/MyBookings" ,forceLoad: true);
+    }
+
+    private async Task EditReservation()
+    {
+
+        selectedReservation.StartDate = Date.Date + Time;
+        selectedReservation.EndDate = selectedReservation.StartDate + TimeSpan.FromHours(1);
+        selectedReservation.RestaurantID = selectedRestaurant.RestaurantID;
+        selectedReservation.Status = Reservation.ReservationStatus.Pending;
+        selectedReservation.Pax = Pax;
+        selectedReservation.Remarks = Remarks;
+
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(selectedReservation!).State = EntityState.Modified;
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ReservationExists(selectedReservation.ReservationID))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        OpenReservationPopUp();
+       
+    }
+
+    private bool ReservationExists(int reservationid)
+        {
+            using var context = DbFactory.CreateDbContext();
+            return context.Reservation.Any(e => e.ReservationID == reservationid);
+        }
+
+    private string FormatHour(int hour)
+    {
+        var displayHour = hour % 12 == 0 ? 12 : hour % 12;
+        var period = hour < 12 ? "AM" : "PM";
+        return $"{displayHour} {period}";
+    }
+
+    public bool showCancelConfirm = false;
+
+    private void ShowCancelConfirm()
+    {
+        showCancelConfirm = true;
+    }
+
+    
+    private void CloseCancelConfirm()
+    {
+        showCancelConfirm = false;
+    }
+
+    private async Task ConfirmCancel()
+    {
+        showCancelConfirm = false;
+        using var context = DbFactory.CreateDbContext();
+        context.Reservation.Remove(selectedReservation);
+        await context.SaveChangesAsync();
+        CloseCancelConfirm();
+        }
+    }
+}
