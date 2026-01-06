@@ -5,16 +5,23 @@
 @using Dinesaur.Data
 @implements IAsyncDisposable
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
-
-<PageTitle>Index</PageTitle>
-
-<h1>Index</h1>
-
-<p>
-    <a href="menus/create">Create New</a>
-</p>
-
-<QuickGrid Class="table" Items="context.Menu">
+@inject AuthenticationStateProvider authenticationStateProvider
+<PageTitle>Menu</PageTitle>
+<container style="text-align: center;">
+<h1 style="margin-top:40px">Restaurant Menu</h1>
+@if (HasMenu == true){
+    @* Display Menu*@
+    <a href="/foods/create" class="btn-primary" style="padding: 15px 32px;">Add food to Menu</a>
+        <a href="/menus/create" class="btn-primary" style="padding: 15px 32px; margin-left:10px;">Add more categories to Menu</a>
+}
+else
+    {
+        <h2 style="color: #88E788;"> Your Restaurant does not have a Menu</h2>
+        <br />
+        <a href="/menus/create" class="btn-primary" style="padding: 15px 32px;">Create Menu</a>
+    }
+</container>
+@* <QuickGrid Class="table" Items="context.Menu">
     
     <PropertyColumn Property="menu => menu.RestaurantID" />
 
@@ -23,14 +30,35 @@
         <a href="@($"menus/details?menuid={menu.MenuID}")">Details</a> |
         <a href="@($"menus/delete?menuid={menu.MenuID}")">Delete</a>
     </TemplateColumn>
-</QuickGrid>
+</QuickGrid> *@
 
 @code {
     private DinesaurContext context = default!;
-
-    protected override void OnInitialized()
+    private bool HasMenu;
+    protected override async Task OnInitializedAsync()
     {
         context = DbFactory.CreateDbContext();
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        var CheckForRestaurantId = await db.Restaurant
+        .Where(r => r.RestaurantOwnerID == aspNetUserId)
+        .Select(r => r.RestaurantID)
+        .SingleOrDefaultAsync();
+        var CheckForMenu = await db.Menu
+        .Where(m => m.RestaurantID == CheckForRestaurantId)
+        .Select(m => m.MenuID)
+        .SingleOrDefaultAsync();
+        if (CheckForMenu == null || CheckForMenu == 0)
+        {
+            HasMenu = false;
+        }
+        else
+        {
+            HasMenu = true;
+        }
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
