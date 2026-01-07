@@ -14,34 +14,58 @@
     <div style="background-color: dimgrey; height: auto; text-align: left; display: flex; flex-direction: column; padding: 10px 30px;">
         <h1 style="padding-top: 100px; text-align: left">Pre - Order</h1>
         <h2>Order your dishes now and enjoy your food when you arrive!</h2>
+
         <div style="background-color: black; display: grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; border-radius: 15px;  padding: 10px;">
-        @for(int i=0; i<7; i++){
-            <a style="background-color: grey; color: white; border-radius: 5px; padding: 10px;" href="#@i">Category @i</a>
-        }
+@if (selectedMenu?.Catergories != null)
+{
+                <button style="background-color: grey; color:white ; border-radius: 5px; padding: 10px; font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-weight:bold;"
+                    @onclick="() => selectedCategory = null"> All</button>
+            @foreach (var i in selectedMenu?.Catergories.Skip(1))
+            {
+                    
+                    <button style="background-color: grey; color:white ; border-radius: 5px; padding: 10px; font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-weight:bold;"
+                    @onclick="() => SelectCategory(i)"> @i</button>
+                }
+            }
+            else
+            {
+                
+            }
         </div>
     </div>
     <div style="padding: 30px 30px; display:flex; flex-direction: column; gap: 10px; margin-top: 50px;">
-        <div>
-            <h2>Category Title</h2>
-        </div>
+        
+
         <div style=" display: grid; grid-template-columns:repeat(5, 1fr); gap: 30px; border-radius: 20px;  padding: 15px;">
-            @for (int i = 0; i < 10; i++)
+            @if (food == null || food.Count == 0)
             {
-                
-                <div style="background-color: black; color: white; border-radius: 20px; padding: 10px; height: 40vh; display: flex; flex-direction: column; gap: 5px;">
-                    <div style="background-color: grey; height: 75%; border-radius: 10px;"></div>
+                <div style="grid-column: 1 / -1; color:white;">
+                    No food items found for this reservation.
+                </div>
+            }
+            else{
+                @foreach (var f in food.Where(f =>
+                            selectedCategory == null || f.Category == selectedCategory))
+                {
+                    <div style="background-color: black; color: white; border-radius: 20px; padding: 10px; height: 40vh; display: flex; flex-direction: column; gap: 5px;">
+                           <img src="@f.Image[0]"
+         style="height: 75%; width: 100%; object-fit: cover; border-radius: 10px;"
+         alt="@f.FoodName" />
+
                     <div style="display: grid; grid-template-columns: 70% 1fr; padding: 10px 10px; gap: 10px"> 
-                        <h5> Dish @i</h5>
-                        <h5> $10.00</h5>
+                        <h5> @GetFoodName(f)</h5>
+                        <h5> @GetFoodPrice(f).ToString("C")</h5>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30px, 1fr)); background-color: grey; border-radius: 10px; text-align:center; ">
-                        <a style="background-color:red; height: 100%; border-radius: 10px 0px 0px 10px; padding-top: 5px; font-weight: bold; z-index: 1000; cursor: pointer;" @onclick="() => itemCount = Math.Max(itemCount-1,0)">-</a>
-                        <h5 style="background-color: white; color: black; height: 100%; padding-top: 5px; font-weight: bold">@itemCount</h5>
-                        <a style="background-color: green; height: 100%; border-radius: 0px 10px 10px 0px; padding-top: 7px; font-weight: bold; z-index: 1000; cursor: pointer;" @onclick="() => itemCount++">+</a>
+                        <a style="background-color:red; height: 100%; border-radius: 10px 0px 0px 10px; padding-top: 5px; font-weight: bold; z-index: 1000; cursor: pointer;"@onclick="() => Dec(f.FoodID)">-</a>
+                        <h5 style="background-color: white; color: black; height: 100%; padding-top: 5px; font-weight: bold">@GetCount(f.FoodID)</h5>
+                        <a style="background-color: green; height: 100%; border-radius: 0px 10px 10px 0px; padding-top: 7px; font-weight: bold; z-index: 1000; cursor: pointer;"@onclick="() =>Inc(f.FoodID)" >+</a>
                     </div>
                     
                 </div>
+                }
             }
+
         </div>
     </div>
     <a href="#"
@@ -56,8 +80,8 @@
        border-radius:10px;
        cursor:pointer;
        text-decoration:none;
-       margin:20px auto;"
-       @onclick="() => GoToOrderList(id)"
+       margin:100px auto;"
+       @onclick="() => SaveAndGoToOrderList(id)"
        @onclick:preventDefault="true">
         Order List
     </a>
@@ -66,10 +90,12 @@
 </div>
 
 @code {
-    public int itemCount = 0;
+
 
     [Parameter]
     public int id { get; set; }
+    private int preOrderID;
+
 
     public DateTime Date { get; set; }
     public TimeSpan Time { get; set; }
@@ -77,12 +103,18 @@
     Restaurant? selectedRestaurant;
     Reservation? selectedReservation;
     Menu? selectedMenu;
+    private string? selectedCategory;
+
+    private List<Food> food = new();
+    private readonly Dictionary<int, int> itemCounts = new();
+
 
     protected override async Task OnInitializedAsync()
     {
         selectedReservation = DbContext.Reservation.FirstOrDefault(x => x.ReservationID == id);
         selectedRestaurant = selectedReservation != null ? await DbContext.Restaurant.FirstOrDefaultAsync(r => r.RestaurantID == selectedReservation.RestaurantID) : null;
         selectedMenu = selectedRestaurant != null ? await DbContext.Menu.FirstOrDefaultAsync(m => m.RestaurantID == selectedRestaurant.RestaurantID) : null;
+        var preOrder = await DbContext.PreOrder.FirstOrDefaultAsync(p => p.ReservationID == id);
         var authState = await Auth.GetAuthenticationStateAsync();
         var user = authState.User;
 
@@ -92,15 +124,143 @@
             return;
         }
 
+        if (selectedReservation == null)
+            return;
+
+        if (preOrder == null)
+        {
+            preOrder = new PreOrder
+            {
+                ReservationID = id,
+                Cost = 0,
+                MenuID = selectedMenu?.MenuID ?? 0
+            };
+
+            DbContext.PreOrder.Add(preOrder);
+            await DbContext.SaveChangesAsync();
+        }
+
+
+        preOrderID = preOrder.PreOrderID;
+
+        food = await DbContext.Food.Where(f => f.MenuID == selectedMenu.MenuID).ToListAsync();
+
+        if (selectedMenu != null)
+        {
+            food = await DbContext.Food
+                .Where(f => f.MenuID == selectedMenu.MenuID)
+                .ToListAsync();
+        }
+        else
+        {
+            food = new List<Food>(); // or leave empty
+        }
+
+
+        var existingItems = await DbContext.PreOrderItem
+           .Where(i => i.PreOrderID == preOrderID)
+           .ToListAsync();
+
+        var existingItemsCat = selectedMenu?.Catergories;
+
+        
+
+
+        foreach (var it in existingItems)
+            itemCounts[it.FoodID] = it.Quantity;
+
+        
+
         var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
         Reservation.CustomerID = aspNetUserId;
 
+        
     }
 
-    private void GoToOrderList(int id)
+    private async Task SaveAndGoToOrderList(int id)
     {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var items = await db.PreOrderItem
+            .Where(i => i.PreOrderID == preOrderID)
+            .ToListAsync();
+
+        double total = 0;
+        foreach (var i in items)
+        {
+            var food = await db.Food.FirstAsync(f => f.FoodID == i.FoodID);
+            total += food.Cost * i.Quantity;
+        }
+
+        var preOrder = await db.PreOrder.FirstAsync(p => p.PreOrderID == preOrderID);
+        preOrder.Cost = total;
+
+        await db.SaveChangesAsync();
+
+        // ✅ now navigate
         NavigationManager.NavigateTo($"/Reservation/OrderList/{id}");
+    }
+
+
+    // Quantity helpers
+    private int GetCount(int foodId) => itemCounts.TryGetValue(foodId, out var v) ? v : 0;
+
+    private async Task Inc(int foodId)
+    {
+        itemCounts[foodId] = GetCount(foodId) + 1;
+        await AddtoPreOrder(foodId, GetCount(foodId));
+    }
+
+    private async Task Dec(int foodId)
+    {
+        itemCounts[foodId] = Math.Max(GetCount(foodId) - 1, 0);
+        await AddtoPreOrder(foodId, GetCount(foodId));
+    }
+
+    private string GetFoodName(Food f) => f.FoodName;       
+    private decimal GetFoodPrice(Food f) => (decimal)f.Cost;
+    
+    /*private int GetCountCat(int Categories) =>*/
+
+    async Task AddtoPreOrder(int foodId, int qty)
+    {
+        if (qty <= 0) return;
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        var food = await db.Food.FirstOrDefaultAsync(f => f.FoodID == foodId);
+
+        if (food == null) return;
+
+        var existing = await db.PreOrderItem.FirstOrDefaultAsync(p =>
+        p.PreOrderID == preOrderID &&
+        p.FoodID == foodId);
+
+        if (existing == null)
+        {
+            db.PreOrderItem.Add(new PreOrderItem
+        {
+            PreOrderID = preOrderID,
+            FoodID = foodId,
+            Quantity = qty
+        });
+        }
+        else
+        {
+            existing.Quantity = qty;
+        }
+        await db.SaveChangesAsync();
+    }
+    private void SelectCategory(string category)
+    {
+        selectedCategory = category;
+    }
+
+
+        
+
+
+
     }
 
   
