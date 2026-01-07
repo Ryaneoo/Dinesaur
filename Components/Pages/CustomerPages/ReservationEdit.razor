@@ -26,7 +26,8 @@
                     <h4 class="mt-2">Time:</h4>
                     <InputDate @bind-Value="selectedReservation.Time"
                                Type="InputDateType.Time"
-                               class="form-control" />
+                               class="form-control"
+                               step="1800" />
 
                     <ValidationMessage For="@(() => selectedReservation.Time)" />
                     <h4 class="mt-2">Diners (Pax):</h4>
@@ -69,7 +70,7 @@
             <div class="reservation-detail">
                 <span class="reservation-label">Timing:</span>
                 <span class="reservation-value">
-                    @selectedReservation.Date.Value.ToString("dd MMMM yyyy") - @selectedReservation.Time.Value.ToString("hh:ss tt")
+                    @selectedReservation.Date.Value.ToString("dd MMMM yyyy") - @selectedReservation.Time.Value.ToString("hh:mm tt")
                 </span>
             </div>
 
@@ -86,7 +87,7 @@
             <div class="reservation-detail">
                 <span class="reservation-label">Remarks:</span>
                 <span class="reservation-value">
-                    @(string.IsNullOrWhiteSpace(selectedReservation.Remarks) ? "NIL" : selectedReservation.Remarks)
+                    @(string.IsNullOrWhiteSpace(selectedReservation.Remarks) ? "N/A" : selectedReservation.Remarks)
                 </span>
             </div>
 
@@ -145,6 +146,8 @@
             NavigationManager.NavigateTo("notfound");
             return;
         }
+
+        
     }
 
     public bool reservationPopUp = false;
@@ -209,6 +212,6 @@
         context.Reservation.Remove(selectedReservation);
         await context.SaveChangesAsync();
         CloseCancelConfirm();
-        }
+        
     }
 }

@@ -28,9 +28,10 @@
                     <ValidationMessage For="@(() => Reservation.Date)" />
 
                     <h4 class="mt-2">Time:</h4>
-                    <InputDate @bind-Value="Reservation.Time"
+                    <InputDate @bind-value="Reservation.Time"
                                Type="InputDateType.Time"
-                               class="form-control" />
+                               class="form-control"
+                               step="1800"/>
                     <ValidationMessage For="@(() => Reservation.Time)" />
 
                     <h4 class="mt-2">Diners (Pax):</h4>
@@ -69,7 +70,7 @@
                 <div class="reservation-detail">
                     <span class="reservation-label">Timing:</span>
                     <span class="reservation-value">
-                        @Reservation.Date.Value.ToString("dd MMMM yyyy") - @Reservation.Time.Value.ToString("hh:ss tt")
+                        @Reservation.Date.Value.ToString("dd MMMM yyyy") - @Reservation.Time.Value.ToString("hh:mm tt")
                     </span>
                 </div>
 
@@ -86,7 +87,7 @@
                 <div class="reservation-detail">
                     <span class="reservation-label">Remarks:</span>
                     <span class="reservation-value">
-                        @(string.IsNullOrWhiteSpace(Reservation.Remarks) ? "NIL" : Reservation.Remarks)
+                        @(string.IsNullOrWhiteSpace(Reservation.Remarks) ? "N/A" : Reservation.Remarks)
                     </span>
                 </div>
                 <div style="margin-top: 20px;">
@@ -127,7 +128,7 @@
 
         if (!user.Identity?.IsAuthenticated ?? true)
         {
-           
+
             NavigationManager.NavigateTo("/Account/Login");
             return;
         }
@@ -135,11 +136,21 @@
         var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
         Reservation.CustomerID = aspNetUserId;
+
+        // Default date
+        Reservation.Date = DateTime.Today;
+
+        // Default time → round current time to nearest 30 minutes
+        var now = DateTime.Now;
+        Reservation.Time = RoundUpToNext30Min(now);
+        
+        Reservation.Pax = 1;
     }
 
     private async Task AddReservation()
     {
         //Assign Values to properties in Reservation
+        NormalizeTime();
         Reservation.RestaurantID = selectedRestaurant.RestaurantID;
         Reservation.Status = Reservation.ReservationStatus.Pending;
         using var context = DbFactory.CreateDbContext();
@@ -160,4 +171,43 @@
         reservationPopUp = false;
         NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
     }
+
+    private void NormalizeTime()
+    {
+        if (Reservation.Time.HasValue)
+        {
+            var time = Reservation.Time.Value;
+            var roundedMinutes = (int)(Math.Round(time.Minute / 30.0) * 30);
+
+            Reservation.Time = new DateTime(
+                time.Year,
+                time.Month,
+                time.Day,
+                time.Hour,
+                roundedMinutes % 60,
+                0);
+        }
+    }
+
+    private DateTime RoundUpToNext30Min(DateTime dt)
+    {
+        // total minutes past the hour
+        int minutes = dt.Minute;
+
+        // if minutes == 0 → same hour
+        // else round up to next 30-min slot
+        int addMinutes = 0;
+        if (minutes == 0 || minutes <= 30)
+        {
+            addMinutes = 30 - minutes;
+        }
+        else
+        {
+            addMinutes = 60 - minutes;
+        }
+
+        return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0)
+            .AddMinutes(addMinutes);
+    }
+
 }
