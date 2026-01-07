@@ -1,4 +1,4 @@
-* {
+﻿* {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -344,62 +344,23 @@ h2, h3, h4, h5, h6 {
     }
 
 /* Stars */
-.stars .star {
-    font-size: 2rem;
-    margin-right: 5px;
-}
-
-.input-field {
-    width: 100%;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-/* Buttons */
-.primary-btn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-    .primary-btn:hover {
-        opacity: 0.85;
-    }
-
 .rating {
-    display: inline-flex;
-    flex-direction: row-reverse;
-    font-size: 2.5rem;
+    display: flex;
+    gap: 16px; /* BIG spacing */
+    font-size: 40px;
 }
 
-    .rating input {
-        display: none;
+.star {
+    cursor: pointer;
+    color: #ccc;
+    user-select: none;
+}
+
+    .star.selected {
+        color: gold;
     }
 
-    .rating label {
-        cursor: pointer;
-        color: #ccc;
-    }
-
-        .rating label.full::before {
-            content: "?";
-        }
-
-        .rating label.half::before {
-            content: "?";
-            position: absolute;
-            width: 50%;
-            overflow: hidden;
-        }
-
-    .rating input:checked ~ label {
+    .star:hover {
         color: #FFD700;
     }
 
-    .rating label {
-        position: relative;
-    }

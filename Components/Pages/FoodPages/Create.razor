@@ -1,65 +1,184 @@
 ﻿@page "/foods/create"
+@using Dinesaur.Data
 @using Microsoft.EntityFrameworkCore
 @using Dinesaur.Domain
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject NavigationManager NavigationManager
-
+@inject AuthenticationStateProvider authenticationStateProvider
+@rendermode InteractiveServer
+@inject IJSRuntime JS
 <PageTitle>Create</PageTitle>
+<container style="text-align: center;">
+<h1 style="margin-top:40px;">Add Food</h1>
 
-<h1>Create</h1>
-
-<h2>Food</h2>
 <hr />
-<div class="row">
+    <div class="row justify-content-center">
     <div class="col-md-4">
         <EditForm method="post" Model="Food" OnValidSubmit="AddFood" FormName="create" Enhance>
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert"/>
             <div class="mb-3">
-                <label for="foodname" class="form-label">FoodName:</label> 
+                <label for="foodname" class="form-label" style="color:white;">Food Name:</label> 
                 <InputText id="foodname" @bind-Value="Food.FoodName" class="form-control" /> 
                 <ValidationMessage For="() => Food.FoodName" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="cost" class="form-label">Cost:</label> 
+                    <label for="cost" class="form-label" style="color:white;">Cost: ($)</label>
                 <InputNumber id="cost" @bind-Value="Food.Cost" class="form-control" /> 
                 <ValidationMessage For="() => Food.Cost" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="description" class="form-label">Description:</label> 
+                    <label for="description" class="form-label" style="color:white;">Description:</label>
                 <InputText id="description" @bind-Value="Food.Description" class="form-control" /> 
                 <ValidationMessage For="() => Food.Description" class="text-danger" /> 
-            </div>        
-            
+            </div>               
             <div class="mb-3">
+                    <label for="category" class="form-label" style="color:white;">Category:</label>
+                    <InputSelect id="itemcategory" @bind-Value="Food.Category" class="form-select">
+                        @foreach (string category in Categories)
+                        {
+                            <option value="@category">@category</option>
+                        }
+
+                    </InputSelect>
+                    <ValidationMessage For="() => Food.Category" class="text-danger" />
+            </div>
+             
+                     <div class="mb-3" hidden>
                 <label for="staffid" class="form-label">StaffID:</label> 
-                <InputNumber id="staffid" @bind-Value="Food.StaffID" class="form-control" /> 
+                <InputText id="staffid" @bind-Value="Food.StaffID" class="form-control" /> 
                 <ValidationMessage For="() => Food.StaffID" class="text-danger" /> 
             </div>        
-            <div class="mb-3">
+            <div class="mb-3" hidden>
                 <label for="menuid" class="form-label">MenuID:</label> 
                 <InputNumber id="menuid" @bind-Value="Food.MenuID" class="form-control" /> 
                 <ValidationMessage For="() => Food.MenuID" class="text-danger" /> 
-            </div>        
-            <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+                <container>
+                    <div class="mb-3">
+                        <label for="IMG" class="form-label" style="color:white;"> Upload Image of Food: </label>
+                        <InputFile id="image" OnChange="@LoadIMG" class="form-control" />
+                    </div>
+                    @if (Errors.Any())
+                    {
+                        <br />
+                        <div class="alert alert-danger mb-3" role="alert" style="">
+                            **Errors in Uploading Logo:**
+                            <ul>
+                                @foreach (var err in Errors)
+                                {
+                                    <li>@err</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    @if (Food.Image.Any())
+                    {
+                        <br />
+
+                        <div class="d-flex flex_wrap gap-3">
+
+                            <div class="card p-2" style="width: 480px">
+                                <img src="@Food.Image.FirstOrDefault()" style="width: 100%; height: auto; object-fit: cover" alt="Uploaded Image" />
+                            </div>
+
+                        </div>
+
+                    }
+                </container>
+            <br />
+                <button type="submit" class="btn btn-primary " >Create</button>
+                <br />
+                <br />
+                
         </EditForm>
     </div>
+       
 </div>
+    <div>
+        <a href="/menus" class="btn-primary" style="padding: 15px 32px;">Back</a>
+    </div>
 
-<div>
-    <a href="/foods">Back to List</a>
-</div>
-
+</container>
+<script>
+    function showAlert() {
+        alert("Food Item created successfully");
+    }
+</script>
 @code {
     [SupplyParameterFromForm]
     private Food Food { get; set; } = new();
+    private List<string> Categories = new List<string>();
+    private int MenuIds, RId;
+    private string? ROwnerId;
+    private const int maxIMGFileSize = 5242880;
+    private List<string> Errors = new List<string>();
 
+    private DinesaurContext context = default!;
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddFood()
     {
+        Food.MenuID = MenuIds;
+        Food.StaffID = ROwnerId;
         using var context = DbFactory.CreateDbContext();
         context.Food.Add(Food);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/foods");
+        await JS.InvokeVoidAsync("showAlert");
+        //NavigationManager.NavigateTo("/foods");
     }
-}
+    private async Task LoadIMG(InputFileChangeEventArgs f)
+    {
+        Errors.Clear();
+        var files = f.GetMultipleFiles();
+        var IMG = files.FirstOrDefault();
+        if (IMG.Size > maxIMGFileSize)
+        {
+            Errors.Add($"File {IMG.Name} exceeds the maximum size of {maxIMGFileSize} bytes.");
+
+        }
+
+        if (!IMG.ContentType.StartsWith("image/"))
+        {
+            Errors.Add($"File {IMG.Name} is not a supported image format.");
+        }
+        using (var mms = new MemoryStream())
+        {
+            await IMG.OpenReadStream(maxIMGFileSize).CopyToAsync(mms);
+            var fileBytes = mms.ToArray();
+            String base64String = Convert.ToBase64String(fileBytes);
+            string image = $"data:{IMG.ContentType};base64,{base64String}";
+            if (Food.Image.Count() > 0)
+            {
+                Food.Image.Clear();
+            }
+            Food.Image.Add(image);
+        }
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        context = DbFactory.CreateDbContext();
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var RDetails = await db.Restaurant
+        .Where(r => r.RestaurantOwnerID == aspNetUserId)
+        .Select(r => new{
+            r.RestaurantID,
+            r.RestaurantOwnerID
+        }).SingleOrDefaultAsync();
+        RId = RDetails.RestaurantID;
+        ROwnerId = RDetails.RestaurantOwnerID;
+        var ListofCategories = await db.Menu
+        .Where(m => m.RestaurantID == RId)
+        .Select(m => m.Catergories)
+        .SingleOrDefaultAsync();
+        Categories = ListofCategories;
+        var MenuId = await db.Menu
+        .Where(m => m.RestaurantID == RId)
+        .Select(m => m.MenuID)
+        .SingleOrDefaultAsync();
+        MenuIds = MenuId;
+    }
+    }
