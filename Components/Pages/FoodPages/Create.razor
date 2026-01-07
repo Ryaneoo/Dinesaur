@@ -124,7 +124,7 @@
         context.Food.Add(Food);
         await context.SaveChangesAsync();
         await JS.InvokeVoidAsync("showAlert");
-        //NavigationManager.NavigateTo("/foods");
+        NavigationManager.NavigateTo("/menus");
     }
     private async Task LoadIMG(InputFileChangeEventArgs f)
     {

@@ -6,14 +6,41 @@
 @implements IAsyncDisposable
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject Dinesaur.Data.DinesaurContext DbContext
 <PageTitle>Menu</PageTitle>
-<container style="text-align: center;">
-<h1 style="margin-top:40px">Restaurant Menu</h1>
+<container >
+    <h1 style="margin-top:40px;">Restaurant Menu</h1>
 @if (HasMenu == true){
     @* Display Menu*@
-    <a href="/foods/create" class="btn-primary" style="padding: 15px 32px;">Add food to Menu</a>
-        <a href="/menus/create" class="btn-primary" style="padding: 15px 32px; margin-left:10px;">Add more categories to Menu</a>
-}
+    <div style=" text-align: center;">
+        <a href="/foods/create" class="btn-primary" style="padding: 15px 32px; ">Add food to Menu</a>
+        <a href="/menus/create" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Add more categories to Menu</a>
+        <a href="/foods/delete" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Delete food from Menu</a>
+        <hr />
+  </div>
+    
+        <div style="display: grid; grid-template-columns: repeat(5,1fr)">
+            @foreach (var fooditem in menuFood)
+            {
+                
+                <div style=" text-align: justify; margin-left:40px;">
+                    <h6> Food Image:</h6>
+                    <div style="width: 60%;  display: flex;  align-items: center;color: none">
+                        <img src="@fooditem.Image.FirstOrDefault()" style="width: 80%; height: auto; align-content: center; border: 5px solid white; border-radius: 5px;" alt="Uploaded Image" />
+                    </div>
+                    <h6> Food Name: @fooditem.FoodName</h6>
+                    <h6> Food Cost: @fooditem.Cost</h6>
+                    <h6> Food Category: @fooditem.Category </h6>
+                    <a href="/foods/delete/@fooditem.FoodID" class="btn btn-danger"  style="padding: 15px 32px;">Delete </a>
+                    <a href="/foods/edit/@fooditem.FoodID" class="btn btn-danger" style="padding: 15px 32px;">Edit </a>
+                </div>
+                
+            }
+        </div>
+        
+    }
+    
 else
     {
         <h2 style="color: #88E788;"> Your Restaurant does not have a Menu</h2>
@@ -35,6 +62,10 @@ else
 @code {
     private DinesaurContext context = default!;
     private bool HasMenu;
+    private List<Food> menuFood = new();
+    private int CheckMenu;
+   
+
     protected override async Task OnInitializedAsync()
     {
         context = DbFactory.CreateDbContext();
@@ -51,6 +82,7 @@ else
         .Where(m => m.RestaurantID == CheckForRestaurantId)
         .Select(m => m.MenuID)
         .SingleOrDefaultAsync();
+        CheckMenu = CheckForMenu;
         if (CheckForMenu == null || CheckForMenu == 0)
         {
             HasMenu = false;
@@ -59,7 +91,9 @@ else
         {
             HasMenu = true;
         }
+        menuFood = context.Food.Where(f => f.MenuID == CheckMenu)
+        .ToList();
     }
-
+        
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
 }
