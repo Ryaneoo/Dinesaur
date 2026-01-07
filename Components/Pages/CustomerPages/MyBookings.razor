@@ -26,7 +26,7 @@
 
             @foreach (var booking in userBookings)
             {
-                if (booking.Status == "Pending")
+                if (booking.Status != Reservation.ReservationStatus.Completed)
                 {
                   var restaurant = restaurants.Find(r => r.RestaurantID == booking.RestaurantID);
                 <a @onclick="() => OpenDetails(booking)">
@@ -56,7 +56,7 @@
             <h3> Past Bookings </h3>
             @foreach (var booking in userBookings)
             {
-                if (booking.Status == "Completed")
+                if (booking.Status == Reservation.ReservationStatus.Completed)
                 {
                     var restaurant = restaurants.Find(r => r.RestaurantID == booking.RestaurantID);
                     <a @onclick="() => OpenDetails(booking)">
@@ -126,7 +126,7 @@
                         View Restaurant
                     </a>
 
-                    @if (SelectedReservation.Status == "Completed")
+                    @if (SelectedReservation.Status == Reservation.ReservationStatus.Completed)
                     {
                         <a class="primary-btn" @onclick="ShowReviewCreate">
                             Leave A Review
@@ -167,7 +167,7 @@
                 <h3>Leave A Review!</h3>
                 <p>Tell us about your experience:</p>
 
-                <button class="close-btn" @onclick="() => showReviewCreate = false">✕</button>
+                <button class="close-btn" @onclick="CloseReviewCreate">✕</button>
 
                 <EditForm Model="@review" OnValidSubmit="CreateReview">
                     <DataAnnotationsValidator />
@@ -176,34 +176,28 @@
                     <!-- Title -->
                     <div style="margin-top:15px;">
                         <label>Title:</label>
-                        <InputText @bind-Value="review.ReviewTitle" class="input-field" />
+                        <InputText @bind-Value="review.ReviewTitle" class="input-field" style="width:100%; border-radius: 15px;"/>
                     </div>
 
                     <!-- Rating -->
-                    <div>
-                        <label>Rating:</label>
-                        <div class="rating">
-                            @for (int i = 5; i >= 1; i--)
-                            {
-                                <input type="radio" id="star@i" name="rating"
-                                       value="@i"
-                                       @onchange="() => review.Rating = i" />
-                                <label for="star@i" class="full"></label>
+                    <div class="rating">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            int starValue = i;
+                            <!-- 👈 CRITICAL LINE -->
 
-                                <input type="radio" id="star@(i - 0.5)" name="rating"
-                                       value="@(i - 0.5)"
-                                       @onchange="() => review.Rating = i - 0.5" />
-                                <label for="star@(i - 0.5)" class="half"></label>
-                            }
-                        </div>
-
-
+                            <span class="star @(review.Rating >= starValue ? "selected" : "")"
+                                  @onclick="() => SetRating(starValue)">
+                                ★
+                            </span>
+                        }
                     </div>
 
-                    <!-- Write-up -->
+                    <p>Rating: @review.Rating</p>
+                    <!-- Feedback -->
                     <div style="margin-top:15px;">
-                        <label>Write-up:</label>
-                        <InputTextArea @bind-Value="review.Description" class="input-field" rows="5" />
+                        <label>Review:</label>
+                        <InputTextArea @bind-Value="review.Description" class="input-field" rows="5" style="width: 100%; border-radius: 15px;" />
                     </div>
 
                     <div style="display:flex; justify-content:flex-end; margin-top:20px;">
@@ -305,26 +299,18 @@
         showReviewCreate = true;
     }
 
-    private double? previewRating;
+    private void CloseReviewCreate()
+    {
+        showReviewCreate = false;
+        review = new Review();
+    }
 
+    
+    
     void SetRating(double value)
     {
         review.Rating = value;
-        previewRating = null;
     }
-
-    void Preview(double value) => previewRating = value;
-    void ClearPreview() => previewRating = null;
-
-    double GetFill(int star)
-    {
-        var value = previewRating ?? review.Rating;
-
-        if (value >= star) return 100;
-        if (value >= star - 0.5) return 50;
-        return 0;
-    }
-
 
 
     private async Task CreateReview()

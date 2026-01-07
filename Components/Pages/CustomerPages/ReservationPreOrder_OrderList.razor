@@ -1,0 +1,103 @@
+﻿@*Pre-Order Order List for Reservation*@
+@page "/Reservation/OrderList/{id:int}"
+@using Dinesaur.Domain
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject Dinesaur.Data.DinesaurContext DbContext
+
+
+<div style="display: flex; flex-direction: column; padding: 30px; font-family: Consolas;">
+
+    <h1>@selectedRestaurant?.RestaurantName</h1>
+    <h2 style=" text-align:center;font-size: 50px;">Reservation Summary</h2>
+
+    <div style="margin-top: 20px;color:white;font-size: 25px;text-align:center">
+        <p><strong>Date:@selectedReservation?.StartDate.ToShortDateString()</strong> </p>
+        <p><strong>Time:@selectedReservation?.StartDate.ToShortTimeString()</strong> </p>
+        <p><strong>Pax:@selectedReservation?.Pax</strong></p>
+        <p><strong>Location:@selectedRestaurant?.Location</strong></p>
+    </div>
+
+    <h3 style="margin-top: 30px;">Pre‑Ordered Dishes:</h3>
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background-color:black; color: white;">
+            <tr>
+                <th style="text-align: left; padding: 8px;">Dish</th>
+                <th style="text-align: right; padding: 8px;">Price</th>
+                <th style="text-align: right; padding: 8px;">Quantity</th>
+                <th style="text-align: right; padding: 8px;">Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < 5; i++)
+            {
+                <tr style="color:white">
+                    <td style="padding: 8px;">____________</td>
+                    <td style="padding: 8px; text-align: right;">$0.00</td>
+                    <td style="padding: 8px; text-align: right;">0</td>
+                    <td style="padding: 8px; text-align: right;">$0.00</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p style="text-align: right; font-weight: bold; color:white;">Total Cost: $0.00</p>
+
+    <h3 style="margin-top: 30px;">Reservation Bill:</h3>
+
+    <div style="text-align: right; color:white;">
+        <p>Pre‑Order Cost: $0.00</p>
+        <p>Reservation Fee: $0.00</p>
+        <p>Subtotal: $0.00</p>
+        <p>GST (9%): $0.00</p>
+        <p>Service Charge (10%): $0.00</p>
+        <p style="font-weight: bold;">Grand Total: $0.00</p>
+    </div>
+
+    <button class="btn btn-success" style="margin-top: 30px;">
+        Confirm Booking
+    </button>
+
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    public DateTime Date { get; set; }
+    public TimeSpan Time { get; set; }
+    public Reservation Reservation { get; set; } = new();
+    Restaurant? selectedRestaurant;
+    Reservation? selectedReservation;
+    Menu? selectedMenu;
+    protected override async Task OnInitializedAsync()
+    {
+        selectedReservation = DbContext.Reservation.FirstOrDefault(x => x.ReservationID == id);
+        selectedRestaurant = selectedReservation != null ? await DbContext.Restaurant.FirstOrDefaultAsync(r => r.RestaurantID == selectedReservation.RestaurantID) : null;
+        selectedMenu = selectedRestaurant != null ? await DbContext.Menu.FirstOrDefaultAsync(m => m.RestaurantID == selectedRestaurant.RestaurantID) : null;
+        var authState = await Auth.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            NavigationManager.NavigateTo("/Account/Login");
+            return;
+        }
+
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        Reservation.CustomerID = aspNetUserId;
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+        
+    }
+
+}
