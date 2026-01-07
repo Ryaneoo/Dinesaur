@@ -15,8 +15,28 @@
 <div style="display: flex; flex-direction:column">
 
     @*Banner*@
-    <div style="background-color: dimgrey; height: auto; text-align: left; display: flex; flex-direction: column; padding: 20px">
-        <h1 style="padding-top: 100px; text-align: left">My Bookings</h1>
+    <div style="background-color: black; height: auto; text-align: left; display: flex; flex-direction: column; padding: 20px; background-color: rgb(0,0,0,60%)">
+        <h1 style="margin-top: 100px; margin-bottom: 20px; text-align: left">My Bookings</h1>
+        <div style="background-color: white; display: grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; border-radius: 10px;  padding: 5px; width: 30%;">
+            <a style="background-color: #386641;
+                        color:white ; 
+                        border-radius: 5px; 
+                        padding: 10px; 
+                        font-weight:bold;
+                        text-align: center"
+                @onclick="GetUpcoming">
+            Upcoming
+            </a>
+            <a style="background-color: #24462C;
+                        color:white ;
+                        border-radius: 5px;
+                        padding: 10px;
+                        font-weight:bold;
+                        text-align: center"
+                    @onclick="GetCompleted">
+            Completed
+            </a>
+        </div>
     </div>
 
     @*Bookings Displayed Here*@
@@ -25,67 +45,81 @@
         {
             <h2><em>No Bookings</em></h2>
             <a style="padding: 20px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/User/Home"> Find Restaurants</a>
-        }
-        else
-        {
-            @*Display Reservations Upcoming*@
-            <h3> Upcoming Bookings</h3>
-            @foreach (var booking in userBookings)
-            {
-                if (booking.Status != Reservation.ReservationStatus.Completed)
-                {
-                  @*Pull Restaurant Info*@
-                  var restaurant = restaurants.Find(r => r.RestaurantID == booking.RestaurantID);
+        } 
+        
+        else{
 
-                    <a @onclick="() => OpenDetails(booking)">
-                        <div style="z-index: 1000; position: relative; cursor: pointer;">
-                            <div style="width: 100%; height: auto; background-color: #386641; border-radius: 15px; pointer-events: none; padding: 20px;">
-                                <div style="display: grid; grid-template-columns: 90% 1fr;">
-                                    <div>
-                                        <h4>@restaurant.RestaurantName</h4>
+            @if(userSelect == "Upcoming")
+            {
+                @*Display Reservations Upcoming*@
+                <h2 style="font-weight: bold"> Upcoming Bookings</h2>
+                @foreach (var booking in userBookings)
+                {
+                    if (booking.Status != Reservation.ReservationStatus.Completed)
+                    {
+                      @*Pull Restaurant Info*@
+                      var restaurant = restaurants.Find(r => r.RestaurantID == booking.RestaurantID);
+
+                        <a @onclick="() => OpenDetails(booking)">
+                            <div style="z-index: 1000; position: relative; cursor: pointer;">
+                                <div style="width: 100%; height: auto; background-color: #386641; border-radius: 15px; pointer-events: none; padding: 20px;">
+                                    <div style="display: grid; grid-template-columns: 90% 1fr;">
+                                        <div>
+                                            <h4 style="font-weight: bold; color: #88E788">@restaurant.RestaurantName</h4>
+                                                <p style="color:white">
+                                                    @restaurant.Location <br />
+                                                    @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("hh:ss tt")</p>
+                                        </div>
+                                        <div style="display: flex; height: 100%; justify-content: center;">
+                                            <a style="width: 100%; height: 100%; padding: 10px; font-size: 20px; font-weight: bold; background-color: #88E788; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                }
+            } else
+            {
+                @*Display Previous Reservations*@
+                <h2 style="font-weight: bold"> Completed Bookings </h2>
+                @foreach (var booking in userBookings)
+                {
+                    if (booking.Status == Reservation.ReservationStatus.Completed)
+                    {
+                        @*Pull Restaurant Info*@
+                        var restaurant = restaurants.Find(r => r.RestaurantID == booking.RestaurantID);
+                        <a @onclick="() => OpenDetails(booking)">
+                            <div style="z-index: 1000; position: relative; cursor: pointer;">
+                                <div style="width: 100%; height: auto; background-color: #24462C; border-radius: 15px; pointer-events: none; padding: 20px;">
+                                    <div style="display: grid; grid-template-columns: 90% 1fr; align-items: center">
+                                        <div>
+                                            <h4 style="font-weight: bold; color:#88E788">@restaurant.RestaurantName</h4>
                                             <p style="color:white">
                                                 @restaurant.Location <br />
-                                                @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("hh:ss tt")</p>
-                                    </div>
-                                    <div style="display: flex; height: 100%; justify-content: center;">
-                                        <a style="width: 100%; height: 100%; padding: 10px; font-size: 18px; font-weight: bold; background-color: white; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
+                                                @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("hh:ss tt")
+                                            </p>
+                                        </div>
+                                        <div style="display: flex; height: 100%; justify-content: center;">
+                                            <a style="width: 100%; height: 100%; padding: 10px; font-size: 20px; font-weight: bold; background-color: #88E788; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    }
                 }
+        
             }
+        } 
+        
+          
+        
+        
+        
+        
 
-            @*Display Previous Reservations*@
-            <h3> Past Bookings </h3>
-            @foreach (var booking in userBookings)
-            {
-                if (booking.Status == Reservation.ReservationStatus.Completed)
-                {
-                    @*Pull Restaurant Info*@
-                    var restaurant = restaurants.Find(r => r.RestaurantID == booking.RestaurantID);
-                    <a @onclick="() => OpenDetails(booking)">
-                        <div style="z-index: 1000; position: relative; cursor: pointer;">
-                            <div style="width: 100%; height: auto; background-color: #24462C; border-radius: 15px; pointer-events: none; padding: 20px;">
-                                <div style="display: grid; grid-template-columns: 90% 1fr; align-items: center">
-                                    <div>
-                                        <h4>@restaurant.RestaurantName</h4>
-                                        <p style="color:white">
-                                            @restaurant.Location <br />
-                                            @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("hh:ss tt")
-                                        </p>
-                                    </div>
-                                    <div style="display: flex; height: 100%; justify-content: center;">
-                                        <a style="width: 100%; height: 100%; padding: 10px; font-size: 18px; font-weight: bold; background-color: white; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                }
-            }
-        }
+            
     </div>
 
     @*Show Details Pop Up*@
@@ -128,7 +162,7 @@
                 </div>
 
                 <div class="modal-buttons">
-                    <a class="primary-btn" href="/Restaurants/@SelectedRestaurant.RestaurantID#start">
+                    <a class="secondary-btn" href="/Restaurants/@SelectedRestaurant.RestaurantID#start">
                         View Restaurant
                     </a>
 
@@ -174,7 +208,7 @@
     {
             <div class="confirm-overlay" @onclick="CreateReview">
                 <div class="confirm-modal" @onclick:stopPropagation>
-                    <h3>Leave A Review!</h3>
+                <h2 style="color: #88E788">Leave A Review!</h2>
                     <p>Tell us about your experience:</p>
 
                     <button class="close-btn" @onclick="CloseReviewCreate">✕</button>
@@ -225,8 +259,9 @@
                 <h3>Cancel Booking:</h3>
                 <p style="color: white">Are you sure of cancelling this booking?</p>
                 <div class="modal-buttons">
-                    <button class="danger-btn" @onclick="ConfirmCancel">Yes</button>
-                    <button class="secondary-btn" @onclick="CloseCancelConfirm">No</button>
+                    <button class="secondary-btn" @onclick="CloseCancelConfirm">Back</button>
+                    <button class="danger-btn" @onclick="ConfirmCancel">Cancel</button>
+
                 </div>
             </div>
         </div>
@@ -346,7 +381,6 @@
     private void CloseCancelConfirm()
     {
         showCancelConfirm = false;
-        SelectedReservation = null;
     }
 
     private async Task ConfirmCancel()
@@ -357,5 +391,16 @@
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
     }
-}
+
+    private string userSelect = "Upcoming";
+
+    private void GetUpcoming()
+    {
+            userSelect = "Upcoming";
+    }
+
+    private void GetCompleted()
+    {
+            userSelect = "Completed";
+    }
 }

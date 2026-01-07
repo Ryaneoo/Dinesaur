@@ -24,6 +24,8 @@ namespace Dinesaur.Domain
         [Required]
         public int RestaurantID { get; set; }
 
+        public int? ReviewID { get; set; }
+
         public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
 
         public enum ReservationStatus
