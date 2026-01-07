@@ -45,10 +45,10 @@
                                         <h4>@restaurant.RestaurantName</h4>
                                             <p style="color:white">
                                                 @restaurant.Location <br />
-                                                @booking.StartDate.ToString("dd MMM yyyy : h:mm tt") - @booking.EndDate.ToString("h:mm tt")</p>
+                                                @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("hh:ss tt")</p>
                                     </div>
                                     <div style="display: flex; height: 100%; justify-content: center;">
-                                        <a style="width: 100%; height: 100%; padding: 10px; font-size: 18px; font-weight: bold; background-color: black; color: white; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
+                                        <a style="width: 100%; height: 100%; padding: 10px; font-size: 18px; font-weight: bold; background-color: white; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
                                     </div>
                                 </div>
                             </div>
@@ -73,11 +73,11 @@
                                         <h4>@restaurant.RestaurantName</h4>
                                         <p style="color:white">
                                             @restaurant.Location <br />
-                                            @booking.StartDate.ToString("dd MMM yyyy : h:mm tt") - @booking.EndDate.ToString("h:mm tt")
+                                            @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("hh:ss tt")
                                         </p>
                                     </div>
                                     <div style="display: flex; height: 100%; justify-content: center;">
-                                        <a style="width: 100%; height: 100%; padding: 10px; font-size: 18px; font-weight: bold; background-color: black; color: white; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
+                                        <a style="width: 100%; height: 100%; padding: 10px; font-size: 18px; font-weight: bold; background-color: white; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
                                     </div>
                                 </div>
                             </div>
@@ -106,8 +106,7 @@
                 <div class="reservation-detail">
                     <span class="reservation-label">Timing:</span>
                     <span class="reservation-value">
-                        @SelectedReservation.StartDate.ToString("dd MMM yyyy : h:mm tt") -
-                        @SelectedReservation.EndDate.ToString("h:mm tt")
+                        @SelectedReservation.Date.Value.ToString("dd MMMM yyyy") - @SelectedReservation.Time.Value.ToString("hh:ss tt")
                     </span>
                 </div>
 
@@ -257,7 +256,7 @@
         @*Fetch Reservations and Restaurants from Database*@
         using var context = DbFactory.CreateDbContext();
         userBookings = await context.Reservation.Where(r => r.CustomerID == aspNetUserId).ToListAsync();
-        userBookings.Sort((x, y) => DateTime.Compare(x.StartDate, y.StartDate));
+        userBookings.Sort((x, y) => Nullable.Compare(x.Date, y.Date));
         restaurants = await context.Restaurant.ToListAsync();
 
     }
@@ -293,7 +292,7 @@
     @*Check Edit Eligibility*@
     private void EditEligibility()
     {
-        if(SelectedReservation.StartDate - DateTime.Now > TimeSpan.FromDays(3))
+        if(SelectedReservation.Date - DateTime.Now > TimeSpan.FromDays(3))
         {
             NavigationManager.NavigateTo($"/Reservation/Edit/{SelectedReservation.ReservationID}");
         }

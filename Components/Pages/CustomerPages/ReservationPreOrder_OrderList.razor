@@ -15,8 +15,8 @@
     <h2 style=" text-align:center;font-size: 50px;">Reservation Summary</h2>
 
     <div style="margin-top: 20px;color:white;font-size: 25px;text-align:center">
-        <p><strong>Date:@selectedReservation?.StartDate.ToShortDateString()</strong> </p>
-        <p><strong>Time:@selectedReservation?.StartDate.ToShortTimeString()</strong> </p>
+        <p><strong>Date:@selectedReservation?.Date.Value.Date</strong> </p>
+        <p><strong>Time:@selectedReservation?.Time.Value.TimeOfDay</strong> </p>
         <p><strong>Pax:@selectedReservation?.Pax</strong></p>
         <p><strong>Location:@selectedRestaurant?.Location</strong></p>
     </div>

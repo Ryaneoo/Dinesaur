@@ -17,32 +17,29 @@
         <div>
             
             <EditForm Model="selectedReservation"OnValidSubmit="EditReservation" FormName="ReservationForm">
+                <DataAnnotationsValidator />
                 <div class="mb-3">
                     <h4>Date:</h4>
-                    <InputDate @bind-Value="    Date"
-                               class="form-control" />
+                    <InputDate @bind-Value="selectedReservation.Date"
+                               class="form-control" Min="@DateTime.Today" />
 
                     <h4 class="mt-2">Time:</h4>
-                    <select class="form-control" @bind="Time">
-                        @for (int h = 0; h < 24; h++)
-                        {
-                            var startHour = h;
-                            var endHour = (h + 1) % 24;
+                    <InputDate @bind-Value="selectedReservation.Time"
+                               Type="InputDateType.Time"
+                               class="form-control" />
 
-                            <option value="@TimeSpan.FromHours(startHour)">
-                                @FormatHour(startHour) – @FormatHour(endHour)
-                            </option>
-                        }
-                    </select>
-                    
+                    <ValidationMessage For="@(() => selectedReservation.Time)" />
                     <h4 class="mt-2">Diners (Pax):</h4>
-                    <InputNumber @bind-Value="Pax" class="form-control" />
+                    <InputNumber @bind-Value="selectedReservation.Pax" class="form-control" Min="1"/>
 
                     <h4 class="mt-2">Remarks:</h4>
-                    <InputText @bind-Value="Remarks" class="form-control" />
-                    
+                    <InputText @bind-Value="selectedReservation.Remarks" class="form-control" />
+
+                   
                     
                 </div>
+                <ValidationSummary/>
+
                 <div style="display: flex; gap: 10px; justify-content: flex-end">
                     <a class="secondary-btn" href="/MyBookings">Back</a>
                     <button type="submit" class="primary-btn">Update</button>
@@ -72,8 +69,7 @@
             <div class="reservation-detail">
                 <span class="reservation-label">Timing:</span>
                 <span class="reservation-value">
-                    @selectedReservation.StartDate.ToString("dd MMM yyyy : h:mm tt") -
-                    @selectedReservation.EndDate.ToString("h:mm tt")
+                    @selectedReservation.Date.Value.ToString("dd MMMM yyyy") - @selectedReservation.Time.Value.ToString("hh:ss tt")
                 </span>
             </div>
 
@@ -131,11 +127,6 @@
     [Parameter]
     public int id { get; set; }
 
-    public DateTime Date { get; set; }
-    public TimeSpan Time { get; set; } = TimeSpan.FromHours(0);
-    public int Pax { get; set; }
-    public string? Remarks { get; set; }    
-
     protected override async Task OnParametersSetAsync()
     {
         using var context = DbFactory.CreateDbContext();
@@ -154,11 +145,6 @@
             NavigationManager.NavigateTo("notfound");
             return;
         }
-
-        Date = selectedReservation.StartDate.Date;
-        Time = selectedReservation.StartDate.TimeOfDay;
-        Pax = selectedReservation.Pax;
-        Remarks = selectedReservation.Remarks;
     }
 
     public bool reservationPopUp = false;
@@ -175,14 +161,6 @@
 
     private async Task EditReservation()
     {
-
-        selectedReservation.StartDate = Date.Date + Time;
-        selectedReservation.EndDate = selectedReservation.StartDate + TimeSpan.FromHours(1);
-        selectedReservation.RestaurantID = selectedRestaurant.RestaurantID;
-        selectedReservation.Status = Reservation.ReservationStatus.Pending;
-        selectedReservation.Pax = Pax;
-        selectedReservation.Remarks = Remarks;
-
         using var context = DbFactory.CreateDbContext();
         context.Attach(selectedReservation!).State = EntityState.Modified;
         try
@@ -210,13 +188,6 @@
             using var context = DbFactory.CreateDbContext();
             return context.Reservation.Any(e => e.ReservationID == reservationid);
         }
-
-    private string FormatHour(int hour)
-    {
-        var displayHour = hour % 12 == 0 ? 12 : hour % 12;
-        var period = hour < 12 ? "AM" : "PM";
-        return $"{displayHour} {period}";
-    }
 
     public bool showCancelConfirm = false;
 
