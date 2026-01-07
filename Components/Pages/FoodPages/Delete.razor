@@ -1,9 +1,9 @@
-﻿@page "/foods/delete"
+﻿@page "/foods/delete/{id:int}"
 @using Microsoft.EntityFrameworkCore
 @using Dinesaur.Domain
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject NavigationManager NavigationManager
-
+@inject Dinesaur.Data.DinesaurContext DbContext
 <PageTitle>Delete</PageTitle>
 
 <h1 style="margin-top:40px;">Delete</h1>
@@ -46,19 +46,20 @@
 </div>
 
 @code {
-    private Food? food;
-
-    [SupplyParameterFromQuery]
-    private int FoodID { get; set; }
+    [Parameter]
+    public int id { get; set; } Food? food;
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        food = await context.Food.FirstOrDefaultAsync(m => m.FoodID == FoodID);
+        //food = await context.Food.FirstOrDefaultAsync(m => m.FoodID == id);
 
-        
+
     }
-
+    protected override void OnInitialized()
+    {
+        food = DbContext.Food.FirstOrDefault(x => x.FoodID == id);
+    }
     private async Task DeleteFood()
     {
         using var context = DbFactory.CreateDbContext();

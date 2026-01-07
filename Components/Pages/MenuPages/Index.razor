@@ -23,6 +23,7 @@
         <div style="display: grid; grid-template-columns: repeat(5,1fr)">
             @foreach (var fooditem in menuFood)
             {
+                
                 <div style=" text-align: justify; margin-left:40px;">
                     <h6> Food Image:</h6>
                     <div style="width: 60%;  display: flex;  align-items: center;color: none">
@@ -31,8 +32,10 @@
                     <h6> Food Name: @fooditem.FoodName</h6>
                     <h6> Food Cost: @fooditem.Cost</h6>
                     <h6> Food Category: @fooditem.Category </h6>
-
+                    <a href="/foods/delete/@fooditem.FoodID" class="btn btn-danger"  style="padding: 15px 32px;">Delete </a>
+                    <a href="/foods/edit/@fooditem.FoodID" class="btn btn-danger" style="padding: 15px 32px;">Edit </a>
                 </div>
+                
             }
         </div>
         
@@ -88,12 +91,8 @@ else
         {
             HasMenu = true;
         }
-        var GetFoodImage = await db.Food
-        .Where(f => f.MenuID == CheckMenu)
-        .Select(f => f.Image)
-        .FirstOrDefaultAsync();
         menuFood = context.Food.Where(f => f.MenuID == CheckMenu)
-        .ToList(); ;
+        .ToList();
     }
         
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
