@@ -14,14 +14,14 @@ namespace Dinesaur.Configurations.Entities
                     PreOrderID = 1,
                     Cost = 3.50,
                     MenuID = 1,
-                    RestaurantID = 1
+                    ReservationID = 1
                 },
                 new PreOrder
                 {
                     PreOrderID = 2,
                     Cost = 4.00,
                     MenuID = 2,
-                    RestaurantID = 2
+                    ReservationID = 2
                 });
         }
     }

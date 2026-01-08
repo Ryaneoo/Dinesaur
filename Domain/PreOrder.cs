@@ -8,6 +8,6 @@
 
         public int MenuID { get; set; }
 
-        public int RestaurantID { get; set; }
+        public int ReservationID { get; set; }
     }
 }
