@@ -10,47 +10,106 @@
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject Dinesaur.Data.DinesaurContext DbContext
 <div style="display: flex; flex-direction:column">
-    <div style="background-color: dimgrey; height: 40vh; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
+    <div style="background-color: dimgrey; height: auto; text-align: left; display: flex; flex-direction: column; padding: 20px;">
         <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant.RestaurantName</h1>
                 <h2>Book a Reservation</h2>
     </div>
     <div style="padding: 50px 100px">
         <div>
             <EditForm Model="@Reservation" OnValidSubmit="AddReservation" FormName="ReservationForm">
-                <div class="mb-3">
-                    <h4>Date:</h4>
-                    <InputDate @bind-Value="Date"
-                               class="form-control" />
-
-                    <h4 class="mt-2">Time:</h4>
-                    <select class="form-control" @bind="Time">
-                        @for (int h = 0; h < 24; h++)
-                        {
-                            var startHour = h;
-                            var endHour = (h + 1) % 24;
-
-                            <option value="@TimeSpan.FromHours(startHour)">
-                                @FormatHour(startHour) – @FormatHour(endHour)
-                            </option>
-                        }
-                    </select>
-
-                    <h4 class="mt-2">Diners (Pax):</h4>
-                    <InputNumber @bind-Value="Reservation.Pax" class="form-control" />
-
-                    <h4 class="mt-2">Remarks:</h4>
-                    <InputText @bind-Value="Reservation.Remarks" class="form-control" />
-                    
-                    
-                </div>
+                <DataAnnotationsValidator />
                 
 
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </EditForm>
+                <div class="mb-3">
+                    <h4>Date:</h4>
+                    <InputDate @bind-Value="Reservation.Date"
+                               class="form-control"
+                               Min="@DateTime.Today" />
+                    <ValidationMessage For="@(() => Reservation.Date)" />
 
+                    <h4 class="mt-2">Time:</h4>
+                    <InputDate @bind-value="Reservation.Time"
+                               Type="InputDateType.Time"
+                               class="form-control"
+                               step="1800"/>
+                    <ValidationMessage For="@(() => Reservation.Time)" />
+
+                    <h4 class="mt-2">Diners (Pax):</h4>
+                    <InputNumber @bind-Value="Reservation.Pax"
+                                 class="form-control" Min="1"/>
+                    <ValidationMessage For="@(() => Reservation.Pax)" />
+
+                    <h4 class="mt-2">Remarks:</h4>
+                    <InputText @bind-Value="Reservation.Remarks"
+                               class="form-control" />
+                </div>
+
+                <ValidationSummary />
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <a class="secondary-btn" href="/Restaurants/@id#start">Back</a>
+                    <button type="submit" class="primary-btn">Book</button>
+                </div>
+            </EditForm>
         </div>
     </div>
     
+    @if (reservationPopUp)
+    {
+        <div class="modal-backdrop">
+
+            <div class="modal-card" @onclick:stopPropagation>
+                <h3>Reservation Booked</h3>
+                <h4 style="color: #88E788">@selectedRestaurant?.RestaurantName</h4>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Location:</span>
+                    <span class="reservation-value">@selectedRestaurant.Location</span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Timing:</span>
+                    <span class="reservation-value">
+                        @Reservation.Date.Value.ToString("dd MMMM yyyy") - @Reservation.Time.Value.ToString("hh:mm tt")
+                    </span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Status:</span>
+                    <span class="reservation-value">@Reservation.Status</span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Number of People:</span>
+                    <span class="reservation-value">@Reservation.Pax</span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Remarks:</span>
+                    <span class="reservation-value">
+                        @(string.IsNullOrWhiteSpace(Reservation.Remarks) ? "N/A" : Reservation.Remarks)
+                    </span>
+                </div>
+                <div style="margin-top: 20px;">
+                    <h5>Do you want to pre-order your food items?</h5>
+                    <p style="color:white">Enjoy your food shortly after you arrive</p>
+                </div>
+                
+                <div class="modal-buttons">
+                    <a class="primary-btn" href="/Reservation/Create/PreOrder/@Reservation.ReservationID");
+                       ">
+                        Pre-Order
+                    </a>
+                    <a class="danger-btn" href="/MyBookings">
+                        No
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+
+    }
 </div>
 
 @code {
@@ -58,22 +117,18 @@
     [Parameter]
     public int id { get; set; }
 
-    public DateTime Date { get; set; }
-    public TimeSpan Time { get; set; }
-
     public Reservation Reservation { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {
-        selectedRestaurant = DbContext.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
-        Date = DateTime.Today;
-        Time = TimeSpan.FromHours(DateTime.Now.Hour); 
+        using var context = DbFactory.CreateDbContext();
+        selectedRestaurant = context.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
 
         var authState = await Auth.GetAuthenticationStateAsync();
         var user = authState.User;
 
         if (!user.Identity?.IsAuthenticated ?? true)
         {
-           
+
             NavigationManager.NavigateTo("/Account/Login");
             return;
         }
@@ -81,28 +136,78 @@
         var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
         Reservation.CustomerID = aspNetUserId;
+
+        // Default date
+        Reservation.Date = DateTime.Today;
+
+        // Default time → round current time to nearest 30 minutes
+        var now = DateTime.Now;
+        Reservation.Time = RoundUpToNext30Min(now);
+        
+        Reservation.Pax = 1;
     }
 
     private async Task AddReservation()
     {
         //Assign Values to properties in Reservation
-        Reservation.StartDate = Date.Date + Time;
-        Reservation.EndDate = Reservation.StartDate + TimeSpan.FromHours(1);
+        NormalizeTime();
         Reservation.RestaurantID = selectedRestaurant.RestaurantID;
         Reservation.Status = Reservation.ReservationStatus.Pending;
         using var context = DbFactory.CreateDbContext();
         context.Reservation.Add(Reservation);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo($"/Reservation/Create/PreOrder/{Reservation.ReservationID}");
-       
+        OpenReservationPopUp();
+        
     }
-
-    private string FormatHour(int hour)
-    {
-        var displayHour = hour % 12 == 0 ? 12 : hour % 12;
-        var period = hour < 12 ? "AM" : "PM";
-        return $"{displayHour} {period}";
-    }
-
     
+    public bool reservationPopUp = false;
+    private void OpenReservationPopUp()
+    {
+        reservationPopUp = true;
+    }
+
+    private void CloseReservationPopUp()
+    {
+        reservationPopUp = false;
+        NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
+    }
+
+    private void NormalizeTime()
+    {
+        if (Reservation.Time.HasValue)
+        {
+            var time = Reservation.Time.Value;
+            var roundedMinutes = (int)(Math.Round(time.Minute / 30.0) * 30);
+
+            Reservation.Time = new DateTime(
+                time.Year,
+                time.Month,
+                time.Day,
+                time.Hour,
+                roundedMinutes % 60,
+                0);
+        }
+    }
+
+    private DateTime RoundUpToNext30Min(DateTime dt)
+    {
+        // total minutes past the hour
+        int minutes = dt.Minute;
+
+        // if minutes == 0 → same hour
+        // else round up to next 30-min slot
+        int addMinutes = 0;
+        if (minutes == 0 || minutes <= 30)
+        {
+            addMinutes = 30 - minutes;
+        }
+        else
+        {
+            addMinutes = 60 - minutes;
+        }
+
+        return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0)
+            .AddMinutes(addMinutes);
+    }
+
 }

@@ -15,13 +15,13 @@
     <h2 style=" text-align:center;font-size: 50px;">Reservation Summary</h2>
 
     <div style="margin-top: 20px;color:white;font-size: 25px;text-align:center">
-        <p><strong>Date:@selectedReservation?.StartDate.ToShortDateString()</strong> </p>
-        <p><strong>Time:@selectedReservation?.StartDate.ToShortTimeString()</strong> </p>
+        <p><strong>Date:@selectedReservation?.Date.Value.Date</strong> </p>
+        <p><strong>Time:@selectedReservation?.Time.Value.TimeOfDay</strong> </p>
         <p><strong>Pax:@selectedReservation?.Pax</strong></p>
         <p><strong>Location:@selectedRestaurant?.Location</strong></p>
     </div>
 
-    <h3 style="margin-top: 30px;">Pre‑Ordered Dishes:</h3>
+    <strong style="margin-top: 30px;font-size:35px;color:white">Pre‑Ordered Dishes:</strong>
 
     <table style="width: 100%; border-collapse: collapse;">
         <thead style="background-color:black; color: white;">
@@ -33,32 +33,43 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < 5; i++)
+            @if (orderRows.Count == 0)
             {
                 <tr style="color:white">
-                    <td style="padding: 8px;">____________</td>
-                    <td style="padding: 8px; text-align: right;">$0.00</td>
-                    <td style="padding: 8px; text-align: right;">0</td>
-                    <td style="padding: 8px; text-align: right;">$0.00</td>
+                    <td style="padding: 8px;" colspan="4">
+                        No pre-ordered dishes.
+                    </td>
                 </tr>
+            }
+            else
+            {
+                @foreach(var r in orderRows)
+                {
+                      <tr style="color:white">
+                    <td style="padding: 8px;font-size:20px;" >@r.Dish</td>
+                        <td style="padding: 8px;text-align:right;font-size:20px;">$@r.Price</td>
+                        <td style="padding: 8px;text-align:right;font-size:20px;">@r.Quantity</td>
+                        <td style="padding: 8px;text-align:right;font-size:20px;">$@(r.Price* r.Quantity)</td>
+                </tr>
+                }
             }
         </tbody>
     </table>
 
-    <p style="text-align: right; font-weight: bold; color:white;">Total Cost: $0.00</p>
+    <p style="text-align: right; font-weight: bold; color:white;font-size:30px;">Total Cost: $@totalCost</p>
 
-    <h3 style="margin-top: 30px;">Reservation Bill:</h3>
+    <strong style="margin-top: 30px;font-size:35px;color:white;">Reservation Bill:</strong>
 
-    <div style="text-align: right; color:white;">
-        <p>Pre‑Order Cost: $0.00</p>
+    <div style="text-align: right; color:white;font-size:20px;">
+        <p>Pre‑Order Cost: $@totalCost</p>
         <p>Reservation Fee: $0.00</p>
         <p>Subtotal: $0.00</p>
         <p>GST (9%): $0.00</p>
         <p>Service Charge (10%): $0.00</p>
-        <p style="font-weight: bold;">Grand Total: $0.00</p>
+        <p style="font-weight: bold;">Grand Total: $@totalCost</p>
     </div>
 
-    <button class="btn btn-success" style="margin-top: 30px;">
+    <button class="btn btn-success" style="margin-top: 30px;"onclick="@SaveAndGoHome">
         Confirm Booking
     </button>
 
@@ -74,9 +85,20 @@
     public DateTime Date { get; set; }
     public TimeSpan Time { get; set; }
     public Reservation Reservation { get; set; } = new();
+    private int? preOrderID;
+    private List<OrderRow> orderRows = new();
+    private double totalCost = 0;
+    private double cost;
     Restaurant? selectedRestaurant;
     Reservation? selectedReservation;
     Menu? selectedMenu;
+
+    private sealed class OrderRow
+    {
+        public string Dish { get; set; } = "";
+        public double Price { get; set; }
+        public int Quantity { get; set; }
+    }
     protected override async Task OnInitializedAsync()
     {
         selectedReservation = DbContext.Reservation.FirstOrDefault(x => x.ReservationID == id);
@@ -97,7 +119,38 @@
 
         await using var db = await DbFactory.CreateDbContextAsync();
 
+        var preOrder = await db.PreOrder.FirstOrDefaultAsync(p => p.ReservationID == id);
+
+        if (preOrder == null)
+            return;
+
+        preOrderID = preOrder.PreOrderID;
+
+        orderRows = await (
+        from poi in db.PreOrderItem
+        join f in db.Food on poi.FoodID equals f.FoodID
+        where poi.PreOrderID == preOrderID.Value
+        select new OrderRow
+        {
+            Dish = f.FoodName,
+            Price = f.Cost,
+            Quantity = poi.Quantity
+        }
+    ).ToListAsync();
+
+        totalCost = preOrder.Cost;
+
+
+    }
+
+    private async Task SaveAndGoHome()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        NavigationManager.NavigateTo("#");
+        await db.SaveChangesAsync();
+    }
+
         
     }
 
-}
+
