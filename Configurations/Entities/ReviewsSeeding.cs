@@ -17,7 +17,8 @@ namespace Dinesaur.Configurations.Entities
                     Date = DateTime.Now,
                     Rating = 2.5,
                     Description = "Bad",
-                    RestaurantID = 1
+                    RestaurantID = 1,
+                    CustomerID = "2"
                 });
         }
     }

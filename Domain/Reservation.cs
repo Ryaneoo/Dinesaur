@@ -15,7 +15,6 @@ namespace Dinesaur.Domain
         [Required(ErrorMessage = "PAX is required")]
         [Range(1, 20, ErrorMessage = "PAX must be between 1 and 20")]
         public int? Pax { get; set; }
-
         public string? Remarks { get; set; }
 
         [Required]
