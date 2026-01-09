@@ -1,14 +1,13 @@
-﻿@page "/restaurants/edit"
+﻿@page "/restaurants/edit/{id:int}"
 @using Microsoft.EntityFrameworkCore
 @using Dinesaur.Domain
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject NavigationManager NavigationManager
-
+@rendermode InteractiveServer
 <PageTitle>Edit</PageTitle>
+<container style="text-align:center; margin-top:40px; color:white;">
+<h1 >Edit Your Restaurant</h1>
 
-<h1>Edit</h1>
-
-<h2>Restaurant</h2>
 <hr />
 @if (Restaurant is null)
 {
@@ -17,7 +16,7 @@
 else
 {
     <div class="row">
-        <div class="col-md-4">
+            <div class="col-md-4 offset-md-4">
             <EditForm method="post" Model="Restaurant" OnValidSubmit="UpdateRestaurant" FormName="edit" Enhance>
                 <DataAnnotationsValidator />
                 <ValidationSummary role="alert"/>
@@ -32,12 +31,18 @@ else
                     <InputText id="location" @bind-Value="Restaurant.Location" class="form-control" />
                     <ValidationMessage For="() => Restaurant.Location" class="text-danger" />
                 </div>
-                <div class="mb-3">
-                    <label for="category" class="form-label">Category:</label>
-                    <InputText id="category" @bind-Value="Restaurant.Category" class="form-control" />
-                    <ValidationMessage For="() => Restaurant.Category" class="text-danger" />
-                </div>
-                <div class="mb-3">
+                    <div class="mb-3">
+                        <label for="category" class="form-label" style="color:white;">Category:</label>
+                        <InputSelect id="itemcategory" @bind-Value="Restaurant.Category" class="form-select">
+                            @foreach (string category in Categories)
+                            {
+                                <option value="@category">@category</option>
+                            }
+
+                        </InputSelect>
+                        <ValidationMessage For="() => Restaurant.Category" class="text-danger" />
+                    </div>
+                <div class="mb-3" hidden>
                     <label for="adminid" class="form-label">AdminID:</label>
                     <InputNumber id="adminid" @bind-Value="Restaurant.AdminID" class="form-control" />
                     <ValidationMessage For="() => Restaurant.AdminID" class="text-danger" />
@@ -52,27 +57,61 @@ else
                     <InputText id="email" @bind-Value="Restaurant.Email" class="form-control" />
                     <ValidationMessage For="() => Restaurant.Email" class="text-danger" />
                 </div>
-                <button type="submit" class="btn btn-primary">Save</button>
+                    <container>
+                        <div class="mb-3">
+                            <label for="IMG" class="form-label" style="color:white;"> Upload Image of Food: </label>
+                            <InputFile id="image" OnChange="@LoadFiles" class="form-control" />
+                        </div>
+                        @if (FileErrors.Any())
+                        {
+                            <br />
+                            <div class="alert alert-danger mb-3" role="alert" style="">
+                                **Errors in Uploading Logo:**
+                                <ul>
+                                    @foreach (var err in FileErrors)
+                                    {
+                                        <li>@err</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        @if (Restaurant.Logo.Any())
+                        {
+                            <br />
+                            <div class="mb-3">Logo of Restaurant to be updated</div>
+                            <div class="d-flex flex_wrap gap-3">
+
+                                <div class="card p-2" style="width: 480px">
+                                    <img src="@Restaurant.Logo.FirstOrDefault()" style="width: 100%; height: auto; object-fit: cover" alt="Uploaded Image" />
+                                </div>
+
+                            </div>
+                            <br />
+                        }
+                    </container>
+                <button type="submit" class="btn btn-primary">Save</button> 
+                <br />
+                    <a href="/restaurants">  Back to Restaurant</a>
             </EditForm>
         </div>
     </div>
 }
 
 <div>
-    <a href="/restaurants">Back to List</a>
+    
 </div>
-
+</container>
 @code {
-    [SupplyParameterFromQuery]
-    private int RestaurantID { get; set; }
-
+    [Parameter]
+    public int id { get; set; } Restaurant? restaurant;
     [SupplyParameterFromForm]
     private Restaurant? Restaurant { get; set; }
-
+    private const int maxLogoFileSize = 5242880;
+    private List<string> FileErrors = new List<string>();
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        Restaurant ??= await context.Restaurant.FirstOrDefaultAsync(m => m.RestaurantID == RestaurantID);
+        Restaurant ??= await context.Restaurant.FirstOrDefaultAsync(m => m.RestaurantID == id);
 
         if (Restaurant is null)
         {
@@ -105,7 +144,45 @@ else
 
         NavigationManager.NavigateTo("/restaurants");
     }
+    private List<String> Categories = new List<String>
+    {
+         "",
+         "Western",
+         "Fine Dining",
+         "Dessert",
+         "Vegetarian",
+         "HotPot",
+         "Others",
+    };
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        FileErrors.Clear();
+        var files = e.GetMultipleFiles();
+        var Logo = files.FirstOrDefault();
+        if (Logo.Size > maxLogoFileSize)
+        {
+            FileErrors.Add($"File {Logo.Name} exceeds the maximum size of {maxLogoFileSize} bytes.");
 
+        }
+
+        if (!Logo.ContentType.StartsWith("image/"))
+        {
+            FileErrors.Add($"File {Logo.Name} is not a supported image format.");
+        }
+        using (var ms = new MemoryStream())
+        {
+            await Logo.OpenReadStream(maxLogoFileSize).CopyToAsync(ms);
+            var fileBytes = ms.ToArray();
+            String base64String = Convert.ToBase64String(fileBytes);
+            string imageUri = $"data:{Logo.ContentType};base64,{base64String}";
+            if (Restaurant.Logo.Count() > 0)
+            {
+                Restaurant.Logo.Clear();
+            }
+            Restaurant.Logo.Add(imageUri);
+        }
+        StateHasChanged();
+    }
     private bool RestaurantExists(int restaurantid)
     {
         using var context = DbFactory.CreateDbContext();

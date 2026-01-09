@@ -5,13 +5,14 @@
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider authenticationStateProvider
+@rendermode InteractiveServer
 <PageTitle>Create</PageTitle>
 <container style="text-align: center;">
 <h1 style="margin-top:40px;">Create Menu</h1>
 
 
 <hr />
-     <div class="row justify-content-center">
+    <div class="row justify-content-center">
     <div class="col-md-4">
         <EditForm method="post" Model="Menu" OnValidSubmit="AddItemtoMenu" FormName="create" Enhance>
             <DataAnnotationsValidator />
@@ -28,18 +29,25 @@
             </div>         
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm> 
+
     </div> 
+
         @if (Catergoriess.Any()){
          <div class="alert alert-danger col-4 mb-3" role="alert" style="">
             Categories in your Restaurant Menu:
             <ul>
-                @foreach (var cat in Catergoriess)
+                @foreach (var cat in Catergoriess.Skip(1))
                 {
                     <li>@cat</li>
                 }
             </ul>
         </div> 
         }
+        <br />
+        <br />
+        <div>
+            <a href="/menus" class="btn-primary" style="padding: 15px 32px;">Back</a>
+        </div>
 </div>
 </container>
 
@@ -47,10 +55,13 @@
     [SupplyParameterFromForm]
     private Menu Menu { get; set; } = new();
     private List<string?> Catergoriess = new List<string?>();
+    
     private int RestaurantId,MenuId;
     private bool MenuExist;
+    private bool update = false;
     private async Task AddItemtoMenu()
     {
+        StateHasChanged();
         await using var db = await DbFactory.CreateDbContextAsync();
         using var context = DbFactory.CreateDbContext();
         if (MenuExist == false)
@@ -71,7 +82,7 @@
             }
         }
         await context.SaveChangesAsync();
-        
+
         var ListofCatergories = await db.Menu
         .Where(m => m.MenuID == MenuId)
         .Select(m => m.Catergories)
@@ -81,7 +92,10 @@
             Catergoriess = ListofCatergories;
         }
         StateHasChanged();
+        update = true;
     }
+    
+   
     protected override async Task OnInitializedAsync()
     {
 
@@ -94,11 +108,15 @@
         .Select(r => r.RestaurantID)
         .SingleOrDefaultAsync();
         RestaurantId = CheckForRestaurantId;
-        var CheckForMenu = await db.Menu
+        var MenuDetails = await db.Menu
         .Where(m => m.RestaurantID == RestaurantId)
-        .Select(m => m.MenuID)
+        .Select(m => new{
+            m.MenuID,
+            m.Catergories
+        }
+        )
         .SingleOrDefaultAsync();
-        MenuId = CheckForMenu;
+        MenuId = MenuDetails.MenuID;
         if(MenuId != 0)
         {
             MenuExist = true;
