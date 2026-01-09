@@ -16,11 +16,11 @@
     <div style=" text-align: center;">
         <a href="/foods/create" class="btn-primary" style="padding: 15px 32px; ">Add food to Menu</a>
         <a href="/menus/create" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Add more categories to Menu</a>
-        <a href="/foods/delete" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Delete food from Menu</a>
+            <a href="/menus/delete" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Remove categories from Menu</a>
         <hr />
   </div>
     
-        <div style="display: grid; grid-template-columns: repeat(5,1fr)">
+        <div style="display: grid; grid-template-columns: repeat(5,1fr) ;">
             @foreach (var fooditem in menuFood)
             {
                 
