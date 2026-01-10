@@ -15,8 +15,8 @@
     <h2 style=" text-align:center;font-size: 50px;">Reservation Summary</h2>
 
     <div style="margin-top: 20px;color:white;font-size: 25px;text-align:center">
-        <p><strong>Date:@selectedReservation?.Date.Value.Date</strong> </p>
-        <p><strong>Time:@selectedReservation?.Time.Value.TimeOfDay</strong> </p>
+        <p><strong>Date:@selectedReservation?.Date.Value.Date.ToString("dd MMMM yyyy")</strong> </p>
+        <p><strong>Time:@selectedReservation?.Time.Value.ToString("h:mm tt")</strong> </p>
         <p><strong>Pax:@selectedReservation?.Pax</strong></p>
         <p><strong>Location:@selectedRestaurant?.Location</strong></p>
     </div>
@@ -66,7 +66,7 @@
         <p>Subtotal: $0.00</p>
         <p>GST (9%): $0.00</p>
         <p>Service Charge (10%): $0.00</p>
-        <p style="font-weight: bold;">Grand Total: $@totalCost</p>
+        <p style="font-weight: bold;font-size:40px;">Grand Total: $@totalCost</p>
     </div>
 
     <button class="btn btn-success" style="margin-top: 30px;"onclick="@SaveAndGoHome">

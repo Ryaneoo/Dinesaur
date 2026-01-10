@@ -143,7 +143,6 @@
 
         preOrderID = preOrder.PreOrderID;
 
-        food = await DbContext.Food.Where(f => f.MenuID == selectedMenu.MenuID).ToListAsync();
 
         if (selectedMenu != null)
         {
