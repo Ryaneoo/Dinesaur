@@ -224,9 +224,9 @@
                 </div>
 
                 <div class="reservation-detail">
-                    <span class="reservation-label">Remarks:</span>
+                    <span class="reservation-label">Description:</span>
                     <span class="reservation-value">
-                        @(string.IsNullOrWhiteSpace(SelectedReview.Description) ? "N/A" : SelectedReview.Description)
+                        @(string.IsNullOrWhiteSpace(SelectedReview.Description) ? "N/A" : SelectedReview.Description.Substring(0,50))...
                     </span>
                 </div>
 
@@ -410,7 +410,7 @@
         SelectedReservation.ReviewID = null;
         context.Attach(SelectedReservation!).State = EntityState.Modified;
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
+        NavigationManager.NavigateTo("/MyBookings?from=completed", forceLoad: true);
         showCancelReviewConfirm = false;
     }
 

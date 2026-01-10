@@ -22,7 +22,7 @@
                 <div class="mb-3">
                     <h4 class="mt-2">Title:</h4>
                     <InputText @bind-Value="selectedReview.ReviewTitle"
-                               class="form-control" />
+                               class="form-control" maxlength="50" />
 
                     <ValidationMessage For="@(() => selectedReview.ReviewTitle)" />
 
@@ -39,7 +39,7 @@
                         }
                     </div>
                     <h4 class="mt-2">Comments:</h4>
-                    <InputTextArea @bind-Value="selectedReview.Description" class="input-field" rows="5" style="width: 100%; border-radius: 15px;" />
+                    <InputTextArea @bind-Value="selectedReview.Description" maxlength="500"class="input-field" rows="5" style="width: 100%; border-radius: 15px;" />
 
                 </div>
 
@@ -85,12 +85,10 @@
             </div>
 
             <div class="reservation-detail">
-                <span class="reservation-label">Remarks:</span>
-                <span class="reservation-value">
-                    @(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description)
-                </span>
+                <span class="reservation-label">Description:</span>
+                <p>@(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description.Substring(0,50))...</p>
             </div>
-
+            
             <div class="modal-buttons">
                 <a class="primary-btn" href="/MyBookings?from=completed">Back</a>
             </div>

@@ -1,11 +1,16 @@
-﻿namespace Dinesaur.Domain
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Dinesaur.Domain
 {
     public class Review
     {
+        [Required]
         public string? ReviewTitle {get; set; }
         public int ReviewID {get; set; }
         public DateTime Date { get; set; }
+        [Required]
         public double Rating { get; set; }
+        [Required]
         public string? Description { get; set; }
         public int RestaurantID { get; set; } /*Foreign key*/
         public string? CustomerID { get; set; } /*Foreign key*/

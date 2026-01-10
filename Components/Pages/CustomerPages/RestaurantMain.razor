@@ -58,25 +58,26 @@
 </div>
     <div style="margin: 20px 80px;">
         <h3>Recent Reviews</h3>
-        <div style="display: flex; gap: 25px; justify-content: left">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; justify-content: left">
             @if (foods == null)
             {
                 <p><em>Loading...</em></p>
             }
             else
             {
-                var random = new Random();
+                
 
                 @foreach (var review in reviews)
                 {
-
-                    <a href="/Restaurants/@review.RestaurantID">
+                    <a>
                         <div style="z-index: 1000; position: relative; cursor: pointer;">
-                            <div style="width: 500px; height: 250px; background-color: black; border-radius: 15px; pointer-events: none;">
-                            </div>
-                            <h4>@review.ReviewTitle</h4>
-                            <p>@review.Date</p>
-
+                            <div style="width: 500px; height: 500px; background-color: black; border-radius: 15px; pointer-events: none; padding: 10px;">
+                                <h4>@review.ReviewTitle</h4>
+                                <p>Oliver Chay</p>
+                                <p>[USERID]  @review.Date.ToString("dd MMMM yyyy") - @review.Date.ToString("hh:mm tt")</p>
+                                <p>@review.Rating</p>
+                                <pr>@review.Description</pr>
+                            </div
                         </div>
                     </a>
 
@@ -107,3 +108,4 @@
         reviews = await DbContext.Review.ToListAsync();
     }
 }
+    
