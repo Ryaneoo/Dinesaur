@@ -25,7 +25,7 @@
                 <div class="mb-3">
                     <h4 class="mt-2">Title:</h4>
                     <InputText @bind-Value="review.ReviewTitle"
-                               class="form-control" />
+                               class="form-control" maxlength="50" />
 
                     <ValidationMessage For="@(() => review.ReviewTitle)" />
 
@@ -41,8 +41,8 @@
                             </span>
                         }
                     </div>
-                    <h4 class="mt-2">Comments:</h4>
-                    <InputTextArea @bind-Value="review.Description" class="input-field" rows="5" style="width: 100%; border-radius: 15px;" />
+                    <h4 class="mt-2">Description:</h4>
+                    <InputTextArea @bind-Value="review.Description" maxlength="500" class="input-field" rows="5" style="width: 100%; border-radius: 15px;" />
 
                 </div>
 
@@ -86,14 +86,14 @@
                 </div>
 
                 <div class="reservation-detail">
-                    <span class="reservation-label">Remarks:</span>
+                    <span class="reservation-label">Description:</span>
                     <span class="reservation-value">
-                        @(string.IsNullOrWhiteSpace(review.Description) ? "N/A" : review.Description)
+                        @(string.IsNullOrWhiteSpace(review.Description) ? "N/A" : review.Description.Substring(0,50))...
                     </span>
                 </div>
                 
                 <div class="modal-buttons">
-                    <a class="primary-btn" href="/MyBookings">
+                    <a class="primary-btn" href="/MyBookings?from=completed">
                         Back
                     </a>
                 </div>
@@ -132,6 +132,7 @@
 
         var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         review.CustomerID = aspNetUserId;
+        review.Rating = 1;
 
     }
 
