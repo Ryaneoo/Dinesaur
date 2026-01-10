@@ -1,0 +1,202 @@
+﻿@*Edit / Delete Reservation*@
+
+
+@page "/Review/Edit/{id:int}"
+@using Dinesaur.Domain
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+<div style="display: flex; flex-direction:column">
+    <div style="background-color: dimgrey; height: auto; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
+        <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant?.RestaurantName</h1>
+                <h2>Edit Review</h2>
+    </div>
+    <div style="padding: 50px 100px">
+        <div>
+            <EditForm Model="@selectedReview" OnValidSubmit="EditReview" FormName="EditReview">
+                <DataAnnotationsValidator />
+
+
+                <div class="mb-3">
+                    <h4 class="mt-2">Title:</h4>
+                    <InputText @bind-Value="selectedReview.ReviewTitle"
+                               class="form-control" />
+
+                    <ValidationMessage For="@(() => selectedReview.ReviewTitle)" />
+
+                    <h4 class="mt-2">Rating:</h4>
+                    <div class="rating">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            int starValue = i;
+
+                            <span class="star @(selectedReview.Rating >= starValue ? "selected" : "")"
+                                  @onclick="() => SetRating(starValue)">
+                                ★
+                            </span>
+                        }
+                    </div>
+                    <h4 class="mt-2">Comments:</h4>
+                    <InputTextArea @bind-Value="selectedReview.Description" class="input-field" rows="5" style="width: 100%; border-radius: 15px;" />
+
+                </div>
+
+                <ValidationSummary />
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <a class="secondary-btn" href="/MyBookings">Back</a>
+                    <button type="submit" class="primary-btn">Submit</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@if (reviewUpdatedPopUp)
+{
+    <div class="modal-backdrop">
+
+        <div class="modal-card" @onclick:stopPropagation>
+            <h2 style="color: #88E788">Review Published:</h2>
+
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Title:</span>
+                <span class="reservation-value">@selectedReview.ReviewTitle</span>
+            </div>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Restaurant:</span>
+                <span class="reservation-value">@selectedRestaurant.RestaurantName</span>
+            </div>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Reservation Slot:</span>
+                <span class="reservation-value">
+                    @selectedReservation.Date.Value.ToString("dd MMMM yyyy") - @selectedReservation.Time.Value.ToString("hh:mm tt")
+                </span>
+            </div>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Rating:</span>
+                <span style="color:yellow " class="reservation-value">@selectedReview.Rating ★</span>
+            </div>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Remarks:</span>
+                <span class="reservation-value">
+                    @(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description)
+                </span>
+            </div>
+
+            <div class="modal-buttons">
+                <a class="primary-btn" href="/MyBookings?from=completed">Back</a>
+            </div>
+        </div>
+    </div>
+}
+
+@*Show Cancel Pop Up*@  
+@if (showCancelConfirm)
+{
+    <div class="modal-backdrop" @onclick="CloseCancelConfirm">
+
+        <div class="modal-card" @onclick:stopPropagation>
+            <button class="close-btn" @onclick="CloseCancelConfirm">✕</button>
+            <h2 style="color: #88E788">Cancel Booking:</h2>
+            <p style="color:white">Are you sure of cancelling this booking?</p>
+            <div class="modal-buttons">
+                <button class="danger-btn" @onclick="ConfirmCancel">Yes</button>
+                <button class="secondary-btn" @onclick="CloseCancelConfirm">No</button>
+            </div>
+        </div>
+    </div>
+
+}
+
+    @code {
+        Restaurant? selectedRestaurant;
+        Reservation? selectedReservation;
+        Review? selectedReview;
+
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        selectedReview = context.Review.FirstOrDefault(a => a.ReviewID == id);
+
+        if (selectedReview is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+            return;
+        }
+
+        selectedReservation = context.Reservation.FirstOrDefault(m => m.ReviewID == selectedReview.ReviewID);
+
+        if (selectedReservation is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+            return;
+        }
+
+        selectedRestaurant = context.Restaurant.FirstOrDefault(x => x.RestaurantID == selectedReview.RestaurantID);
+
+        if (selectedRestaurant is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+            return;
+        }
+
+        
+    }
+
+    public bool reviewUpdatedPopUp = false;
+    private void OpenReviewUpdatedPopUp()
+    {   
+        reviewUpdatedPopUp = true;
+    }
+
+    private async Task EditReview()
+    {  
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(selectedReview!).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+        OpenReviewUpdatedPopUp();
+       
+    }
+
+    
+    public bool showCancelConfirm = false;
+
+    private void ShowCancelConfirm()
+    {
+        showCancelConfirm = true;
+    }
+
+    
+    private void CloseCancelConfirm()
+    {
+        showCancelConfirm = false;
+    }
+
+    private async Task ConfirmCancel()
+    {
+        showCancelConfirm = false;
+        using var context = DbFactory.CreateDbContext();
+        context.Reservation.Remove(selectedReservation);
+        await context.SaveChangesAsync();
+        CloseCancelConfirm();
+        
+    }
+
+    @*Set Rating Value*@
+    void SetRating(double value)
+    {
+        selectedReview.Rating = value;
+    }
+}

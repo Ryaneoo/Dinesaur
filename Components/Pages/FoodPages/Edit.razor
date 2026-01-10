@@ -1,14 +1,14 @@
-﻿@page "/foods/edit"
+﻿@page "/foods/edit/{id:int}"
 @using Microsoft.EntityFrameworkCore
 @using Dinesaur.Domain
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject NavigationManager NavigationManager
-
+@inject AuthenticationStateProvider authenticationStateProvider
+@rendermode InteractiveServer
 <PageTitle>Edit</PageTitle>
+<container style="text-align:center; margin-top:40px; color:white;">
+<h1>Edit Food</h1>
 
-<h1>Edit</h1>
-
-<h2>Food</h2>
 <hr />
 @if (Food is null)
 {
@@ -17,7 +17,7 @@
 else
 {
     <div class="row">
-        <div class="col-md-4">
+            <div class="col-md-4 offset-md-4">
             <EditForm method="post" Model="Food" OnValidSubmit="UpdateFood" FormName="edit" Enhance>
                 <DataAnnotationsValidator />
                 <ValidationSummary role="alert"/>
@@ -37,13 +37,55 @@ else
                     <InputText id="description" @bind-Value="Food.Description" class="form-control" />
                     <ValidationMessage For="() => Food.Description" class="text-danger" />
                 </div>
-                
-                <div class="mb-3">
-                    <label for="staffid" class="form-label">StaffID:</label>
-                    <InputNumber id="staffid" @bind-Value="Food.StaffID" class="form-control" />
+                     <div class="mb-3">
+                        <label for="category" class="form-label" style="color:white;">Category:</label>
+                        <InputSelect id="itemcategory" @bind-Value="Food.Category" class="form-select">
+                            @foreach (string category in Categories)
+                            {
+                                <option value="@category">@category</option>
+                            }
+
+                        </InputSelect>
+                        <ValidationMessage For="() => Food.Category" class="text-danger" />
+                    </div> 
+                    <container>
+                        <div class="mb-3">
+                            <label for="IMG" class="form-label" style="color:white;"> Upload Image of Food: </label>
+                            <InputFile id="image" OnChange="@LoadIMG" class="form-control" />
+                        </div>
+                        @if (Errors.Any())
+                        {
+                            <br />
+                            <div class="alert alert-danger mb-3" role="alert" style="">
+                                **Errors in Uploading Logo:**
+                                <ul>
+                                    @foreach (var err in Errors)
+                                    {
+                                        <li>@err</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        @if (Food.Image.Any())
+                        {
+                            <br />
+                            <div class="mb-3">Photo of food to be updated</div>
+                            <div class="d-flex flex_wrap gap-3">
+                                
+                                <div class="card p-2" style="width: 480px"> 
+                                    <img src="@Food.Image.FirstOrDefault()" style="width: 100%; height: auto; object-fit: cover" alt="Uploaded Image" />
+                                </div>
+
+                            </div>
+                            <br />
+                        }
+                    </container>
+                <div class="mb-3" hidden>
+                    <label for="staffid" class="form-label" >StaffID:</label>
+                    <InputText id="staffid" @bind-Value="Food.StaffID" class="form-control" />
                     <ValidationMessage For="() => Food.StaffID" class="text-danger" />
                 </div>
-                <div class="mb-3">
+                <div class="mb-3" hidden>
                     <label for="menuid" class="form-label">MenuID:</label>
                     <InputNumber id="menuid" @bind-Value="Food.MenuID" class="form-control" />
                     <ValidationMessage For="() => Food.MenuID" class="text-danger" />
@@ -53,29 +95,77 @@ else
         </div>
     </div>
 }
-
+<br />
 <div>
-    <a href="/foods">Back to List</a>
+    <a href="/menus">Back to List</a>
 </div>
-
+</container>
 @code {
-    [SupplyParameterFromQuery]
-    private int FoodID { get; set; }
-
+    [Parameter]
+    public int id { get; set; } Food? food;
+    private List<string> Categories = new List<string>();
     [SupplyParameterFromForm]
     private Food? Food { get; set; }
-
+    private int RId;
+    private string? ROwnerId;
+    private const int maxIMGFileSize = 5242880;
+    private List<string> Errors = new List<string>();
     protected override async Task OnInitializedAsync()
     {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         using var context = DbFactory.CreateDbContext();
-        Food ??= await context.Food.FirstOrDefaultAsync(m => m.FoodID == FoodID);
-
+        await using var db = await DbFactory.CreateDbContextAsync();
+        Food ??= await context.Food.FirstOrDefaultAsync(m => m.FoodID == id);
+        var RDetails = await db.Restaurant
+       .Where(r => r.RestaurantOwnerID == aspNetUserId)
+       .Select(r => new
+       {
+           r.RestaurantID,
+           r.RestaurantOwnerID
+       }).SingleOrDefaultAsync();
+        RId = RDetails.RestaurantID;
+        ROwnerId = RDetails.RestaurantOwnerID;
+        var ListofCategories = await db.Menu
+        .Where(m => m.RestaurantID == RId)
+        .Select(m => m.Catergories)
+        .SingleOrDefaultAsync();
+        Categories = ListofCategories;
         if (Food is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
     }
+    private async Task LoadIMG(InputFileChangeEventArgs f)
+    {
+        Errors.Clear();
+        var files = f.GetMultipleFiles();
+        var IMG = files.FirstOrDefault();
+        if (IMG.Size > maxIMGFileSize)
+        {
+            Errors.Add($"File {IMG.Name} exceeds the maximum size of {maxIMGFileSize} bytes.");
 
+        }
+
+        if (!IMG.ContentType.StartsWith("image/"))
+        {
+            Errors.Add($"File {IMG.Name} is not a supported image format.");
+        }
+        using (var mms = new MemoryStream())
+        {
+            await IMG.OpenReadStream(maxIMGFileSize).CopyToAsync(mms);
+            var fileBytes = mms.ToArray();
+            String base64String = Convert.ToBase64String(fileBytes);
+            string image = $"data:{IMG.ContentType};base64,{base64String}";
+            if (Food.Image.Count() > 0)
+            {
+                Food.Image.Clear();
+            }
+            Food.Image.Add(image);
+        }
+        StateHasChanged();
+    }
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task UpdateFood()
@@ -99,7 +189,7 @@ else
             }
         }
 
-        NavigationManager.NavigateTo("/foods");
+        NavigationManager.NavigateTo("/menus");
     }
 
     private bool FoodExists(int foodid)

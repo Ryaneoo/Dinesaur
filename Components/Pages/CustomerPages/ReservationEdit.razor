@@ -59,8 +59,12 @@
     <div class="modal-backdrop">
 
         <div class="modal-card" @onclick:stopPropagation>
-            <h3>Reservation Updated</h3>
-            <h4 style="color: #88E788">@selectedRestaurant?.RestaurantName</h4>
+            <h2 style="color: #88E788">Reservation Updated</h2>
+
+            <div class="reservation-detail">
+                <span class="reservation-label">Restaurant:</span>
+                <span class="reservation-value">@selectedRestaurant.RestaurantName</span>
+            </div>
 
             <div class="reservation-detail">
                 <span class="reservation-label">Location:</span>
@@ -110,7 +114,7 @@
 
         <div class="modal-card" @onclick:stopPropagation>
             <button class="close-btn" @onclick="CloseCancelConfirm">✕</button>
-            <h3>Cancel Booking:</h3>
+            <h2 style="color: #88E788">Cancel Booking:</h2>
             <p style="color:white">Are you sure of cancelling this booking?</p>
             <div class="modal-buttons">
                 <button class="danger-btn" @onclick="ConfirmCancel">Yes</button>

@@ -16,6 +16,8 @@ namespace Dinesaur.Configurations.Entities
                     Location = "Orchard",
                     Category = "Western",
                     AdminID = 1,
+                    OpeningHours = new TimeOnly(9, 0),
+                    ClosingHours = new TimeOnly(22, 0),
                     Logo = new List<string>(),
                     RestaurantOwnerID = "3"
                 });

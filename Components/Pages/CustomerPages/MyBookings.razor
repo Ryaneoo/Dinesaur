@@ -52,7 +52,7 @@
             @if(userSelect == "Upcoming")
             {
                 @*Display Reservations Upcoming*@
-                <h2 style="font-weight: bold"> Upcoming Bookings</h2>
+                <h2 id ="Upcoming" style="font-weight: bold"> Upcoming Bookings</h2>
                 @foreach (var booking in userBookings)
                 {
                     if (booking.Status != Reservation.ReservationStatus.Completed)
@@ -82,7 +82,7 @@
             } else
             {
                 @*Display Previous Reservations*@
-                <h2 style="font-weight: bold"> Completed Bookings </h2>
+                <h2 id = "Completed" style="font-weight: bold"> Completed Bookings </h2>
                 @foreach (var booking in userBookings)
                 {
                     if (booking.Status == Reservation.ReservationStatus.Completed)
@@ -168,16 +168,24 @@
 
                     @if (SelectedReservation.Status == Reservation.ReservationStatus.Completed)
                     {
-                        <a class="primary-btn" @onclick="ShowReviewCreate">
-                            Leave A Review
-                        </a>
+                        if (SelectedReservation.ReviewID is not null)
+                        {
+                            <a class="primary-btn" @onclick="OpenReviewPopUp">
+                                View Review
+                            </a>
+                        } else
+                        {
+                            <a class="primary-btn" href="/Review/Create/@SelectedReservation.ReservationID">
+                                Leave A Review
+                            </a>
+                        }
                     }
                     else 
                     {
                         <a class="primary-btn" @onclick="EditEligibility">
                             Edit Booking
                         </a>
-                        <a class="danger-btn" @onclick="ShowCancelConfirm">
+                        <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
                             Cancel Booking
                         </a>
 
@@ -189,12 +197,61 @@
 
     }
 
+    @*Show Review Pop Up*@
+    @if (reviewPopUp)
+    {
+        <div class="modal-backdrop" @onclick="CloseReviewPopUp">
+
+            <div class="modal-card" @onclick:stopPropagation>
+                <button class="close-btn" @onclick="CloseReviewPopUp">✕</button>
+                <h2 style="color: #88E788">Review</h2>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Title:</span>
+                    <span class="reservation-value">@SelectedReview.ReviewTitle</span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Reservation Slot:</span>
+                    <span class="reservation-value">
+                        @SelectedReservation.Date.Value.ToString("dd MMMM yyyy") - @SelectedReservation.Time.Value.ToString("hh:mm tt")
+                    </span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Rating:</span>
+                    <span style="color:yellow " class="reservation-value">@SelectedReview.Rating ★</span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Remarks:</span>
+                    <span class="reservation-value">
+                        @(string.IsNullOrWhiteSpace(SelectedReview.Description) ? "N/A" : SelectedReview.Description)
+                    </span>
+                </div>
+
+                <div class="modal-buttons">
+                    <a class="secondary-btn" @onclick="CloseReviewPopUp">
+                        Back
+                    </a>
+                    <a class="primary-btn" href="/Review/Edit/@SelectedReview.ReviewID">
+                        Edit
+                    </a>
+                    <a class="danger-btn" @onclick="ShowCancelReviewConfirm">
+                        Remove
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    }
+
     @*Alert Shown When Reservation cannot be edited*@
     @if (showEditDenied)
     {
         <div class="confirm-overlay" @onclick="() => showEditDenied = false">
             <div class="confirm-modal" @onclick:stopPropagation>
-                <h3>Unable to Edit</h3>
+                <h2 style="color: #88E788">Unable to Edit</h2>
                 <p>Booking cannot be edited less then 3 days from Day of Booking</p>
                 <div class="modal-buttons">
                     <button class="secondary-btn" @onclick="() => showEditDenied = false">Close</button>
@@ -203,65 +260,35 @@
         </div>
     }
 
-    @*Reviews Create Form Pop Up*@
-    @if (showReviewCreate)
-    {
-            <div class="confirm-overlay" @onclick="CreateReview">
-                <div class="confirm-modal" @onclick:stopPropagation>
-                <h2 style="color: #88E788">Leave A Review!</h2>
-                    <p>Tell us about your experience:</p>
-
-                    <button class="close-btn" @onclick="CloseReviewCreate">✕</button>
-
-                    <EditForm Model="@review" OnValidSubmit="CreateReview">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
-
-                        
-                        <div style="margin-top:15px;">
-                            <label>Title:</label>
-                            <InputText @bind-Value="review.ReviewTitle" class="input-field" style="width:100%; border-radius: 15px;"/>
-                        </div>
-
-                        
-                        <div class="rating">
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                int starValue = i;
-
-                                <span class="star @(review.Rating >= starValue ? "selected" : "")"
-                                      @onclick="() => SetRating(starValue)">
-                                    ★
-                                </span>
-                            }
-                        </div>
-                        <p>Rating: @review.Rating</p>
-                        <div style="margin-top:15px;">
-                            <label>Review:</label>
-                            <InputTextArea @bind-Value="review.Description" class="input-field" rows="5" style="width: 100%; border-radius: 15px;" />
-                        </div>
-
-                        <div style="display:flex; justify-content:flex-end; margin-top:20px;">
-                            <button type="submit" class="primary-btn">Submit Review</button>
-                        </div>
-                    </EditForm>
-                </div>
-            </div>
-    }
-
     @*Show Cancel Confirm Pop Up*@
-    @if (showCancelConfirm)
+    @if (showCancelReservationConfirm)
     {
-        <div class="modal-backdrop" @onclick="CloseCancelConfirm">
+        <div class="modal-backdrop" @onclick="CloseCancelReservationConfirm">
 
             <div class="modal-card" @onclick:stopPropagation>
-                <button class="close-btn" @onclick="CloseCancelConfirm">✕</button>
-                <h3>Cancel Booking:</h3>
+                <button class="close-btn" @onclick="CloseCancelReservationConfirm">✕</button>
+                <h2 style="color: #88E788">Cancel Booking:</h2>
                 <p style="color: white">Are you sure of cancelling this booking?</p>
                 <div class="modal-buttons">
-                    <button class="secondary-btn" @onclick="CloseCancelConfirm">Back</button>
-                    <button class="danger-btn" @onclick="ConfirmCancel">Cancel</button>
+                    <button class="danger-btn" @onclick="CancelReservation">Yes</button>
+                    <button class="secondary-btn" @onclick="CloseCancelReservationConfirm">No</button>
+                </div>
+            </div>
+        </div>
 
+    }
+
+    @if (showCancelReviewConfirm)
+    {
+        <div class="modal-backdrop" @onclick="CloseCancelReviewConfirm">
+
+            <div class="modal-card" @onclick:stopPropagation>
+                <button class="close-btn" @onclick="CloseCancelReviewConfirm">✕</button>
+                <h2 style="color: #88E788">Remove Review:</h2>
+                <p style="color: white">Are you sure you want to remove this review?</p>
+                <div class="modal-buttons">
+                    <button class="danger-btn" @onclick="CancelReview">Yes</button>
+                    <button class="secondary-btn" @onclick="CloseCancelReviewConfirm">No</button>
                 </div>
             </div>
         </div>
@@ -271,9 +298,11 @@
 
 
 @code {
-    public Review review = new();
+    
     private List<Reservation> userBookings = new();
+    private List<Review> userReviews = new();
     private List<Restaurant> restaurants;
+    private string aspNetUserId;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -286,12 +315,13 @@
             NavigationManager.NavigateTo("/Account/Login");
             return;
         }
-        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
         @*Fetch Reservations and Restaurants from Database*@
         using var context = DbFactory.CreateDbContext();
         userBookings = await context.Reservation.Where(r => r.CustomerID == aspNetUserId).ToListAsync();
         userBookings.Sort((x, y) => Nullable.Compare(x.Date, y.Date));
+        userReviews = await context.Review.Where(a => a.CustomerID == aspNetUserId).ToListAsync();
         restaurants = await context.Restaurant.ToListAsync();
 
     }
@@ -305,6 +335,7 @@
     bool ShowPopUp = false;
     Reservation? SelectedReservation;
     Restaurant? SelectedRestaurant;
+    Review? SelectedReview;
 
     @*Open Reservation Details Pop Up*@
     void OpenDetails(Reservation reservation)
@@ -337,59 +368,50 @@
         }
     }
 
-    public bool showReviewCreate = false;
-    @*Show Review Create Pop Up*@
-    private void ShowReviewCreate()
-    {
-        showReviewCreate = true;
-    }
-    @*Close Review Create Pop Up*@
-    private void CloseReviewCreate()
-    {
-        showReviewCreate = false;
-        review = new Review();
-    }
+    public bool showCancelReservationConfirm = false;
 
-    @*Set Rating Value*@
-    void SetRating(double value)
+    private void ShowCancelReservationConfirm()
     {
-        review.Rating = value;
-    }
-
-    @*Create Review and Save to Database*@
-    private async Task CreateReview()
-    {
-        review.Date = DateTime.Now;
-        review.RestaurantID = SelectedRestaurant.RestaurantID;
-        review.Status = Review.ApprovalStatusReviews.Pending;
-
-        using var context = DbFactory.CreateDbContext();
-        context.Review.Add(review);
-        await context.SaveChangesAsync();
-        showReviewCreate = false;
-        review = new Review();
-    }
-
-    public bool showCancelConfirm = false;
-
-    private void ShowCancelConfirm()
-    {
-        showCancelConfirm = true;
+        showCancelReservationConfirm = true;
     }
 
 
-    private void CloseCancelConfirm()
+    private void CloseCancelReservationConfirm()
     {
-        showCancelConfirm = false;
+        showCancelReservationConfirm = false;
     }
 
-    private async Task ConfirmCancel()
+    private async Task CancelReservation()
     {
-        showCancelConfirm = false;
+        showCancelReservationConfirm = false;
         using var context = DbFactory.CreateDbContext();
         context.Reservation.Remove(SelectedReservation);
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
+    }
+
+    public bool showCancelReviewConfirm = false;
+
+    private void ShowCancelReviewConfirm()
+    {
+        showCancelReviewConfirm = true;
+    }
+
+
+    private void CloseCancelReviewConfirm()
+    {
+        showCancelReviewConfirm = false;
+    }
+
+    private async Task CancelReview()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Review.Remove(SelectedReview);
+        SelectedReservation.ReviewID = null;
+        context.Attach(SelectedReservation!).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
+        showCancelReviewConfirm = false;
     }
 
     private string userSelect = "Upcoming";
@@ -402,5 +424,29 @@
     private void GetCompleted()
     {
             userSelect = "Completed";
+    }
+
+    public bool reviewPopUp = false;
+    private void OpenReviewPopUp()
+    {
+        SelectedReview = userReviews.Find(r => r.ReviewID == SelectedReservation.ReviewID);
+        reviewPopUp = true;
+    }
+
+    private void CloseReviewPopUp()
+    {
+        reviewPopUp = false;
+        SelectedReview = null;
+    }
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+        if (query["from"] == "completed")
+        {
+            userSelect = "Completed";
+        }
     }
 }

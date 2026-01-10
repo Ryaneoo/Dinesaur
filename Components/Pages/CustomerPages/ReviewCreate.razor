@@ -1,0 +1,190 @@
+﻿@*Home Page For Dinesaur Restaurants*@
+
+
+@page "/Review/Create/{id:int}"
+@using Dinesaur.Domain
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider Auth
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject Dinesaur.Data.DinesaurContext DbContext
+<div style="display: flex; flex-direction:column">
+    <div style="background-color: dimgrey; height: auto; text-align: left; display: flex; flex-direction: column; padding: 20px;">
+        <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant.RestaurantName</h1>
+        <h2>
+            @selectedReservation.Date.Value.ToString("dd MMMM yyyy") - @selectedReservation.Time.Value.ToString("hh:mm tt")
+        </h2>
+    </div>
+    <div style="padding: 50px 100px">
+        <div>
+            <EditForm Model="@review" OnValidSubmit="AddReview" FormName="AddReview">
+                <DataAnnotationsValidator />
+                
+
+                <div class="mb-3">
+                    <h4 class="mt-2">Title:</h4>
+                    <InputText @bind-Value="review.ReviewTitle"
+                               class="form-control" />
+
+                    <ValidationMessage For="@(() => review.ReviewTitle)" />
+
+                    <h4 class="mt-2">Rating:</h4>
+                    <div class="rating">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            int starValue = i;
+
+                            <span class="star @(review.Rating >= starValue ? "selected" : "")"
+                                  @onclick="() => SetRating(starValue)">
+                                ★
+                            </span>
+                        }
+                    </div>
+                    <h4 class="mt-2">Comments:</h4>
+                    <InputTextArea @bind-Value="review.Description" class="input-field" rows="5" style="width: 100%; border-radius: 15px;" />
+
+                </div>
+
+                <ValidationSummary />
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <a class="secondary-btn" href="/MyBookings">Back</a>
+                    <button type="submit" class="primary-btn">Submit</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+    
+    @if (reviewPopUp)
+    {
+        <div class="modal-backdrop">
+
+            <div class="modal-card" @onclick:stopPropagation>
+                <h2 style="color: #88E788">Review Published:</h2>
+
+                
+                <div class="reservation-detail">
+                    <span class="reservation-label">Title:</span>
+                    <span class="reservation-value">@review.ReviewTitle</span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Restaurant:</span>
+                    <span class="reservation-value">@selectedRestaurant.RestaurantName</span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Reservation Slot:</span>
+                    <span class="reservation-value">@selectedReservation.Date.Value.ToString("dd MMMM yyyy") - @selectedReservation.Time.Value.ToString("hh:mm tt")
+                    </span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Rating:</span>
+                    <span style="color:yellow "class="reservation-value">@review.Rating ★</span>
+                </div>
+
+                <div class="reservation-detail">
+                    <span class="reservation-label">Remarks:</span>
+                    <span class="reservation-value">
+                        @(string.IsNullOrWhiteSpace(review.Description) ? "N/A" : review.Description)
+                    </span>
+                </div>
+                
+                <div class="modal-buttons">
+                    <a class="primary-btn" href="/MyBookings">
+                        Back
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+
+    }
+</div>
+
+@code {
+    Restaurant? selectedRestaurant;
+    Reservation? selectedReservation;
+    Review? selectedReview;
+    Review? review = new();
+
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        selectedReservation = context.Reservation.FirstOrDefault(r => r.ReservationID == id);
+        selectedRestaurant = context.Restaurant.FirstOrDefault(x => x.RestaurantID == selectedReservation.RestaurantID);
+
+        var authState = await Auth.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+
+            NavigationManager.NavigateTo("/Account/Login");
+            return;
+        }
+
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        review.CustomerID = aspNetUserId;
+
+    }
+
+    private async Task AddReview()
+    {
+        review.Date = DateTime.Now;
+        review.RestaurantID = selectedRestaurant.RestaurantID;
+        using var context = DbFactory.CreateDbContext();
+        context.Review.Add(review);
+        await context.SaveChangesAsync();
+        
+        selectedReservation.ReviewID = review.ReviewID;
+        context.Attach(selectedReservation!).State = EntityState.Modified;
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ReservationExists(selectedReservation.ReservationID))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+        OpenReviewCreatedPopUp();
+
+    }
+
+    public bool reviewPopUp = false;
+    private void OpenReviewCreatedPopUp()
+    {
+        reviewPopUp = true;
+    }
+
+    private void CloseReviewCreatedPopUp()
+    {
+        reviewPopUp = false;
+        NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
+    }
+
+    @*Set Rating Value*@
+    void SetRating(double value)
+    {
+        review.Rating = value;
+    }
+
+    private bool ReservationExists(int reservationid)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Reservation.Any(e => e.ReservationID == reservationid);
+    }
+}
