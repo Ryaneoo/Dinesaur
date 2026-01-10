@@ -16,11 +16,11 @@
     <div style=" text-align: center;">
         <a href="/foods/create" class="btn-primary" style="padding: 15px 32px; ">Add food to Menu</a>
         <a href="/menus/create" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Add more categories to Menu</a>
-        <a href="/foods/delete" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Delete food from Menu</a>
+            <a href="/menus/delete" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Remove categories from Menu</a>
         <hr />
   </div>
     
-        <div style="display: grid; grid-template-columns: repeat(5,1fr)">
+        <div style="display: grid; grid-template-columns: repeat(5,1fr) ;">
             @foreach (var fooditem in menuFood)
             {
                 
@@ -43,9 +43,9 @@
     
 else
     {
-        <h2 style="color: #88E788;"> Your Restaurant does not have a Menu</h2>
+        <h2 style="color: #88E788; text-align:center;"> Your Restaurant does not have a Menu</h2>
         <br />
-        <a href="/menus/create" class="btn-primary" style="padding: 15px 32px;">Create Menu</a>
+        <a href="/menus/create" class="btn-primary" style="padding: 15px 32px; margin-left:650px;">Create Menu</a>
     }
 </container>
 @* <QuickGrid Class="table" Items="context.Menu">

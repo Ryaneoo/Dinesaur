@@ -17,6 +17,10 @@ namespace Dinesaur.Domain
         public int AdminID { get; set; }
         [Required]
         public List<string> Logo { get; set; } = new List<string>();
+        [Required]
+        public TimeOnly OpeningHours { get; set; }
+        [Required]
+        public TimeOnly ClosingHours { get; set; }
 
         public string? RestaurantOwnerID { get; set; }
 

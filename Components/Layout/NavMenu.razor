@@ -7,11 +7,11 @@
     <div>
         <a class="navbar-brand" , href="/">Dinesaur</a>
         <a class="nav-link" href=@link >Home</a>
-        <a class="nav-link" href="#ourhistory">About Us</a>
+        <a class="nav-link" href="/TC">T & C</a>
     </div>
     <AuthorizeView Roles="@($"RestaurantStaff")">
         <div>
-            <a href="/restaurants"> Restaurant </a>
+            <a href="/RestaurantStaff/Home"> Restaurant </a>
         </div>
     </AuthorizeView>
     <AuthorizeView>

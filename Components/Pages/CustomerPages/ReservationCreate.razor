@@ -59,8 +59,11 @@
         <div class="modal-backdrop">
 
             <div class="modal-card" @onclick:stopPropagation>
-                <h3>Reservation Booked</h3>
-                <h4 style="color: #88E788">@selectedRestaurant?.RestaurantName</h4>
+                <h2 style="color: #88E788">Reservation Booked!</h2>
+                <div class="reservation-detail">
+                    <span class="reservation-label">Restaurant:</span>
+                    <span class="reservation-value">@selectedRestaurant.RestaurantName</span>
+                </div>
 
                 <div class="reservation-detail">
                     <span class="reservation-label">Location:</span>
