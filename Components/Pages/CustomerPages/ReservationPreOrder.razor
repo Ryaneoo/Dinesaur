@@ -47,7 +47,9 @@
                 @foreach (var f in food.Where(f =>
                             selectedCategory == null || f.Category == selectedCategory))
                 {
-                    <div style="background-color: black; color: white; border-radius: 20px; padding: 10px; height: 40vh; display: flex; flex-direction: column; gap: 5px;">
+                    <div style="background-color: black; color: white; border-radius: 20px; padding: 10px; height: 40vh; display: flex; flex-direction: column; gap: 5px; cursor:pointer;"
+                         @onclick="() => OpenPopup(f)">
+
                            <img src="@f.Image[0]"
          style="height: 75%; width: 100%; object-fit: cover; border-radius: 10px;"
          alt="@f.FoodName" />
@@ -57,9 +59,13 @@
                         <h5> @GetFoodPrice(f).ToString("C")</h5>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30px, 1fr)); background-color: grey; border-radius: 10px; text-align:center; ">
-                        <a style="background-color:red; height: 100%; border-radius: 10px 0px 0px 10px; padding-top: 5px; font-weight: bold; z-index: 1000; cursor: pointer;"@onclick="() => Dec(f.FoodID)">-</a>
+                            <a style="background-color:red; height: 100%; border-radius: 10px 0px 0px 10px; padding-top: 5px; font-weight: bold; z-index: 1000; cursor: pointer;"
+                               @onclick="() => Dec(f.FoodID)"
+                               @onclick:stopPropagation="true">-</a>
                         <h5 style="background-color: white; color: black; height: 100%; padding-top: 5px; font-weight: bold">@GetCount(f.FoodID)</h5>
-                        <a style="background-color: green; height: 100%; border-radius: 0px 10px 10px 0px; padding-top: 7px; font-weight: bold; z-index: 1000; cursor: pointer;"@onclick="() =>Inc(f.FoodID)" >+</a>
+                            <a style="background-color: green; height: 100%; border-radius: 0px 10px 10px 0px; padding-top: 7px; font-weight: bold; z-index: 1000; cursor: pointer;"
+                               @onclick="() => Inc(f.FoodID)"
+                               @onclick:stopPropagation="true">+</a>
                     </div>
                     
                 </div>
@@ -86,8 +92,78 @@
         Order List
     </a>
 
+    @if (showPopup && popupFood != null)
+    {
+        <div style="
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;"
+             @onclick="ClosePopup">
+
+            <div style="
+                width: 700px;
+                max-width: 95vw;
+                background: #111;
+                color: white;
+                border-radius: 18px;
+                overflow: hidden;"
+                 @onclick:stopPropagation="true">
+
+                <div style="height: 300px; background: black;">
+                    @if (popupFood.Image != null && popupFood.Image.Count > 0)
+                    {
+                        <img src="@popupFood.Image[0]"
+                             alt="@popupFood.FoodName"
+                             style="width:100%; height:100%; object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#aaa;">
+                            No image available
+                        </div>
+                    }
+            </div>
+
+            <div style="padding: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 20px;">
+                    <div>
+                        <h2 style="margin:0;">@popupFood.FoodName</h2>
+
+                        <p style="margin: 8px 0; color:#ccc;">
+                            @(string.IsNullOrWhiteSpace(popupFood.Description)
+                                                        ? "No description available."
+                                                        : popupFood.Description)
+                            </p>
+                        </div>
+
+                        <div style="text-align:right; min-width:150px;">
+                            <p style="margin:0; font-size: 18px;">
+                                <b>@popupFood.Cost.ToString("C")</b>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="text-align:right; margin-top: 20px;">
+                        <button class="btn btn-secondary" @onclick="ClosePopup">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+   
+
 
 </div>
+
+
+
 
 @code {
 
@@ -104,6 +180,9 @@
     Reservation? selectedReservation;
     Menu? selectedMenu;
     private string? selectedCategory;
+    private bool showPopup = false;
+    private Food? popupFood;
+    
 
     private List<Food> food = new();
     private readonly Dictionary<int, int> itemCounts = new();
@@ -185,11 +264,12 @@
             .ToListAsync();
 
         double total = 0;
-        foreach (var i in items)
-        {
-            var food = await db.Food.FirstAsync(f => f.FoodID == i.FoodID);
-            total += food.Cost * i.Quantity;
-        }
+        total = await (
+    from poi in db.PreOrderItem
+    join f in db.Food on poi.FoodID equals f.FoodID
+    where poi.PreOrderID == preOrderID
+    select f.Cost * poi.Quantity
+).SumAsync();
 
         var preOrder = await db.PreOrder.FirstAsync(p => p.PreOrderID == preOrderID);
         preOrder.Cost = total;
@@ -223,37 +303,56 @@
 
     async Task AddtoPreOrder(int foodId, int qty)
     {
-        if (qty <= 0) return;
-
         await using var db = await DbFactory.CreateDbContextAsync();
 
-        var food = await db.Food.FirstOrDefaultAsync(f => f.FoodID == foodId);
-
-        if (food == null) return;
-
         var existing = await db.PreOrderItem.FirstOrDefaultAsync(p =>
-        p.PreOrderID == preOrderID &&
-        p.FoodID == foodId);
+            p.PreOrderID == preOrderID &&
+            p.FoodID == foodId);
+
+        if (qty <= 0)
+        {
+            if (existing != null)
+            {
+                db.PreOrderItem.Remove(existing);   // or existing.Quantity = 0;
+                await db.SaveChangesAsync();
+            }
+            return;
+        }
 
         if (existing == null)
         {
             db.PreOrderItem.Add(new PreOrderItem
-        {
-            PreOrderID = preOrderID,
-            FoodID = foodId,
-            Quantity = qty
-        });
+            {
+                PreOrderID = preOrderID,
+                FoodID = foodId,
+                Quantity = qty
+            });
         }
         else
         {
             existing.Quantity = qty;
         }
+
         await db.SaveChangesAsync();
     }
+
     private void SelectCategory(string category)
     {
         selectedCategory = category;
     }
+
+    private void OpenPopup(Food f)
+    {
+        popupFood = f;
+        showPopup = true;
+    }
+
+    private void ClosePopup()
+    {
+        showPopup = false;
+        popupFood = null;
+    }
+
 
 
         
@@ -264,4 +363,4 @@
 
   
     
-}
+

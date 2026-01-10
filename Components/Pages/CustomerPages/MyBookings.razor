@@ -165,6 +165,9 @@
                     <a class="secondary-btn" href="/Restaurants/@SelectedRestaurant.RestaurantID#start">
                         View Restaurant
                     </a>
+                    <a class="secondary-btn" @onclick="@ViewPreOrderReceipt">
+                        View Pre-Order Receipt
+                    </a>
 
                     @if (SelectedReservation.Status == Reservation.ReservationStatus.Completed)
                     {
@@ -304,6 +307,8 @@
     private List<Restaurant> restaurants;
     private string aspNetUserId;
 
+
+    
     protected override async Task OnParametersSetAsync()
     {
         @*Get Logged In User Info*@
@@ -418,12 +423,12 @@
 
     private void GetUpcoming()
     {
-            userSelect = "Upcoming";
+        userSelect = "Upcoming";
     }
 
     private void GetCompleted()
     {
-            userSelect = "Completed";
+        userSelect = "Completed";
     }
 
     public bool reviewPopUp = false;
@@ -448,5 +453,9 @@
         {
             userSelect = "Completed";
         }
+    }
+    private async Task ViewPreOrderReceipt()
+    {
+        NavigationManager.NavigateTo($"/Reservation/OrderList/{SelectedReservation.ReservationID}");
     }
 }

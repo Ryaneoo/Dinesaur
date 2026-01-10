@@ -47,29 +47,44 @@
                 {
                       <tr style="color:white">
                     <td style="padding: 8px;font-size:20px;" >@r.Dish</td>
-                        <td style="padding: 8px;text-align:right;font-size:20px;">$@r.Price</td>
+                        <td style="padding: 8px;text-align:right;font-size:20px;">$@r.Price.ToString("F2")</td>
                         <td style="padding: 8px;text-align:right;font-size:20px;">@r.Quantity</td>
-                        <td style="padding: 8px;text-align:right;font-size:20px;">$@(r.Price* r.Quantity)</td>
+                        <td style="padding: 8px;text-align:right;font-size:20px;">$@((r.Price* r.Quantity).ToString("F2"))</td>
                 </tr>
                 }
             }
         </tbody>
     </table>
 
-    <p style="text-align: right; font-weight: bold; color:white;font-size:30px;">Total Cost: $@totalCost</p>
+    <p style="text-align: right; font-weight: bold; color:white;font-size:30px;">Total Cost: $@totalCost.ToString("F2")</p>
 
     <strong style="margin-top: 30px;font-size:35px;color:white;">Reservation Bill:</strong>
 
     <div style="text-align: right; color:white;font-size:20px;">
-        <p>Pre‑Order Cost: $@totalCost</p>
+        <p>Pre‑Order Cost: $@totalCost.ToString("F2")</p>
         <p>Reservation Fee: $0.00</p>
         <p>Subtotal: $0.00</p>
         <p>GST (9%): $0.00</p>
         <p>Service Charge (10%): $0.00</p>
-        <p style="font-weight: bold;font-size:40px;">Grand Total: $@totalCost</p>
+        <p style="font-weight: bold;font-size:40px;">Grand Total: $@totalCost.ToString("F2")</p>
     </div>
+    @if (CanEditPreOrder)
+    {
+        <button class="btn btn-success"
+                style="margin-top: 30px; background-color: red;"
+                @onclick="DeletePreOrder">
+            Delete PreOrder
+        </button>
 
-    <button class="btn btn-success" style="margin-top: 30px;"onclick="@SaveAndGoHome">
+        <button class="btn btn-success"
+                style="margin-top: 30px;"
+                @onclick="EditPreOrdering">
+            Edit PreOrder
+        </button>
+    }
+
+
+    <button class="btn btn-success" style="margin-top: 30px;" onclick="@SaveAndGoHome">
         Confirm Booking
     </button>
 
@@ -149,6 +164,64 @@
         NavigationManager.NavigateTo("#");
         await db.SaveChangesAsync();
     }
+    private async Task EditPreOrdering()
+    {
+
+        NavigationManager.NavigateTo($"/Reservation/Create/PreOrder/{id}");
+        
+    }
+    private async Task DeletePreOrder()
+    {
+        if (preOrderID == null)
+            return;
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+
+       
+        var preOrder = await db.PreOrder
+            .FirstOrDefaultAsync(p => p.PreOrderID == preOrderID.Value);
+
+        if (preOrder == null)
+            return;
+
+        
+        var items = await db.PreOrderItem
+            .Where(i => i.PreOrderID == preOrderID.Value)
+            .ToListAsync();
+
+        db.PreOrderItem.RemoveRange(items);
+
+        
+        db.PreOrder.Remove(preOrder);
+
+        await db.SaveChangesAsync();
+
+        
+        orderRows.Clear();
+        totalCost = 0;
+        preOrderID = null;
+
+        NavigationManager.NavigateTo("/MyBookings");
+        
+    }
+    private bool CanEditPreOrder
+    {
+        get
+        {
+            if (selectedReservation?.Date == null)
+                return false;
+
+            
+            var reservationDate = selectedReservation.Date.Value.Date;
+
+            
+            var cutoff = reservationDate.AddDays(-1);
+
+            
+            return DateTime.Now < cutoff;
+        }
+    }
+
 
         
     }

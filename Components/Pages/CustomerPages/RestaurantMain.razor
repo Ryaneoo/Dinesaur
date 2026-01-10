@@ -2,25 +2,27 @@
 
 
 @page "/Restaurants/{id:int}"
+@rendermode InteractiveServer
 @using Dinesaur.Domain
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider Auth
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject Dinesaur.Data.DinesaurContext DbContext
+
 <div style="display: flex; flex-direction:column">
 <div id="start" style="background-color: dimgrey; height: 60vh; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
-    <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant.RestaurantName</h1>
+    <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant?.RestaurantName</h1>
     <div style="display: flex; padding-top: 20px;">
         <div>
-            <h3>Category: @selectedRestaurant.Category</h3>
+            <h3>Category: @selectedRestaurant?.Category</h3>
             <h3>Description</h3>
-            <h3>Address: @selectedRestaurant.Location</h3>
+            <h3>Address: @selectedRestaurant?.Location</h3>
         </div>
         <div style="padding-left: 100px;">
             <h3>Hours: 9am-9pm (Placeholder)</h3>
-            <h3>Contact: @selectedRestaurant.Contact</h3>
-            <h3>Email: @selectedRestaurant.Email</h3>
+            <h3>Contact: @selectedRestaurant?.Contact</h3>
+            <h3>Email: @selectedRestaurant?.Email</h3>
         </div>
         <div>
             <a style="padding: 20px; margin: 300px 50px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/Reservation/Create/@selectedRestaurant.RestaurantID"> Book Now</a>
@@ -30,43 +32,57 @@
 </div>
 <div style="margin: 20px 80px;">
     <h3>Top Selling Dishes</h3>
-    <div style="display: flex; gap: 25px; justify-content: left">
+    <div style="display: flex; gap: 25px; justify-content: left; color:white; font-size: 25px;">
         @if (foods == null)
         {
-            <p><em>Loading...</em></p>
+            <p><em>No dishes available</em></p>
         }
         else
         {
             var random = new Random();
-            
-            @foreach (var food in foods)
-            {
-                
-                <a href="/Restaurants/@food.FoodName">
-                    <div style="z-index: 1000; position: relative; cursor: pointer;">
-                        <div style="width: 250px; height: 250px; background-color: black; border-radius: 15px; pointer-events: none;">
+                @foreach (var food in foods)
+                {
+                    <div style="cursor:pointer;" @onclick="() => OpenPopup(food)">
+                        <div style="z-index: 1000; position: relative;">
+                            <div style="width: 250px; height: 250px; background-color: black; border-radius: 15px; overflow:hidden;">
+                                @if (food.Image != null && food.Image.Count > 0)
+                                {
+                                    <img src="@food.Image[0]"
+                                         style="height:100%; width:100%; object-fit:cover;"
+                                         alt="@food.FoodName" />
+                                }
+                                else
+                                {
+                                    <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#aaa;">
+                                        No image
+                                    </div>
+                                }
+                            </div>
+
+                            <h4>@food.FoodName</h4>
+                            <p>$@($"{food.Cost:F2}")</p>
                         </div>
-                        <h4>@food.FoodName</h4>
-                        <p>$@($"{food.Cost:F2}")</p>
-
                     </div>
-                </a>
+                }
 
-            }
         }
     </div>
 </div>
     <div style="margin: 20px 80px;">
         <h3>Recent Reviews</h3>
-        <div style="display: flex; gap: 25px; justify-content: left">
+        <div style="display: flex; gap: 25px; justify-content: left; color:white;font-size:25px;">
             @if (foods == null)
             {
-                <p><em>Loading...</em></p>
+                <p><em>No Reviews Available</em></p>
             }
             else
             {
                 var random = new Random();
-
+                @if (reviews.Count == 0)
+                {
+                    <p><em>No reviews yet</em></p>
+                }
+                else{
                 @foreach (var review in reviews)
                 {
 
@@ -82,8 +98,62 @@
 
                 }
             }
+            }
         </div>
     </div>
+    @if (showPopup && popupFood != null)
+    {
+        <div style="position:fixed; inset:0; background:rgba(0,0,0,0.75);
+                    display:flex; align-items:center; justify-content:center; z-index:9999;"
+             @onclick="ClosePopup">
+
+            <div style="width:700px; max-width:95vw; background:#111; color:white;
+                        border-radius:18px; overflow:hidden;"
+                 @onclick:stopPropagation="true">
+
+                <div style="height:300px; background:black;">
+                    @if (popupFood.Image != null && popupFood.Image.Count > 0)
+                    {
+                        <img src="@popupFood.Image[0]"
+                             alt="@popupFood.FoodName"
+                             style="width:100%; height:100%; object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#aaa;">
+                            No image available
+                        </div>
+                    }
+            </div>  @* ✅ THIS CLOSING DIV WAS MISSING *@
+
+            <div style="padding:20px;">
+                <div style="display:flex; justify-content:space-between; gap:20px;">
+                    <div>
+                        <h2 style="margin:0;">@popupFood.FoodName</h2>
+                        <p style="margin:8px 0; color:#ccc;">
+                            @(string.IsNullOrWhiteSpace(popupFood.Description)
+                                                        ? "No description available."
+                                                        : popupFood.Description)
+                            </p>
+                        </div>
+
+                        <div style="text-align:right; min-width:150px;">
+                            <p style="margin:0; font-size:18px;">
+                                <b>@popupFood.Cost.ToString("C")</b>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="text-align:right; margin-top:20px;">
+                        <button class="btn btn-secondary" type="button" @onclick="ClosePopup">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+
+
 </div>
 
 
@@ -92,18 +162,33 @@
     public int id { get; set; }
 
     Restaurant? selectedRestaurant;
+    Menu? selectedMenu;
     private List<Food> foods;
     private List<Review> reviews;
-
-    protected override void OnInitialized()
-    {
-        selectedRestaurant = DbContext.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
-    }
+    private bool showPopup = false;
+    private Food? popupFood;
 
     protected override async Task OnInitializedAsync()
     {
-       
-        foods = await DbContext.Food.ToListAsync();
-        reviews = await DbContext.Review.ToListAsync();
+        selectedRestaurant = DbContext.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
+        selectedMenu = DbContext.Menu.FirstOrDefault(m => m.RestaurantID == selectedRestaurant.RestaurantID);
+        if (selectedMenu == null)
+        {
+            reviews = new List<Review>();
+            return;
+        }
+        foods = await DbContext.Food.Where(f => f.MenuID == selectedMenu.MenuID).ToListAsync();
+        reviews = await DbContext.Review.Where(r => r.RestaurantID == selectedRestaurant.RestaurantID).ToListAsync();
+    }
+    private void OpenPopup(Food f)
+    {
+        popupFood = f;
+        showPopup = true;
+    }
+
+    private void ClosePopup()
+    {
+        showPopup = false;
+        popupFood = null;
     }
 }
