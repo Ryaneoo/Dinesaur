@@ -68,7 +68,7 @@
                                             <h4 style="font-weight: bold; color: #88E788">@restaurant.RestaurantName</h4>
                                                 <p style="color:white">
                                                     @restaurant.Location <br />
-                                                    @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("hh:mm tt")</p>
+                                                    @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("h:mm tt")</p>
                                         </div>
                                         <div style="display: flex; height: 100%; justify-content: center;">
                                             <a style="width: 100%; height: 100%; padding: 10px; font-size: 20px; font-weight: bold; background-color: #88E788; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
@@ -97,7 +97,7 @@
                                             <h4 style="font-weight: bold; color:#88E788">@restaurant.RestaurantName</h4>
                                             <p style="color:white">
                                                 @restaurant.Location <br />
-                                                @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("hh:mm tt")
+                                                @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("h:mm tt")
                                             </p>
                                         </div>
                                         <div style="display: flex; height: 100%; justify-content: center;">
@@ -140,7 +140,7 @@
                 <div class="reservation-detail">
                     <span class="reservation-label">Timing:</span>
                     <span class="reservation-value">
-                        @SelectedReservation.Date.Value.ToString("dd MMMM yyyy") - @SelectedReservation.Time.Value.ToString("hh:mm tt")
+                        @SelectedReservation.Date.Value.ToString("dd MMMM yyyy") - @SelectedReservation.Time.Value.ToString("h:mm tt")
                     </span>
                 </div>
 
@@ -164,6 +164,9 @@
                 <div class="modal-buttons">
                     <a class="secondary-btn" href="/Restaurants/@SelectedRestaurant.RestaurantID#start">
                         View Restaurant
+                    </a>
+                    <a class="secondary-btn" @onclick="@ViewPreOrderReceipt">
+                        View Pre-Order Receipt
                     </a>
 
                     @if (SelectedReservation.Status == Reservation.ReservationStatus.Completed)
@@ -304,6 +307,8 @@
     private List<Restaurant> restaurants;
     private string aspNetUserId;
 
+
+    
     protected override async Task OnParametersSetAsync()
     {
         @*Get Logged In User Info*@
@@ -418,12 +423,12 @@
 
     private void GetUpcoming()
     {
-            userSelect = "Upcoming";
+        userSelect = "Upcoming";
     }
 
     private void GetCompleted()
     {
-            userSelect = "Completed";
+        userSelect = "Completed";
     }
 
     public bool reviewPopUp = false;
@@ -448,5 +453,9 @@
         {
             userSelect = "Completed";
         }
+    }
+    private async Task ViewPreOrderReceipt()
+    {
+        NavigationManager.NavigateTo($"/Reservation/OrderList/{SelectedReservation.ReservationID}");
     }
 }
