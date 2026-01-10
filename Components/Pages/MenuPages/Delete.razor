@@ -20,7 +20,7 @@
                 <label for="category" class="form-label" style="color:white;">Insert Category to be Deleted:</label>
                 <InputSelect id="itemcategory" @bind-Value="Menu.Category" class="form-select">
 
-                    @foreach (string category in Catergories.Skip(1))
+                    @foreach (string category in Catergories)
                     {
                         <option value="@category">@category</option>
                     }
@@ -38,11 +38,11 @@
         else
         {
             <h2> You dont have any categories to delete from your menu</h2>
-            <a href="/menus" class="btn-primary" style="padding: 15px 32px;">Back</a>
+            
         }
         <br />
         <div>
-            <a href="/menus" class="btn-primary" style="padding: 15px 32px;">Back</a>
+            <a href="/menus" class="btn-primary" style="padding: 15px 32px; ">Back</a>
         </div>
     </div>
     </div>

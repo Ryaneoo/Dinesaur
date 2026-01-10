@@ -26,12 +26,13 @@
                 <label for="menurestaurantid" class="form-label">RestaurantID:</label> 
                 <InputNumber id="menurestaurantid" @bind-Value="Menu.RestaurantID" class="form-control" /> 
                 <ValidationMessage For="() => Menu.RestaurantID" class="text-danger" /> 
-            </div>         
+            </div>  
+            
             <button type="submit" class="btn btn-primary">Create</button>
+            
         </EditForm> 
 
     </div> 
-
         @if (Catergoriess.Any()){
          <div class="alert alert-danger col-4 mb-3" role="alert" style="">
             Categories in your Restaurant Menu:
@@ -46,8 +47,8 @@
         <br />
         <br />
         <div>
-            <a href="/menus" class="btn-primary" style="padding: 15px 32px;">Back</a>
-        </div>
+            <a href="/menus" class="btn-primary" style="padding: 15px 32px; margin-top:50px;">Back</a>
+        </div> 
 </div>
 </container>
 
@@ -58,10 +59,9 @@
     
     private int RestaurantId,MenuId;
     private bool MenuExist;
-    private bool update = false;
     private async Task AddItemtoMenu()
     {
-        StateHasChanged();
+        //StateHasChanged();
         await using var db = await DbFactory.CreateDbContextAsync();
         using var context = DbFactory.CreateDbContext();
         if (MenuExist == false)
@@ -92,7 +92,7 @@
             Catergoriess = ListofCatergories;
         }
         StateHasChanged();
-        update = true;
+        
     }
     
    
@@ -110,14 +110,12 @@
         RestaurantId = CheckForRestaurantId;
         var MenuDetails = await db.Menu
         .Where(m => m.RestaurantID == RestaurantId)
-        .Select(m => new{
-            m.MenuID,
-            m.Catergories
-        }
+        .Select(m => 
+            m.MenuID
         )
         .SingleOrDefaultAsync();
-        MenuId = MenuDetails.MenuID;
-        if(MenuId != 0)
+        MenuId = MenuDetails;
+        if(MenuId != 0) 
         {
             MenuExist = true;
         }

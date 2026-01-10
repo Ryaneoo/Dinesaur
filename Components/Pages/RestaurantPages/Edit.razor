@@ -34,13 +34,29 @@ else
                     <div class="mb-3">
                         <label for="category" class="form-label" style="color:white;">Category:</label>
                         <InputSelect id="itemcategory" @bind-Value="Restaurant.Category" class="form-select">
-                            @foreach (string category in Categories)
+                            @foreach (string category in Categories.Skip(1))
                             {
                                 <option value="@category">@category</option>
                             }
 
                         </InputSelect>
                         <ValidationMessage For="() => Restaurant.Category" class="text-danger" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="openinghours" class="form-label" style="color:white;"> Opening Hour: </label>
+                        <InputDate @bind-value="Restaurant.OpeningHours"
+                                   Type="InputDateType.Time"
+                                   class="form-control"
+                                   step="1800" />
+                        <ValidationMessage For="() => Restaurant.OpeningHours" class="text-danger" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="openinghours" class="form-label" style="color:white;"> Closing Hour: </label>
+                        <InputDate @bind-value="Restaurant.ClosingHours"
+                                   Type="InputDateType.Time"
+                                   class="form-control"
+                                   step="1800" />
+                        <ValidationMessage For="() => Restaurant.ClosingHours" class="text-danger" />
                     </div>
                 <div class="mb-3" hidden>
                     <label for="adminid" class="form-label">AdminID:</label>
@@ -91,7 +107,7 @@ else
                     </container>
                 <button type="submit" class="btn btn-primary">Save</button> 
                 <br />
-                    <a href="/restaurants">  Back to Restaurant</a>
+                    <a href="/RestaurantStaff/Home">  Back to Restaurant</a>
             </EditForm>
         </div>
     </div>

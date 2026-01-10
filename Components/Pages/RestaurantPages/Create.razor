@@ -31,7 +31,7 @@
             <div class="mb-3">
                     <label for="category" class="form-label" style="color:white;">Category:</label>
                     <InputSelect id="itemcategory" @bind-Value="Restaurant.Category" class="form-select">
-                        @foreach (string category in Categories)
+                        @foreach (string category in Categories.Skip(1))
                         {
                             <option value="@category">@category</option>
                         }
@@ -54,6 +54,22 @@
                 <InputText id="email" @bind-Value="Restaurant.Email" class="form-control" /> 
                 <ValidationMessage For="() => Restaurant.Email" class="text-danger" /> 
             </div>
+                <div class="mb-3">
+                    <label for="openinghours" class="form-label" style="color:white;"> Opening Hour: </label>
+                    <InputDate @bind-value="Restaurant.OpeningHours"
+                               Type="InputDateType.Time"
+                               class="form-control"
+                               step="1800" />
+                    <ValidationMessage For="() => Restaurant.OpeningHours" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="openinghours" class="form-label" style="color:white;"> Closing Hour: </label>
+                    <InputDate @bind-value="Restaurant.ClosingHours"
+                               Type="InputDateType.Time"
+                               class="form-control"
+                               step="1800" />
+                    <ValidationMessage For="() => Restaurant.ClosingHours" class="text-danger" />
+                </div>
             </div>
             <h3> Note: Your Restaurant will be checked by Admins and will be removed if deemed inappropriate.</h3>
             <h3> By creating a restaurant, you agree to the site's terms and conditions.</h3>
@@ -94,9 +110,8 @@
         
 </div>
 <br />
-<div>
-        <a href="/restaurants" class="btn-primary" style="padding: 15px 32px; position:absolute; bottom:5px; left:350px;">Back</a>
-</div>
+
+
 </container>
 @code {
     [SupplyParameterFromForm]
@@ -140,7 +155,7 @@
         using var context = DbFactory.CreateDbContext();
         context.Restaurant.Add(Restaurant);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/restaurants");
+        NavigationManager.NavigateTo("/RestaurantStaff/Home");
     }
     private List<String> Categories = new List<String>
     {

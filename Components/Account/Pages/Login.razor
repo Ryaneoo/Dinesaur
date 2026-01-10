@@ -94,6 +94,10 @@
             {
                 RedirectManager.RedirectTo("/Admin/Home");
             }
+            else if(await UserManager.IsInRoleAsync(user, "RestaurantStaff"))
+            {
+                RedirectManager.RedirectTo("/RestaurantStaff/Home");
+            }
             else
             {
                 RedirectManager.RedirectTo("/User/Home");

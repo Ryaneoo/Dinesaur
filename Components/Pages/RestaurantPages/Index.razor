@@ -1,4 +1,4 @@
-﻿@page "/restaurants"
+﻿@page "/RestaurantStaff/Home"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
@@ -24,6 +24,8 @@
         <h2> Restaurant Location: @Location </h2>
         <h2> Restaurant Category: @Catergory </h2>
         <h2> Restaurant Email: @Email </h2>
+        <h2> Restuarant Opening Hour: @Oh</h2>
+        <h2> Restaurant Closing Hour: @Ch</h2>
         <br />
         <a href="/menus" class="btn-primary" style="padding: 15px 32px;">Restaurant's Menu</a>
         <a href="/restaurants/edit/@Id" class="btn-primary" style="padding: 15px 32px;">Edit Your Restaurant</a>
@@ -53,7 +55,7 @@ else
 
 @code {
     private bool HasRestaurant;
-    private string? RestaurantName,Lo,Email,Location;
+    private string? RestaurantName,Lo,Email,Location,Ch,Oh;
     private int? Contact,Id;
     private string? Catergory;
 
@@ -98,13 +100,17 @@ else
                   d.Category,
                   d.Contact,
                   d.Email,
-                  d.Location
+                  d.Location,
+                  d.ClosingHours,
+                  d.OpeningHours
               }).SingleOrDefaultAsync();
             RestaurantName = Details.RestaurantName;
             Contact = Details.Contact;
             Catergory = Details.Category;
             Email = Details.Email;
             Location = Details.Location;
+            Ch = Details.ClosingHours.ToString("hh:mm tt");
+            Oh = Details.OpeningHours.ToString("hh:mm tt");
             Id = Details.RestaurantID;
             var Logo = await db.Restaurant
             .Where(l => l.RestaurantOwnerID == aspNetUserId)

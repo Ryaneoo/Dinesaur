@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dinesaur.Migrations
 {
     [DbContext(typeof(DinesaurContext))]
-    [Migration("20260109182805_Initial")]
-    partial class Initial
+    [Migration("20260110100436_hours")]
+    partial class hours
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,18 +109,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f4bc8f77-cc34-44a0-a2bc-67fb4724f48f",
+                            ConcurrencyStamp = "b9411b93-a747-4958-8210-15fc91095720",
                             Contact = 91234567,
-                            CreatedAtUtc = new DateTime(2026, 1, 9, 18, 28, 4, 299, DateTimeKind.Utc).AddTicks(7764),
+                            CreatedAtUtc = new DateTime(2026, 1, 10, 10, 4, 35, 924, DateTimeKind.Utc).AddTicks(8672),
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "Admin",
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPBA9X+eFhzCZeSnAhFX5SX+3zuH40g1+B5KN1f79NHEIjMVlsS+wM2dvYZpWK3RUg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBlcfcz7n8zyhAOwadLmV8M1aMX2IRGCQ78bnFBrenYqvzj4CoVvO8F067SGEDEfqQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "200f5daa-dfb8-4faf-ba70-c2a7a16653da",
+                            SecurityStamp = "63c7cc63-88b9-476c-8a08-0fca10eebb36",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         },
@@ -128,18 +128,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d4de691e-2c1d-44bd-97b7-404fb8f01fc6",
+                            ConcurrencyStamp = "22c526dc-fd59-4f4a-a85b-3c06d515e939",
                             Contact = 91234568,
-                            CreatedAtUtc = new DateTime(2026, 1, 9, 18, 28, 4, 356, DateTimeKind.Utc).AddTicks(6377),
+                            CreatedAtUtc = new DateTime(2026, 1, 10, 10, 4, 35, 964, DateTimeKind.Utc).AddTicks(3831),
                             Email = "user@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "User",
                             NormalizedEmail = "USER@LOCALHOST.COM",
                             NormalizedUserName = "USER@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJ9Tlzu1k0599y9HlapCGfgyIrt1G42+Cs8MeE9bhtoqyn0HZC8NBvuc6lboggRxtg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE9RqTESBDIFc/RBpqeuW1VP9ivJzJMep71QWmEE12gEdgKQDJ8UA/viCxApMnnP3w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2918f2ec-c224-465e-b98b-051a3299bce1",
+                            SecurityStamp = "b0168503-9f5d-45f1-ae29-9e1ce4fde703",
                             TwoFactorEnabled = false,
                             UserName = "user@localhost.com"
                         },
@@ -147,18 +147,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "3",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1d4b79c9-0871-4140-8d1e-19a1130c67ab",
+                            ConcurrencyStamp = "e7038675-b63d-4c04-bc5e-21cc771fc0c0",
                             Contact = 91234560,
-                            CreatedAtUtc = new DateTime(2026, 1, 9, 18, 28, 4, 415, DateTimeKind.Utc).AddTicks(6646),
+                            CreatedAtUtc = new DateTime(2026, 1, 10, 10, 4, 36, 6, DateTimeKind.Utc).AddTicks(6463),
                             Email = "restaurantstaff@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "RestaurantStaff",
                             NormalizedEmail = "RESTAURANTSTAFF@LOCALHOST.COM",
                             NormalizedUserName = "RESTAURANTSTAFF@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOdEA6YO1Cidgm2x5dZKg9Qm2UDck63WgPZlcoW1GbH4Tt5eGD9WXKGDnim9cHkZ7w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEaouWRs5XOF89zqq9oEx59qqnJVsBMjztBzYX+pge6NzWpRDAGzjzkOrNjsQbVEXA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d1864a80-17a7-40a6-89ec-32fbd2a58eab",
+                            SecurityStamp = "4dae09dc-9713-432b-a880-bd983954f451",
                             TwoFactorEnabled = false,
                             UserName = "restaurantstaff@localhost.com"
                         });
@@ -522,6 +522,9 @@ namespace Dinesaur.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<TimeOnly>("ClosingHours")
+                        .HasColumnType("time");
+
                     b.Property<int?>("Contact")
                         .HasColumnType("int");
 
@@ -535,6 +538,9 @@ namespace Dinesaur.Migrations
                     b.Property<string>("Logo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeOnly>("OpeningHours")
+                        .HasColumnType("time");
 
                     b.Property<string>("RestaurantName")
                         .IsRequired()
@@ -556,8 +562,10 @@ namespace Dinesaur.Migrations
                             RestaurantID = 1,
                             AdminID = 1,
                             Category = "Western",
+                            ClosingHours = new TimeOnly(22, 0, 0),
                             Location = "Orchard",
                             Logo = "[]",
+                            OpeningHours = new TimeOnly(9, 0, 0),
                             RestaurantName = "WesternBanana",
                             RestaurantOwnerID = "3",
                             Status = 0
@@ -602,7 +610,7 @@ namespace Dinesaur.Migrations
                         {
                             ReviewID = 1,
                             CustomerID = "2",
-                            Date = new DateTime(2026, 1, 10, 2, 28, 4, 299, DateTimeKind.Local).AddTicks(7519),
+                            Date = new DateTime(2026, 1, 10, 18, 4, 35, 924, DateTimeKind.Local).AddTicks(8527),
                             Description = "Bad",
                             Rating = 2.5,
                             RestaurantID = 1,
