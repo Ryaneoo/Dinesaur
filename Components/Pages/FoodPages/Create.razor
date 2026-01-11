@@ -56,7 +56,7 @@
             </div>
                 <container>
                     <div class="mb-3">
-                        <label for="IMG" class="form-label" style="color:white;"> Upload Image of Food: </label>
+                        <label for="food" class="form-label" style="color:white;"> Upload Image of Food: </label>
                         <InputFile id="image" OnChange="@LoadIMG" class="form-control" />
                     </div>
                     @if (Errors.Any())
@@ -104,6 +104,9 @@
     function showAlert() {
         alert("Food Item created successfully");
     }
+    function showPic() {
+        alert("Food Image uploaded successfully");
+    }
 </script>
 @code {
     [SupplyParameterFromForm]
@@ -131,6 +134,7 @@
         Errors.Clear();
         var files = f.GetMultipleFiles();
         var IMG = files.FirstOrDefault();
+        await JS.InvokeVoidAsync("showPic");
         if (IMG.Size > maxIMGFileSize)
         {
             Errors.Add($"File {IMG.Name} exceeds the maximum size of {maxIMGFileSize} bytes.");
