@@ -15,7 +15,15 @@
 @if(HasRestaurant == true)
 {   
     <br />
-    <h2> Restaurant Logo:</h2>
+        @if(Status == Restaurant.ApprovalStatus.Pending)
+        {
+            <h2 style="color:lightgreen;">Status: Your restaurant is waiting to be approved.</h2>
+        }
+        @if(Status == Restaurant.ApprovalStatus.Rejected)
+        {
+            <h2 style="color:lightgreen;">Status: Your restaurant has been rejected, contact admin@localhost.com for an appeal.</h2>
+        }
+        <h2> Restaurant Logo:</h2>
     <div style="width: 100%;  display: flex; justify-content: center; align-items: center; color: none">
             <img src="@Lo" style="width: 50%; height: auto; align-content: center; border: 5px solid white; border-radius: 5px;" alt="Uploaded Image" />
     </div>
@@ -27,8 +35,12 @@
         <h2> Restuarant Opening Hour: @Oh</h2>
         <h2> Restaurant Closing Hour: @Ch</h2>
         <br />
+        @if(Status == Restaurant.ApprovalStatus.Approved){
         <a href="/menus" class="btn-primary" style="padding: 15px 32px;">Restaurant's Menu</a>
         <a href="/restaurants/edit/@Id" class="btn-primary" style="padding: 15px 32px;">Edit Your Restaurant</a>
+        <a href="/Restaurant/Bookings" class="btn-primary" style="padding: 15px 32px;">View Bookings Made</a>
+        <a href="/restaurants/delete" class="btn-primary" style="padding: 15px 32px;">Delete Restaurant</a>
+}
 }
 else
 {
@@ -58,7 +70,7 @@ else
     private string? RestaurantName,Lo,Email,Location,Ch,Oh;
     private int? Contact,Id;
     private string? Catergory;
-
+    private Restaurant.ApprovalStatus Status;
     @inject AuthenticationStateProvider authenticationStateProvider
     private DinesaurContext context = default!;
     private string? userId = "Default";
@@ -102,13 +114,15 @@ else
                   d.Email,
                   d.Location,
                   d.ClosingHours,
-                  d.OpeningHours
+                  d.OpeningHours,
+                  d.Status
               }).SingleOrDefaultAsync();
             RestaurantName = Details.RestaurantName;
             Contact = Details.Contact;
             Catergory = Details.Category;
             Email = Details.Email;
             Location = Details.Location;
+            Status = Details.Status;
             Ch = Details.ClosingHours.ToString("hh:mm tt");
             Oh = Details.OpeningHours.ToString("hh:mm tt");
             Id = Details.RestaurantID;

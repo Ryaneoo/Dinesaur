@@ -16,11 +16,11 @@
     <div style="display: flex; padding-top: 20px;">
         <div>
             <h3>Category: @selectedRestaurant?.Category</h3>
-            <h3>Description</h3>
+            
             <h3>Address: @selectedRestaurant?.Location</h3>
         </div>
         <div style="padding-left: 100px;">
-            <h3>Hours: 9am-9pm (Placeholder)</h3>
+                <h3>Hours: @selectedRestaurant?.OpeningHours.ToString("hh:mm tt") - @selectedRestaurant?.ClosingHours.ToString("hh:mm tt")</h3>
             <h3>Contact: @selectedRestaurant?.Contact</h3>
             <h3>Email: @selectedRestaurant?.Email</h3>
         </div>

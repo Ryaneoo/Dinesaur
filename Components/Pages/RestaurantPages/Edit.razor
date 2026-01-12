@@ -75,7 +75,7 @@ else
                 </div>
                     <container>
                         <div class="mb-3">
-                            <label for="IMG" class="form-label" style="color:white;"> Upload Image of Food: </label>
+                            <label for="logo" class="form-label" style="color:white;"> Upload Image of Logo: </label>
                             <InputFile id="image" OnChange="@LoadFiles" class="form-control" />
                         </div>
                         @if (FileErrors.Any())
@@ -158,7 +158,7 @@ else
             }
         }
 
-        NavigationManager.NavigateTo("/restaurants");
+        NavigationManager.NavigateTo("/RestaurantStaff/Home");
     }
     private List<String> Categories = new List<String>
     {
