@@ -1,10 +1,11 @@
 ﻿@*Users View Their Bookings*@
 
 @*Page Link*@
-@page "/MyBookings" 
+@page "/Restaurant/Bookings" 
 
 @*Imports*@
 @using Dinesaur.Domain
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
@@ -16,16 +17,16 @@
 
     @*Banner*@
     <div style="background-color: black; height: auto; text-align: left; display: flex; flex-direction: column; padding: 20px; background-color: rgb(0,0,0,60%)">
-        <h1 style="margin-top: 100px; margin-bottom: 20px; text-align: left">My Bookings</h1>
-        <div style="background-color: white; display: grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; border-radius: 10px;  padding: 5px; width: 30%;">
+        <h1 style="margin-top: 100px; margin-bottom: 20px; text-align: left">@SelectedRestaurant.RestaurantName Bookings</h1>
+        <div style="background-color: white; display: grid; grid-template-columns:repeat(auto-fit, minmax(10px, 1fr)); gap: 10px; border-radius: 10px;  padding: 5px;">
             <a style="background-color: #386641;
                         color:white ; 
                         border-radius: 5px; 
                         padding: 10px; 
                         font-weight:bold;
                         text-align: center"
-                @onclick="GetUpcoming">
-            Upcoming
+                @onclick="@(() => GetTab(1))">
+            NEW
             </a>
             <a style="background-color: #24462C;
                         color:white ;
@@ -33,15 +34,40 @@
                         padding: 10px;
                         font-weight:bold;
                         text-align: center"
-                    @onclick="GetCompleted">
-            Completed
+               @onclick="@(() => GetTab(2))">CONFIRMED
+            </a>
+            <a style="background-color: darkorange;
+                        color:black ;
+                        border-radius: 5px;
+                        padding: 10px;
+                        font-weight:bold;
+                        text-align: center"
+                    @onclick="@(()=>GetTab(3))">ONGOING
+            </a>
+            <a style="background-color: darkgreen;
+                        color:white ;
+                        border-radius: 5px;
+                        padding: 10px;
+                        font-weight:bold;
+                        text-align: center"
+               @onclick="@(() => GetTab(4))">
+                COMPLETED
+            </a>
+            <a style="background-color: darkred;
+                        color:white ;
+                        border-radius: 5px;
+                        padding: 10px;
+                        font-weight:bold;
+                        text-align: center"
+               @onclick="@(() => GetTab(5))">
+                CANCELLED
             </a>
         </div>
     </div>
 
     @*Bookings Displayed Here*@
     <div style="display: flex; gap: 25px; flex-direction: column; padding: 50px;">
-        @if (userBookings.Count == 0)
+        @if (restaurantBookings.Count == 0)
         {
             <h2><em>No Bookings</em></h2>
             <a style="padding: 20px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/User/Home"> Find Restaurants</a>
@@ -53,22 +79,25 @@
             {
                 @*Display Reservations Upcoming*@
                 <h2 id ="Upcoming" style="font-weight: bold"> Upcoming Bookings</h2>
-                @foreach (var booking in userBookings)
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                @foreach (var booking in restaurantBookings)
                 {
+                    using var context = DbFactory.CreateDbContext();
+                    var user = context.DinesaurUser.FirstOrDefault(r => r.DinesaurUserID == booking.CustomerID);
+
                     if (booking.Status == Reservation.ReservationStatus.Pending || booking.Status == Reservation.ReservationStatus.Confirmed || booking.Status == Reservation.ReservationStatus.Ongoing)
                     {
-                      @*Pull Restaurant Info*@
-                      var restaurant = restaurants.Find(r => r.RestaurantID == booking.RestaurantID);
-
+                        @*Pull Restaurant Info*@
                         <a @onclick="() => OpenDetails(booking)">
                             <div style="z-index: 1000; position: relative; cursor: pointer;">
                                 <div style="width: 100%; height: auto; background-color: #386641; border-radius: 15px; pointer-events: none; padding: 20px;">
-                                    <div style="display: grid; grid-template-columns: 90% 1fr;">
+                                    <div style="display: grid; grid-template-columns: 70% 1fr;">
                                         <div>
-                                            <h4 style="font-weight: bold; color: #88E788">@restaurant.RestaurantName</h4>
+                                            <h4 style="font-weight: bold; color: #88E788">@user.DinesaurUserName</h4>
                                                 <p style="color:white">
-                                                    @restaurant.Location <br />
-                                                    @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("h:mm tt")</p>
+                                                    @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("h:mm tt")<br />
+                                                    @booking.Pax PAX</p>
+
                                         </div>
                                         <div style="display: flex; height: 100%; justify-content: center;">
                                             <a style="width: 100%; height: 100%; padding: 10px; font-size: 20px; font-weight: bold; background-color: #88E788; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
@@ -79,11 +108,12 @@
                         </a>
                     }
                 }
+                </div>
             } else
             {
                 @*Display Previous Reservations*@
                 <h2 id = "Completed" style="font-weight: bold"> Completed Bookings </h2>
-                @foreach (var booking in userBookings)
+                @foreach (var booking in restaurantBookings)
                 {
                     if (booking.Status == Reservation.ReservationStatus.Completed || booking.Status == Reservation.ReservationStatus.Absent)
                     {
@@ -162,9 +192,6 @@
                 </div>
 
                 <div class="modal-buttons">
-                    <a class="secondary-btn" href="/Restaurants/@SelectedRestaurant.RestaurantID#start">
-                        View Restaurant
-                    </a>
                     <a class="secondary-btn" @onclick="@ViewPreOrderReceipt">
                         View Pre-Order
                     </a>
@@ -183,15 +210,28 @@
                             </a>
                         }
                     }
-                    else 
+                    else if (SelectedReservation.Status == Reservation.ReservationStatus.Pending)
                     {
-                        <a class="primary-btn" @onclick="EditEligibility">
-                            Edit Booking
+                        <a class="primary-btn" @onclick="ChangeReservationStatus">
+                            Confirm Booking
                         </a>
                         <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
                             Cancel Booking
                         </a>
 
+                    } else if (SelectedReservation.Status == Reservation.ReservationStatus.Confirmed)
+                    {
+                        <a class="primary-btn" @onclick="ChangeReservationStatus">
+                            Start Booking
+                        </a>
+                        <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
+                            Cancel Booking
+                        </a>
+                    } else if (SelectedReservation.Status == Reservation.ReservationStatus.Ongoing)
+                    {
+                        <a class="primary-btn" @onclick="ChangeReservationStatus">
+                            Complete Booking
+                        </a>
                     }
                 </div>
             </div>
@@ -302,7 +342,7 @@
 
 @code {
     
-    private List<Reservation> userBookings = new();
+    private List<Reservation> restaurantBookings = new();
     private List<Review> userReviews = new();
     private List<Restaurant> restaurants;
     private string aspNetUserId;
@@ -324,8 +364,9 @@
 
         @*Fetch Reservations and Restaurants from Database*@
         using var context = DbFactory.CreateDbContext();
-        userBookings = await context.Reservation.Where(r => r.CustomerID == aspNetUserId).ToListAsync();
-        userBookings.Sort((x, y) => Nullable.Compare(x.Date, y.Date));
+        SelectedRestaurant = await context.Restaurant.FirstOrDefaultAsync(r => r.RestaurantOwnerID == aspNetUserId);
+        restaurantBookings = await context.Reservation.Where(r => r.RestaurantID == SelectedRestaurant.RestaurantID).ToListAsync();
+        restaurantBookings.Sort((x, y) => Nullable.Compare(x.Date, y.Date));
         userReviews = await context.Review.Where(a => a.CustomerID == aspNetUserId).ToListAsync();
         restaurants = await context.Restaurant.ToListAsync();
 
@@ -339,13 +380,12 @@
 
     bool ShowPopUp = false;
     Reservation? SelectedReservation;
-    Restaurant? SelectedRestaurant;
+    Restaurant? SelectedRestaurant = new();
     Review? SelectedReview;
 
     @*Open Reservation Details Pop Up*@
     void OpenDetails(Reservation reservation)
     {
-        SelectedRestaurant = restaurants.Find(r => r.RestaurantID == reservation.RestaurantID);
         SelectedReservation = reservation;
         ShowPopUp = true;
     }
@@ -355,7 +395,6 @@
     {
         ShowPopUp = false;
         SelectedReservation = null;
-        SelectedRestaurant = null;
     }
 
     private bool showEditDenied = false;
@@ -421,15 +460,28 @@
 
     private string userSelect = "Upcoming";
 
-    private void GetUpcoming()
+    private void GetTab(int tab)
     {
-        userSelect = "Upcoming";
+        switch(tab)
+        {
+            case 1:
+                userSelect = "Upcoming";
+                break;
+            case 2:
+                userSelect = "Completed";
+                break;
+            case 3:
+                userSelect = "Ongoing";
+                break;
+            case 4:
+                userSelect = "Completed";
+                break;
+            case 5:
+                userSelect = "Cancelled";
+                break;
+        }
     }
 
-    private void GetCompleted()
-    {
-        userSelect = "Completed";
-    }
 
     public bool reviewPopUp = false;
     private void OpenReviewPopUp()
@@ -458,4 +510,25 @@
     {
         NavigationManager.NavigateTo($"/Reservation/OrderList/{SelectedReservation.ReservationID}");
     }
-}
+
+    private async Task ChangeReservationStatus()
+    {
+        using var context = DbFactory.CreateDbContext();
+        if (SelectedReservation.Status == Reservation.ReservationStatus.Pending)
+        {
+            SelectedReservation.Status = Reservation.ReservationStatus.Confirmed;
+        }
+        else if (SelectedReservation.Status == Reservation.ReservationStatus.Confirmed)
+        {
+            SelectedReservation.Status = Reservation.ReservationStatus.Ongoing;
+
+        } else if (SelectedReservation.Status == Reservation.ReservationStatus.Ongoing)
+        {
+            SelectedReservation.Status = Reservation.ReservationStatus.Completed;
+
+        }
+        context.Attach(SelectedReservation!).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Restaurant/Bookings", forceLoad: true);
+    }
+}   

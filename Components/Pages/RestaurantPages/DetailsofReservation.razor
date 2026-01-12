@@ -1,0 +1,70 @@
+﻿@page "/restaurants/details"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using Dinesaur.Domain
+@using Dinesaur.Data
+@inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider authenticationStateProvider
+<PageTitle>Details</PageTitle>
+<container>
+<h1 style="margin-top:40px;">Reservation Details</h1>
+
+    @foreach (var booking in AllReservations)
+    {
+        if (booking.Status != Reservation.ReservationStatus.Completed)
+        {
+            @*Pull Restaurant Info*@
+            var reservation = AllReservations.Find(r => r.RestaurantID == booking.RestaurantID);
+            
+                 
+            var username = UserDetails.Find(u => u.Id == booking.CustomerID); 
+                <div style="z-index: 1000; position: relative; cursor: pointer;">
+                    <div style="width: 100%; height: auto; background-color: #386641; border-radius: 15px; pointer-events: none; padding: 20px;">
+                        <div style="display: grid; grid-template-columns: 90% 1fr;">
+                            <div>
+                                
+                                <h4 style="font-weight: bold; color: #88E788">Customer Name: @username.Name</h4>
+                                <p style="color:white">
+                                    Pax: @booking.Pax <br />
+                                    Remarks: @booking.Remarks <br />
+                                    Date/Time: @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("h:mm tt")
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                
+                
+        }
+    }
+</container>
+@code {
+    private List<Reservation> AllReservations = new();
+    private List<DinesaurUser> UserDetails = new();
+    private DinesaurContext context = default!;
+    private string? userId = "Default";
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        context = DbFactory.CreateDbContext();
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var userIdClaim = user.FindFirst("userId");
+
+        if (userIdClaim != null)
+        {
+            userId = userIdClaim.Value;
+        }
+        var CheckForRestaurantId = await db.Restaurant
+        .Where(r => r.RestaurantOwnerID == aspNetUserId)
+        .Select(r => r.RestaurantID)
+        .SingleOrDefaultAsync();
+
+        AllReservations = context.Reservation.Where(f => f.RestaurantID == CheckForRestaurantId)
+        .ToList();
+        UserDetails = context.Users.ToList();
+    }
+}

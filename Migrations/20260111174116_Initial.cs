@@ -186,10 +186,10 @@ namespace Dinesaur.Migrations
                 {
                     ReviewID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ReviewTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReviewTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Rating = table.Column<double>(type: "float", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RestaurantID = table.Column<int>(type: "int", nullable: false),
                     CustomerID = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false)
@@ -320,9 +320,9 @@ namespace Dinesaur.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Contact", "CreatedAtUtc", "Email", "EmailConfirmed", "LastLoginAtUtc", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PreviousLoginAtUtc", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "1", 0, "4b70d7b7-ac92-437a-9a89-a7cc7a2d3a73", 91234567, new DateTime(2026, 1, 10, 13, 20, 32, 379, DateTimeKind.Utc).AddTicks(5258), "admin@localhost.com", true, null, false, null, "Admin", "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEMANRUb69YahMSSPUJDr0JbVUll4GPjZTVa58Kip0aotvFhu62mm1n53N/LQKd4wAA==", null, false, null, "7623a30f-db17-4d46-b671-61595f543ce5", false, "admin@localhost.com" },
-                    { "2", 0, "e351fe7f-4baa-4511-8f30-ad602ae86524", 91234568, new DateTime(2026, 1, 10, 13, 20, 32, 455, DateTimeKind.Utc).AddTicks(8366), "user@localhost.com", true, null, false, null, "User", "USER@LOCALHOST.COM", "USER@LOCALHOST.COM", "AQAAAAIAAYagAAAAEOUrJyEIfPGAyYtV/d3ho/diwGLtqf3OYPm1PsvHsLFmxVU+EaA9gNoP16owiUCiRQ==", null, false, null, "c40e6b27-53b5-471f-8eb8-68d9fd7e318c", false, "user@localhost.com" },
-                    { "3", 0, "30ffaf63-0b1d-4ce7-a3f6-0ad2dc7f6d1c", 91234560, new DateTime(2026, 1, 10, 13, 20, 32, 536, DateTimeKind.Utc).AddTicks(7947), "restaurantstaff@localhost.com", true, null, false, null, "RestaurantStaff", "RESTAURANTSTAFF@LOCALHOST.COM", "RESTAURANTSTAFF@LOCALHOST.COM", "AQAAAAIAAYagAAAAEKpmTXPzgfocDwBOF11ds9CiRQc7iiuLViYRDfEu+N+nTLU9C5rhq8TQrF5j8o+sXQ==", null, false, null, "6c8844a2-b544-4c09-bcde-dbb16a15a0ed", false, "restaurantstaff@localhost.com" }
+                    { "1", 0, "233c2bf3-c933-40be-a848-8b5e976b56c3", 91234567, new DateTime(2026, 1, 11, 17, 41, 15, 285, DateTimeKind.Utc).AddTicks(3844), "admin@localhost.com", true, null, false, null, "Admin", "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEJy4f1BwnY6SkKtwD1WkRLXvIkVl/U5mLgJULeVvKH2mPGYQTbBIh5civgliRCGj9Q==", null, false, null, "7b39879c-c384-4352-a8ed-ad5443761904", false, "admin@localhost.com" },
+                    { "2", 0, "e18437c3-f9f0-4872-af9f-2a4c8bd5037c", 91234568, new DateTime(2026, 1, 11, 17, 41, 15, 341, DateTimeKind.Utc).AddTicks(8185), "user@localhost.com", true, null, false, null, "User", "USER@LOCALHOST.COM", "USER@LOCALHOST.COM", "AQAAAAIAAYagAAAAEGCwft9o66MnuILZathwRBJIKLzigtJ0rKv9MN4sS8B8IWkRRV8+PtYXdtxBHXsgSQ==", null, false, null, "7b2d0087-98d5-496d-9b6f-f0de5e8b4fea", false, "user@localhost.com" },
+                    { "3", 0, "612f0de3-dff9-4d7b-8bb1-b8dd36a7d4f6", 91234560, new DateTime(2026, 1, 11, 17, 41, 15, 399, DateTimeKind.Utc).AddTicks(7486), "restaurantstaff@localhost.com", true, null, false, null, "RestaurantStaff", "RESTAURANTSTAFF@LOCALHOST.COM", "RESTAURANTSTAFF@LOCALHOST.COM", "AQAAAAIAAYagAAAAEBsVR8WOkjCY74q2aEfxbTyylFN3ubq/qX24uHjn9iyvep3veusi/9VjwJBOraAcqw==", null, false, null, "dc4d1834-0b73-470c-8a01-925f2ba01d23", false, "restaurantstaff@localhost.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -373,12 +373,12 @@ namespace Dinesaur.Migrations
                 {
                     { 1, "2", new DateTime(2026, 1, 9, 14, 0, 0, 0, DateTimeKind.Unspecified), 4, "N/A", 1, null, 1, new DateTime(2026, 1, 9, 18, 0, 0, 0, DateTimeKind.Unspecified) },
                     { 2, "2", new DateTime(2026, 1, 10, 12, 0, 0, 0, DateTimeKind.Unspecified), 2, "N/A", 1, null, 0, new DateTime(2026, 1, 10, 14, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 3, "2", new DateTime(2026, 1, 13, 13, 0, 0, 0, DateTimeKind.Unspecified), 3, "N/A", 1, null, 2, new DateTime(2026, 1, 13, 15, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 3, "2", new DateTime(2026, 1, 13, 13, 0, 0, 0, DateTimeKind.Unspecified), 3, "N/A", 1, null, 3, new DateTime(2026, 1, 13, 15, 0, 0, 0, DateTimeKind.Unspecified) },
                     { 4, "2", new DateTime(2026, 1, 15, 18, 0, 0, 0, DateTimeKind.Unspecified), 4, "N/A", 1, null, 0, new DateTime(2026, 1, 15, 20, 0, 0, 0, DateTimeKind.Unspecified) },
                     { 5, "2", new DateTime(2026, 1, 18, 12, 0, 0, 0, DateTimeKind.Unspecified), 2, "N/A", 1, null, 1, new DateTime(2026, 1, 18, 14, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 6, "2", new DateTime(2025, 12, 20, 13, 0, 0, 0, DateTimeKind.Unspecified), 2, "N/A", 1, null, 2, new DateTime(2025, 12, 20, 15, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 7, "2", new DateTime(2025, 12, 22, 18, 0, 0, 0, DateTimeKind.Unspecified), 4, "N/A", 1, null, 2, new DateTime(2025, 12, 22, 20, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 8, "2", new DateTime(2025, 12, 25, 12, 0, 0, 0, DateTimeKind.Unspecified), 3, "N/A", 1, null, 2, new DateTime(2025, 12, 25, 14, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { 6, "2", new DateTime(2025, 12, 20, 13, 0, 0, 0, DateTimeKind.Unspecified), 2, "N/A", 1, null, 3, new DateTime(2025, 12, 20, 15, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 7, "2", new DateTime(2025, 12, 22, 18, 0, 0, 0, DateTimeKind.Unspecified), 4, "N/A", 1, null, 3, new DateTime(2025, 12, 22, 20, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 8, "2", new DateTime(2025, 12, 25, 12, 0, 0, 0, DateTimeKind.Unspecified), 3, "N/A", 1, null, 3, new DateTime(2025, 12, 25, 14, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.InsertData(
@@ -389,7 +389,7 @@ namespace Dinesaur.Migrations
             migrationBuilder.InsertData(
                 table: "Review",
                 columns: new[] { "ReviewID", "CustomerID", "Date", "Description", "Rating", "RestaurantID", "ReviewTitle", "Status" },
-                values: new object[] { 1, "2", new DateTime(2026, 1, 10, 21, 20, 32, 379, DateTimeKind.Local).AddTicks(4852), "Bad", 2.5, 1, "Bad", 0 });
+                values: new object[] { 1, "2", new DateTime(2026, 1, 12, 1, 41, 15, 285, DateTimeKind.Local).AddTicks(3635), "Bad", 2.5, 1, "Bad", 0 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",

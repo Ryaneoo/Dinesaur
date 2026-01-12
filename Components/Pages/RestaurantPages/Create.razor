@@ -150,8 +150,8 @@
     private async Task AddRestaurant()
     {
         Restaurant.RestaurantOwnerID = Id;
-        Restaurant.AdminID = 0; // Yet to be approved by Admin
-
+        Restaurant.AdminID = 1; 
+        // Restaurant.Status = 0; (Seeded) Yet to be approved by Admin
         using var context = DbFactory.CreateDbContext();
         context.Restaurant.Add(Restaurant);
         await context.SaveChangesAsync();

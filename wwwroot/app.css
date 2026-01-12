@@ -150,7 +150,7 @@ h2, h3, h4, h5, h6 {
     background-color: #386641; /* single background color */
     padding: 25px 30px;
     border-radius: 12px;
-    width: 600px;
+    width: 800px;
     max-width: 90%;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     /* Animation for smooth pop-out */
