@@ -25,7 +25,7 @@
                         padding: 10px; 
                         font-weight:bold;
                         text-align: center"
-                @onclick="@(() => GetTab(1))">
+                @onclick="@(() => GetBookings(1))">
             NEW
             </a>
             <a style="background-color: #24462C;
@@ -34,7 +34,7 @@
                         padding: 10px;
                         font-weight:bold;
                         text-align: center"
-               @onclick="@(() => GetTab(2))">CONFIRMED
+               @onclick="@(() => GetBookings(2))">CONFIRMED
             </a>
             <a style="background-color: darkorange;
                         color:black ;
@@ -42,7 +42,7 @@
                         padding: 10px;
                         font-weight:bold;
                         text-align: center"
-                    @onclick="@(()=>GetTab(3))">ONGOING
+                    @onclick="@(()=>GetBookings(3))">ONGOING
             </a>
             <a style="background-color: darkgreen;
                         color:white ;
@@ -50,7 +50,7 @@
                         padding: 10px;
                         font-weight:bold;
                         text-align: center"
-               @onclick="@(() => GetTab(4))">
+               @onclick="@(() => GetBookings(4))">
                 COMPLETED
             </a>
             <a style="background-color: darkred;
@@ -59,7 +59,7 @@
                         padding: 10px;
                         font-weight:bold;
                         text-align: center"
-               @onclick="@(() => GetTab(5))">
+               @onclick="@(() => GetBookings(5))">
                 CANCELLED
             </a>
         </div>
@@ -67,90 +67,46 @@
 
     @*Bookings Displayed Here*@
     <div style="display: flex; gap: 25px; flex-direction: column; padding: 50px;">
-        @if (restaurantBookings.Count == 0)
+        @if (BookingTab.Count == 0)
         {
             <h2><em>No Bookings</em></h2>
             <a style="padding: 20px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/User/Home"> Find Restaurants</a>
-        } 
-        
-        else{
+        }
+        else
+        {
 
-            @if(userSelect == "Upcoming")
-            {
-                @*Display Reservations Upcoming*@
-                <h2 id ="Upcoming" style="font-weight: bold"> Upcoming Bookings</h2>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                @foreach (var booking in restaurantBookings)
+            @*Display Reservations Upcoming*@
+            <h2 style="font-weight: bold"> @tabHeader Bookings</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                @foreach (var booking in BookingTab)
                 {
                     using var context = DbFactory.CreateDbContext();
                     var user = context.DinesaurUser.FirstOrDefault(r => r.DinesaurUserID == booking.CustomerID);
-
-                    if (booking.Status == Reservation.ReservationStatus.Pending || booking.Status == Reservation.ReservationStatus.Confirmed || booking.Status == Reservation.ReservationStatus.Ongoing)
-                    {
-                        @*Pull Restaurant Info*@
-                        <a @onclick="() => OpenDetails(booking)">
-                            <div style="z-index: 1000; position: relative; cursor: pointer;">
-                                <div style="width: 100%; height: auto; background-color: #386641; border-radius: 15px; pointer-events: none; padding: 20px;">
-                                    <div style="display: grid; grid-template-columns: 70% 1fr;">
-                                        <div>
-                                            <h4 style="font-weight: bold; color: #88E788">@user.DinesaurUserName</h4>
-                                                <p style="color:white">
-                                                    @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("h:mm tt")<br />
-                                                    @booking.Pax PAX</p>
-
-                                        </div>
-                                        <div style="display: flex; height: 100%; justify-content: center;">
-                                            <a style="width: 100%; height: 100%; padding: 10px; font-size: 20px; font-weight: bold; background-color: #88E788; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
-                                        </div>
+                    @*Pull Restaurant Info*@
+                    <a @onclick="() => OpenDetails(booking)">
+                        <div style="z-index: 1000; position: relative; cursor: pointer;">
+                            <div style="width: 100%; height: auto; background-color: #386641; border-radius: 15px; pointer-events: none; padding: 20px;">
+                                <div style="display: grid; grid-template-columns: 70% 1fr;">
+                                    <div>
+                                        <h4 style="font-weight: bold; color: #88E788">@user.DinesaurUserName</h4>
+                                        <p style="color:white">
+                                            @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("h:mm tt")<br />
+                                            @booking.Pax PAX
+                                        </p>
+                                    </div>
+                                    <div style="display: flex; height: 100%; justify-content: center;">
+                                        <a style="width: 100%; height: 100%; padding: 10px; font-size: 20px; font-weight: bold; background-color: #88E788; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
                                     </div>
                                 </div>
                             </div>
-                        </a>
-                    }
+                        </div>
+                    </a>
                 }
-                </div>
-            } else
-            {
-                @*Display Previous Reservations*@
-                <h2 id = "Completed" style="font-weight: bold"> Completed Bookings </h2>
-                @foreach (var booking in restaurantBookings)
-                {
-                    if (booking.Status == Reservation.ReservationStatus.Completed || booking.Status == Reservation.ReservationStatus.Absent)
-                    {
-                        @*Pull Restaurant Info*@
-                        var restaurant = restaurants.Find(r => r.RestaurantID == booking.RestaurantID);
-                        <a @onclick="() => OpenDetails(booking)">
-                            <div style="z-index: 1000; position: relative; cursor: pointer;">
-                                <div style="width: 100%; height: auto; background-color: #24462C; border-radius: 15px; pointer-events: none; padding: 20px;">
-                                    <div style="display: grid; grid-template-columns: 90% 1fr; align-items: center">
-                                        <div>
-                                            <h4 style="font-weight: bold; color:#88E788">@restaurant.RestaurantName</h4>
-                                            <p style="color:white">
-                                                @restaurant.Location <br />
-                                                @booking.Date.Value.ToString("dd MMMM") - @booking.Time.Value.ToString("h:mm tt")
-                                            </p>
-                                        </div>
-                                        <div style="display: flex; height: 100%; justify-content: center;">
-                                            <a style="width: 100%; height: 100%; padding: 10px; font-size: 20px; font-weight: bold; background-color: #88E788; color: black; border-radius: 15px; text-align: center; align-content: center" @onclick="() => OpenDetails(booking)">View</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    }
-                }
-        
-            }
-        } 
-        
-          
-        
-        
-        
-        
-
-            
+            </div>
+        }
     </div>
+
+          
 
     @*Show Details Pop Up*@
     @if (ShowPopUp && SelectedReservation != null)
@@ -192,115 +148,37 @@
                 </div>
 
                 <div class="modal-buttons">
-                    <a class="secondary-btn" @onclick="@ViewPreOrderReceipt">
-                        View Pre-Order
-                    </a>
-
-                    @if (SelectedReservation.Status == Reservation.ReservationStatus.Completed)
-                    {
-                        if (SelectedReservation.ReviewID is not null)
-                        {
-                            <a class="primary-btn" @onclick="OpenReviewPopUp">
-                                View Review
+                        <a class="secondary-btn" @onclick="@ViewPreOrderReceipt">
+                            View Pre-Order
+                        </a>
+                    @switch (SelectedReservation.Status) {
+                        case Reservation.ReservationStatus.Pending:
+                            <a class="primary-btn" @onclick="ChangeReservationStatus">
+                                Confirm Booking
                             </a>
-                        } else
-                        {
-                            <a class="primary-btn" href="/Review/Create/@SelectedReservation.ReservationID">
-                                Leave A Review
+                            <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
+                                Cancel Booking
                             </a>
-                        }
-                    }
-                    else if (SelectedReservation.Status == Reservation.ReservationStatus.Pending)
-                    {
-                        <a class="primary-btn" @onclick="ChangeReservationStatus">
-                            Confirm Booking
-                        </a>
-                        <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
-                            Cancel Booking
-                        </a>
-
-                    } else if (SelectedReservation.Status == Reservation.ReservationStatus.Confirmed)
-                    {
-                        <a class="primary-btn" @onclick="ChangeReservationStatus">
-                            Start Booking
-                        </a>
-                        <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
-                            Cancel Booking
-                        </a>
-                    } else if (SelectedReservation.Status == Reservation.ReservationStatus.Ongoing)
-                    {
-                        <a class="primary-btn" @onclick="ChangeReservationStatus">
-                            Complete Booking
-                        </a>
+                            break;
+                        case Reservation.ReservationStatus.Confirmed:
+                            <a class="primary-btn" @onclick="ChangeReservationStatus">
+                                Start Booking
+                            </a>
+                            <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
+                                Cancel Booking
+                            </a>
+                            break;
+                        case Reservation.ReservationStatus.Ongoing:
+                            <a class="primary-btn" @onclick="ChangeReservationStatus">
+                                Complete Booking
+                             </a>
+                            break;
                     }
                 </div>
             </div>
         </div>
  
 
-    }
-
-    @*Show Review Pop Up*@
-    @if (reviewPopUp)
-    {
-        <div class="modal-backdrop" @onclick="CloseReviewPopUp">
-
-            <div class="modal-card" @onclick:stopPropagation>
-                <button class="close-btn" @onclick="CloseReviewPopUp">✕</button>
-                <h2 style="color: #88E788">Review</h2>
-
-                <div class="reservation-detail">
-                    <span class="reservation-label">Title:</span>
-                    <span class="reservation-value">@SelectedReview.ReviewTitle</span>
-                </div>
-
-                <div class="reservation-detail">
-                    <span class="reservation-label">Reservation Slot:</span>
-                    <span class="reservation-value">
-                        @SelectedReservation.Date.Value.ToString("dd MMMM yyyy") - @SelectedReservation.Time.Value.ToString("hh:mm tt")
-                    </span>
-                </div>
-
-                <div class="reservation-detail">
-                    <span class="reservation-label">Rating:</span>
-                    <span style="color:yellow " class="reservation-value">@SelectedReview.Rating ★</span>
-                </div>
-
-                <div class="reservation-detail">
-                    <span class="reservation-label">Description:</span>
-                    <span class="reservation-value">
-                        @(string.IsNullOrWhiteSpace(SelectedReview.Description) ? "N/A" : SelectedReview.Description.Substring(0,50))...
-                    </span>
-                </div>
-
-                <div class="modal-buttons">
-                    <a class="secondary-btn" @onclick="CloseReviewPopUp">
-                        Back
-                    </a>
-                    <a class="primary-btn" href="/Review/Edit/@SelectedReview.ReviewID">
-                        Edit
-                    </a>
-                    <a class="danger-btn" @onclick="ShowCancelReviewConfirm">
-                        Remove
-                    </a>
-                </div>
-            </div>
-        </div>
-
-    }
-
-    @*Alert Shown When Reservation cannot be edited*@
-    @if (showEditDenied)
-    {
-        <div class="confirm-overlay" @onclick="() => showEditDenied = false">
-            <div class="confirm-modal" @onclick:stopPropagation>
-                <h2 style="color: #88E788">Unable to Edit</h2>
-                <p>Booking cannot be edited less then 3 days from Day of Booking</p>
-                <div class="modal-buttons">
-                    <button class="secondary-btn" @onclick="() => showEditDenied = false">Close</button>
-                </div>
-            </div>
-        </div>
     }
 
     @*Show Cancel Confirm Pop Up*@
@@ -313,25 +191,9 @@
                 <h2 style="color: #88E788">Cancel Booking:</h2>
                 <p style="color: white">Are you sure of cancelling this booking?</p>
                 <div class="modal-buttons">
-                    <button class="danger-btn" @onclick="CancelReservation">Yes</button>
-                    <button class="secondary-btn" @onclick="CloseCancelReservationConfirm">No</button>
-                </div>
-            </div>
-        </div>
-
-    }
-
-    @if (showCancelReviewConfirm)
-    {
-        <div class="modal-backdrop" @onclick="CloseCancelReviewConfirm">
-
-            <div class="modal-card" @onclick:stopPropagation>
-                <button class="close-btn" @onclick="CloseCancelReviewConfirm">✕</button>
-                <h2 style="color: #88E788">Remove Review:</h2>
-                <p style="color: white">Are you sure you want to remove this review?</p>
-                <div class="modal-buttons">
-                    <button class="danger-btn" @onclick="CancelReview">Yes</button>
-                    <button class="secondary-btn" @onclick="CloseCancelReviewConfirm">No</button>
+                    <button class="secondary-btn" @onclick="CloseCancelReservationConfirm">Back</button>
+                    <button class="danger-btn" @onclick="() => CancelReservation(0)">Cancel</button>
+                    <button class="danger-btn" @onclick="() => CancelReservation(1)">No-Show</button>
                 </div>
             </div>
         </div>
@@ -341,8 +203,10 @@
 
 
 @code {
-    
+
     private List<Reservation> restaurantBookings = new();
+    private List<Reservation> BookingTab = new();
+    string tabHeader = "";
     private List<Review> userReviews = new();
     private List<Restaurant> restaurants;
     private string aspNetUserId;
@@ -367,7 +231,6 @@
         SelectedRestaurant = await context.Restaurant.FirstOrDefaultAsync(r => r.RestaurantOwnerID == aspNetUserId);
         restaurantBookings = await context.Reservation.Where(r => r.RestaurantID == SelectedRestaurant.RestaurantID).ToListAsync();
         restaurantBookings.Sort((x, y) => Nullable.Compare(x.Date, y.Date));
-        userReviews = await context.Review.Where(a => a.CustomerID == aspNetUserId).ToListAsync();
         restaurants = await context.Restaurant.ToListAsync();
 
     }
@@ -381,7 +244,6 @@
     bool ShowPopUp = false;
     Reservation? SelectedReservation;
     Restaurant? SelectedRestaurant = new();
-    Review? SelectedReview;
 
     @*Open Reservation Details Pop Up*@
     void OpenDetails(Reservation reservation)
@@ -397,21 +259,6 @@
         SelectedReservation = null;
     }
 
-    private bool showEditDenied = false;
-
-    @*Check Edit Eligibility*@
-    private void EditEligibility()
-    {
-        if(SelectedReservation.Date - DateTime.Now > TimeSpan.FromDays(3))
-        {
-            NavigationManager.NavigateTo($"/Reservation/Edit/{SelectedReservation.ReservationID}");
-        }
-        else
-        {
-            showEditDenied = true;
-        }
-    }
-
     public bool showCancelReservationConfirm = false;
 
     private void ShowCancelReservationConfirm()
@@ -425,87 +272,54 @@
         showCancelReservationConfirm = false;
     }
 
-    private async Task CancelReservation()
+    private async Task CancelReservation(int state)
     {
-        showCancelReservationConfirm = false;
+        if (state == 0)
+        {
+            SelectedReservation.Status = Reservation.ReservationStatus.Cancelled;
+        }
+        else
+        {
+            SelectedReservation.Status = Reservation.ReservationStatus.Absent;
+        }
+
         using var context = DbFactory.CreateDbContext();
-        context.Reservation.Remove(SelectedReservation);
-        await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
-    }
-
-    public bool showCancelReviewConfirm = false;
-
-    private void ShowCancelReviewConfirm()
-    {
-        showCancelReviewConfirm = true;
-    }
-
-
-    private void CloseCancelReviewConfirm()
-    {
-        showCancelReviewConfirm = false;
-    }
-
-    private async Task CancelReview()
-    {
-        using var context = DbFactory.CreateDbContext();
-        context.Review.Remove(SelectedReview);
-        SelectedReservation.ReviewID = null;
         context.Attach(SelectedReservation!).State = EntityState.Modified;
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/MyBookings?from=completed", forceLoad: true);
-        showCancelReviewConfirm = false;
+        showCancelReservationConfirm = false;
+        NavigationManager.NavigateTo("/Restaurant/Bookings", forceLoad: true);
     }
 
-    private string userSelect = "Upcoming";
-
-    private void GetTab(int tab)
+    private async Task GetBookings(int tab)
     {
-        switch(tab)
+        switch (tab)
         {
             case 1:
-                userSelect = "Upcoming";
+                BookingTab = restaurantBookings.Where(r => r.Status == Reservation.ReservationStatus.Pending).ToList();
+                tabHeader = "New";
                 break;
             case 2:
-                userSelect = "Completed";
+                BookingTab = restaurantBookings.Where(r => r.Status == Reservation.ReservationStatus.Confirmed).ToList();
+                tabHeader = "Confirmed";
                 break;
             case 3:
-                userSelect = "Ongoing";
+                BookingTab = restaurantBookings.Where(r => r.Status == Reservation.ReservationStatus.Ongoing).ToList();
+                tabHeader = "Ongoing";
                 break;
             case 4:
-                userSelect = "Completed";
+                BookingTab = restaurantBookings.Where(r => r.Status == Reservation.ReservationStatus.Completed).ToList();
+                tabHeader = "Completed";
                 break;
             case 5:
-                userSelect = "Cancelled";
+                BookingTab = restaurantBookings.Where(r => r.Status == Reservation.ReservationStatus.Cancelled).ToList();
+                tabHeader = "Cancelled";
+                break;
+            default:
+                BookingTab = new List<Reservation>();
                 break;
         }
     }
 
-
-    public bool reviewPopUp = false;
-    private void OpenReviewPopUp()
-    {
-        SelectedReview = userReviews.Find(r => r.ReviewID == SelectedReservation.ReviewID);
-        reviewPopUp = true;
-    }
-
-    private void CloseReviewPopUp()
-    {
-        reviewPopUp = false;
-        SelectedReview = null;
-    }
-
-    protected override void OnInitialized()
-    {
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-
-        if (query["from"] == "completed")
-        {
-            userSelect = "Completed";
-        }
-    }
     private async Task ViewPreOrderReceipt()
     {
         NavigationManager.NavigateTo($"/Reservation/OrderList/{SelectedReservation.ReservationID}");

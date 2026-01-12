@@ -33,7 +33,8 @@ namespace Dinesaur.Domain
             Confirmed = 1,
             Ongoing = 2,
             Completed = 3,
-            Absent = 4,
+            Cancelled = 4,
+            Absent = 5
         }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext context)
