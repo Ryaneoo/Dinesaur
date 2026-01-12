@@ -20,7 +20,7 @@
                 <h1 style="text-align: left"> Welcome,</h1>
                 <h1 style="text-align: left"> @displayName!</h1>
             </div>
-            
+            <div>
             <form @onsubmit="Search">
                 <input type="text"
                        @bind-value="searchTerm"
@@ -29,19 +29,28 @@
                        style="height: 50px; width: 200px;"
                         />
                 <button type="submit"
-                        style="padding: 12px 18px; font-size: 16px;"
+                        
                         >
                     Search
+                    </button>
+            </form>
+            </div>
+            <div>
+                <button type="button"
+                style="padding: 12px 18px; font-size: 16px;"
+                        @onclick="OpenFilter">
+                        Filters
                 </button>
-        </form>
-         
+            </div>
              @if (restaurants.Count != 0)
                 {
              var searchedRestaurant = searchrestaurants
             .ToList();
-        if(searchedRestaurant.Any())
+            var filteredRestaurant = filteredrestaurants
+            .ToList();
+            if(searchedRestaurant.Any() || filteredRestaurant.Any())
         {
-                num = searchedRestaurant.Count;
+                num = searchedRestaurant?.Count ?? filteredRestaurant?.Count ?? 0;
                 <h3>@num match found</h3>
         }
             else
@@ -67,9 +76,11 @@
                     .ToList();
                  var searchedRestaurants = searchrestaurants
                 .ToList();
+                var filteredRestaurants = filteredrestaurants
+                .ToList();
                 if(searchedRestaurants.Any())
                 {
-                    <h3>Searched Restaurants</h3>
+                    <h3>Searched Restaurants by Search Bar</h3>
                     
                 <div style="display: flex; gap: 25px; justify-content: left">
                  @foreach (var restaurant in searchedRestaurants)
@@ -96,8 +107,9 @@
                 }
                 </div>
                 }
+                
                 else{ 
-                    <h3>Restaurants</h3>
+                    <h3>Restaurants Avaliable</h3>
                 <div style="display: flex; gap: 25px; justify-content: left">
                 @foreach( var restaurant in randomRestaurants)
                     {
@@ -128,100 +140,51 @@
                 }
                 }
                 
-            @* </div> *@
+            
         </div>
-        @* <div>
-            <h3>Nearby Restaurants</h3>
-            <div style="display: flex; gap: 25px;justify-content: left">
-                @if (restaurants.Count == 0)
-                {
-                    <p><em>Loading...</em></p>
-                }
-                else
-                {
-                    var random = new Random();
-                    var randomRestaurants = restaurants
-                    .OrderBy(r => random.Next())
-                    .Take(5)
-                    .ToList();
-                    @foreach (var restaurant in randomRestaurants)
-                    {
-                        <a href="/Restaurants/@restaurant.RestaurantID">
-                            <div>
-                                <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
-                                @if (restaurant.Logo != null && restaurant.Logo.Count > 0)
-                                {
-                                    <img src="@restaurant.Logo[0]"
-                                         alt="@restaurant.RestaurantName logo"
-                                         style="width:100%;height:100%;object-fit:cover;border-radius:15px;display:block;" />
-                                }
-                                else
-                                {
-                                    <div style="color:white;padding:10px;">No logo</div>
-                                }
-
-                                </div>
-                                <h4> @restaurant.RestaurantName</h4>
-                                <p> @restaurant.Location</p>
-
-                            </div>
-                        </a>
-
-                    }
-                }
-            </div>
-        </div> *@
-        @* <div>
-            <h3>Rated Restaurants</h3>
-            <div style="display: flex; gap: 25px;justify-content: left">
-                @if (restaurants.Count == 0)
-                {
-                    <p><em>Loading...</em></p>
-                }
-                else
-                {
-                    var random = new Random();
-                    var randomRestaurants = restaurants
-                    .OrderBy(r => random.Next())
-                    .Take(5)
-                    .ToList();
-                    @foreach (var restaurant in randomRestaurants)
-                    {
-                        <a href="/Restaurants/@restaurant.RestaurantID">
-                            <div>
-                                <div style=" width: 250px; height: 250px; background-color: black;border-radius: 15px">
-                                @if (restaurant.Logo != null && restaurant.Logo.Count > 0)
-                                {
-                                    <img src="@restaurant.Logo[0]"
-                                         alt="@restaurant.RestaurantName logo"
-                                         style="width:100%;height:100%;object-fit:cover;border-radius:15px;display:block;" />
-                                }
-                                else
-                                {
-                                    <div style="color:white;padding:10px;">No logo</div>
-                                }
-
-                                </div>
-                                <h4> @restaurant.RestaurantName</h4>
-                                <p> @restaurant.Location</p>
-
-                            </div>
-                        </a>
-                    }
-                }
-            </div>
-        </div> *@
     </div>
+    @if(showFilter == true)
+        {
+    <!-- Backdrop -->
+    <div class="modal-backdrop fade show"></div>
 
+    <!-- Modal -->
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
 
+                <div class="modal-header">
+                    <h4 class="modal-title" style="color:black;">Search Restaurant by Category</h4>
+                    <button type="button" class="btn-close" @onclick="CloseFilter"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Restaurant Category</label>
+                        <select class="form-select" @bind="Category">
+                            @foreach (var c in Categories)
+                            {
+                                <option value="@c">@c</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="ApplyFilters">Apply</button>
+                </div>
+             </div>
+        </div>
+    </div>
+    }
 
-            @code {
-                private string? displayName;
-            private string? searchinput,searchTerm;
-            private int? num;
-            private List<Restaurant> restaurants = new();
+@code {
+    private string? displayName;
+    private string? searchinput,searchTerm;
+    private int? num;
+    private List<Restaurant> restaurants = new();
     private List<Restaurant>? searchrestaurants = new();
-    private bool hasSearched;
+    private List<Restaurant>? filteredrestaurants = new();
+    private string? Category,filterCategory;
+    private bool hasSearched,showFilter;
     public void Dispose()
     {
         throw new NotImplementedException();
@@ -244,7 +207,16 @@
         restaurants = await DbContext.Restaurant
         .Where(r => r.Status == Restaurant.ApprovalStatus.Approved).ToListAsync();
     }
-
+    private List<String> Categories = new List<String>
+    {
+         "",
+         "Western",
+         "Fine Dining",
+         "Dessert",
+         "Vegetarian",
+         "HotPot",
+         "Others",
+    };
     void displayRestaurant(Restaurant restaurant)
     {
 
@@ -255,6 +227,7 @@
     {
         searchinput = searchTerm;
         searchrestaurants.Clear();
+        filteredrestaurants.Clear();
         foreach(var stall in restaurants)
         {
             if (stall.RestaurantName.Contains(searchinput, StringComparison.OrdinalIgnoreCase) || stall.RestaurantName == (searchinput))
@@ -265,5 +238,24 @@
         hasSearched = true;
         StateHasChanged();
     }
-
+    private async Task OpenFilter()
+    {
+        showFilter = true;
+    }
+    private void CloseFilter() => showFilter = false;
+    private async Task ApplyFilters()
+    {
+        filterCategory = Category;
+        filteredrestaurants.Clear();
+        searchrestaurants.Clear();
+        foreach (var stall in restaurants)
+        {
+            if(stall.Category == Category)
+            {
+                filteredrestaurants.Add(stall);
+            }
+        }
+        showFilter = false;
+        StateHasChanged();
+    }
 }
