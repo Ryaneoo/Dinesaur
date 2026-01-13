@@ -16,10 +16,10 @@ namespace Dinesaur.Domain
         public string? CustomerID { get; set; } /*Foreign key*/
         public enum ApprovalStatusReviews
         {
-            Pending = 0,
-            Approved = 1,
-            Rejected = 2,
+            Published = 0,
+            Reported = 1,
+            Removed = 2
         }
-        public ApprovalStatusReviews Status { get; set; } = ApprovalStatusReviews.Pending;
+        public ApprovalStatusReviews Status { get; set; } = ApprovalStatusReviews.Published;
     }
 }

@@ -100,7 +100,7 @@
         pendingRestaurants = await db.Restaurant
             .CountAsync(r => r.Status == Restaurant.ApprovalStatus.Pending);
         pendingReviews = await db.Review
-            .CountAsync(rev => rev.Status == Review.ApprovalStatusReviews.Pending);
+            .CountAsync(rev => rev.Status == Review.ApprovalStatusReviews.Published);
 
 }
 }
