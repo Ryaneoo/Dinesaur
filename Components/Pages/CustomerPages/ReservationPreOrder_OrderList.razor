@@ -1,13 +1,15 @@
 ﻿@*Pre-Order Order List for Reservation*@
 @page "/Reservation/OrderList/{id:int}"
+@using Dinesaur.Data
 @using Dinesaur.Domain
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider Auth
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject Dinesaur.Data.DinesaurContext DbContext
-
+@inject UserManager<DinesaurUser> UserManager
 
 <div style="display: flex; flex-direction: column; padding: 30px; font-family: Consolas;">
 
@@ -62,10 +64,10 @@
 
     <div style="text-align: right; color:white;font-size:20px;">
         <p>Pre‑Order Cost: $@totalCost.ToString("F2")</p>
-        <p>Reservation Fee: $0.00</p>
-        <p>Subtotal: $0.00</p>
-        <p>GST (9%): $0.00</p>
-        <p>Service Charge (10%): $0.00</p>
+        <p>Reservation Fee: .00</p>
+        <p>Subtotal: .00</p>
+        <p>GST (9%): .00</p>
+        <p>Service Charge (10%): .00</p>
         <p style="font-weight: bold;font-size:40px;">Grand Total: $@totalCost.ToString("F2")</p>
     </div>
     @if (CanEditPreOrder)
@@ -85,7 +87,7 @@
 
 
     <button class="btn btn-success" style="margin-top: 30px;" onclick="@SaveAndGoHome">
-        Confirm Booking
+        Confirm
     </button>
 
 </div>
@@ -107,7 +109,8 @@
     Restaurant? selectedRestaurant;
     Reservation? selectedReservation;
     Menu? selectedMenu;
-
+    private DinesaurUser? role;
+    private string? url = "/MyBookings";
     private sealed class OrderRow
     {
         public string Dish { get; set; } = "";
@@ -154,14 +157,30 @@
     ).ToListAsync();
 
         totalCost = preOrder.Cost;
-
-
+        var email = await db.Users
+        .Where(u => u.Id == aspNetUserId)
+        .Select(u => u.Email)
+        .SingleOrDefaultAsync();
+        if (email != null)
+        {
+            var userrole = await UserManager.FindByEmailAsync(email);
+            role = userrole;
+        }
+        if (await UserManager.IsInRoleAsync(role, "RestaurantStaff"))
+        {
+            url = "/Restaurant/Bookings";
+        }
+        else
+        {
+            url = "/MyBookings";
+           
+        }
     }
 
     private async Task SaveAndGoHome()
     {
         await using var db = await DbFactory.CreateDbContextAsync();
-        NavigationManager.NavigateTo("#");
+        NavigationManager.NavigateTo(url);
         await db.SaveChangesAsync();
     }
     private async Task EditPreOrdering()
