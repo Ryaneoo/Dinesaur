@@ -35,7 +35,7 @@
             <div class="mb-3">
                     <label for="category" class="form-label" style="color:white;">Category:</label>
                     <InputSelect id="itemcategory" @bind-Value="Food.Category" class="form-select">
-                        @foreach (string category in Categories.Skip(1))
+                        @foreach (string category in Categories)
                         {
                             <option value="@category">@category</option>
                         }
@@ -114,7 +114,7 @@
     private List<string> Categories = new List<string>();
     private int MenuIds, RId;
     private string? ROwnerId;
-    private const int maxIMGFileSize = 5242880;
+    private const int maxIMGFileSize = 5000000;
     private List<string> Errors = new List<string>();
 
     private DinesaurContext context = default!;

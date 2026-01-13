@@ -31,7 +31,7 @@
             <div class="mb-3">
                     <label for="category" class="form-label" style="color:white;">Category:</label>
                     <InputSelect id="itemcategory" @bind-Value="Restaurant.Category" class="form-select">
-                        @foreach (string category in Categories.Skip(1))
+                        @foreach (string category in Categories)
                         {
                             <option value="@category">@category</option>
                         }

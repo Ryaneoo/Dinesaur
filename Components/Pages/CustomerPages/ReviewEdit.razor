@@ -86,7 +86,18 @@
 
             <div class="reservation-detail">
                 <span class="reservation-label">Description:</span>
-                <p>@(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description.Substring(0,50))...</p>
+                @if (selectedReview.Description.Length > 50)
+                {
+                    <span class="reservation-value">
+                        @(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description.Substring(0, 50))...
+                    </span>
+                }
+                else
+                {
+                    <span class="reservation-value">
+                        @(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description)
+                    </span>
+                }
             </div>
             
             <div class="modal-buttons">
