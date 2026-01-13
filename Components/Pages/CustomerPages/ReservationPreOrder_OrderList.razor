@@ -110,7 +110,7 @@
     Reservation? selectedReservation;
     Menu? selectedMenu;
     private DinesaurUser? role;
-    private string? url = "/MyBookings";
+    private string? url = "/";
     private sealed class OrderRow
     {
         public string Dish { get; set; } = "";
@@ -165,20 +165,23 @@
         {
             var userrole = await UserManager.FindByEmailAsync(email);
             role = userrole;
+           
         }
         if (await UserManager.IsInRoleAsync(role, "RestaurantStaff"))
         {
             url = "/Restaurant/Bookings";
         }
-        else
+        else if (await UserManager.IsInRoleAsync(role, "User"))
         {
             url = "/MyBookings";
-           
+
         }
+        
     }
 
     private async Task SaveAndGoHome()
     {
+        StateHasChanged();
         await using var db = await DbFactory.CreateDbContextAsync();
         NavigationManager.NavigateTo(url);
         await db.SaveChangesAsync();
