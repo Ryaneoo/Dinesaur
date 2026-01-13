@@ -19,7 +19,8 @@ namespace Dinesaur.Configurations.Entities
                     OpeningHours = new TimeOnly(9, 0),
                     ClosingHours = new TimeOnly(22, 0),
                     Logo = new List<string>(),
-                    RestaurantOwnerID = "3"
+                    RestaurantOwnerID = "3",
+                    Status = Restaurant.ApprovalStatus.Approved
                 });
         }
     }

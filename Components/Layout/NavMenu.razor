@@ -4,11 +4,24 @@
 @inject AuthenticationStateProvider Auth
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 <nav style="background-color: #386641; display: flex; justify-content: space-between; width: 100%;  z-index: 9999; position: fixed">
-    <div>
-        <a class="navbar-brand" , href="/">Dinesaur</a>
-        <a class="nav-link" href=@link >Home</a>
-        <a class="nav-link" href="/TC">T & C</a>
-    </div>
+    <AuthorizeView Roles ="Administrator">
+        <Authorized>
+        <div>
+            <a class="navbar-brand" , href="/">Dinesaur</a>
+            <a class="nav-link" href="/Admin/Home">Home</a>
+            <a class="nav-link" href="/TC">T & C</a>
+        </div>
+        </Authorized>
+
+        <NotAuthorized>
+            <div>
+                <a class="navbar-brand" , href="/">Dinesaur</a>
+                <a class="nav-link" href=@link>Home</a>
+                <a class="nav-link" href="/TC">T & C</a>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+   
     <AuthorizeView Roles="@($"RestaurantStaff")">
         <div>
             <a href="/RestaurantStaff/Home"> Restaurant </a>
