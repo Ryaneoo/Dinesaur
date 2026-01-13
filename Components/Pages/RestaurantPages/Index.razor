@@ -23,10 +23,16 @@
         {
             <h2 style="color:lightgreen;">Status: Your restaurant has been rejected, contact admin@localhost.com for an appeal.</h2>
         }
+        @if(@Lo == null)
+        {
+            <h2>No Restaurant Logo</h2>
+        }
+        else{
         <h2> Restaurant Logo:</h2>
     <div style="width: 100%;  display: flex; justify-content: center; align-items: center; color: none">
             <img src="@Lo" style="width: 50%; height: auto; align-content: center; border: 5px solid white; border-radius: 5px;" alt="Uploaded Image" />
     </div>
+        }
         <h2> Restaurant Name:  @RestaurantName </h2>
         <h2> Restaurant Contact Number: @Contact </h2>
         <h2> Restaurant Location: @Location </h2>
@@ -49,21 +55,6 @@ else
         <a href="/restaurants/create" class="btn-primary" style="padding: 15px 32px;">Create Restaurant</a>
 }
 </container>
-
-@* <QuickGrid Class="table" Items="context.Restaurant">
-    <PropertyColumn Property="restaurant => restaurant.RestaurantName">  </PropertyColumn>
-    <PropertyColumn Property="restaurant => restaurant.Location" />
-    <PropertyColumn Property="restaurant => restaurant.Category" />
-    <PropertyColumn Property="restaurant => restaurant.AdminID" />
-    <PropertyColumn Property="restaurant => restaurant.Contact" />
-    <PropertyColumn Property="restaurant => restaurant.Email" />
-
-    <TemplateColumn Context="restaurant">
-        <a href="@($"restaurants/edit?restaurantid={restaurant.RestaurantID}")">Edit</a> |
-        <a href="@($"restaurants/details?restaurantid={restaurant.RestaurantID}")">Details</a> |
-        <a href="@($"restaurants/delete?restaurantid={restaurant.RestaurantID}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid> *@
 
 @code {
     private bool HasRestaurant;
@@ -130,8 +121,10 @@ else
             .Where(l => l.RestaurantOwnerID == aspNetUserId)
             .Select(l => l.Logo)
             .FirstOrDefaultAsync();
-
-            Lo = Logo.First();
+            if (Logo != null)
+            {
+                Lo = Logo.First();
+            }
         }
         
     }
