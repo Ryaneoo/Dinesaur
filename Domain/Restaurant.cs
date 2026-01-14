@@ -31,5 +31,7 @@ namespace Dinesaur.Domain
             Rejected = 2,
         }
         public ApprovalStatus Status { get; set; } = ApprovalStatus.Pending;
+
+        public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     }
 }

@@ -14,6 +14,7 @@
     <div style="background-color: dimgrey; height: auto; text-align: left; display: flex; flex-direction: column; padding: 10px 30px;">
         <h1 style="padding-top: 100px; text-align: left">Pre - Order</h1>
         <h2>Order your dishes now and enjoy your food when you arrive!</h2>
+        <h3>Note:Pre-orders can only be modified up to 24 hours before the scheduled date.<br /> Hence you are unable to edit it after @selectedReservation?.Date.Value.Date.AddDays(-1) </h3>
 
         <div style="background-color: black; display: grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; border-radius: 15px;  padding: 10px;">
 @if (selectedMenu?.Catergories != null)

@@ -16,17 +16,25 @@
                                     <Authorized Context="adminAuth">
                                         <a class="nav-link" href="/admin/reviews/manage">Customer Reviews</a>
                                         <a class="nav-link" href="/admin/restaurant/manage">Restaurants</a>
-                                        <a class="nav-link" href="/Account/Manage">Settings</a>
                                     </Authorized>
                                 </AuthorizeView>
-
                                 @* Normal User Menu (only if NOT admin) *@
-                                <AuthorizeView Roles="Administrator" Context="userAuth"> 
-                                    <NotAuthorized Context="userAuth">
+                                <AuthorizeView Roles="User" Context="userAuth"> 
+                                    <Authorized Context="userAuth">
+                                        @if (userAuth.User.IsInRole("RestaurantStaff"))
+                                        {
+                                        <a class="nav-link" href="/Restaurant/Bookings">Restaurant Bookings</a>
+                                        }
+                                        
+                                        else if (userAuth.User.IsInRole("User"))
+                                        {
                                         <a class="nav-link" href="/MyBookings">My Bookings</a>
-                                        <a class="nav-link" href="/Account/Manage">Settings</a>
-                                    </NotAuthorized>
+                                        }
+                                        
+                                    </Authorized>
                                 </AuthorizeView>
+                                        <a class="nav-link" href="/Account/Manage">Settings</a>
+                                    
 
                             </div>
                         </div>
@@ -47,3 +55,7 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+
+
+
