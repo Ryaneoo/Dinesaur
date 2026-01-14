@@ -22,4 +22,5 @@ namespace Dinesaur.Domain
         }
         public ApprovalStatusReviews Status { get; set; } = ApprovalStatusReviews.Published;
     }
+
 }

@@ -9,6 +9,8 @@
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject Dinesaur.Data.DinesaurContext DbContext
 @inject UserManager<Dinesaur.Data.DinesaurUser> UserManager
+@inject IJSRuntime JS
+@rendermode InteractiveServer
 
 <AuthorizeView Roles="Administrator">
     <Authorized>
@@ -17,9 +19,11 @@
             width: 100%;
             color: white;
             padding: 50px;
-            align-items: center;">
+            display:grid;
+            grid-template-columns:1fr auto;
+            align-items: start;">
 
-            <div style="display: flex; gap: 25px; height: 400px; align-items: center; justify-content: left">
+            <div style="display: flex; flex-direction:column; gap:40px;">
                 <div>
                     <h1 style="text-align: left">Welcome,</h1>
                     <h1 style="text-align: left">@displayName!</h1>
@@ -27,15 +31,23 @@
 
                 <div style="
                     color:white;
-                    font-size:90px;
-                    line-height:1.6;
-                    margin-top:1025px;
-                    transform: translateX(-550px);">
-                    There are “@NewUsersCount” New Users<br />
-                    There are “@pendingReviews” New Reviews for review<br />
-                    There are “@pendingRestaurants” New Restaurants for review
+                    font-size:60px;
+                    line-height:1.7;
+                    max-width:800px;">
+                    There are “@NewUsersCount” New Users today<br/>
+                    There are “@pendingRestaurants” New Restaurants for review<br />
+                    There are “@pendingReviews” New Reviews for review
+                    
                 </div>
             </div>
+            <div style="width:500px;height:400px;margin-left:auto;margin-top:30px;">
+                <h3 style="font-size:35px;">New Users (Last 7 Days)</h3>
+                <canvas id="newUsersChart"></canvas>
+                <h3 style="font-size:35px;">New Restaurants (Last 7 Days)</h3>
+                <canvas id="restaurantsChart"></canvas>
+            </div>
+
+           
         </div>
     </Authorized>
 
@@ -61,10 +73,11 @@
     private DateTime? sinceUtc;
     private int pendingRestaurants;
     private int pendingReviews;
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
+    private string[] newUserLabels = Array.Empty<string>();
+    private int[] newUserCounts = Array.Empty<int>();
+    private string[] restaurantLabels = Array.Empty<string>();
+    private int[] restaurantCounts = Array.Empty<int>();
+    private bool _chartRendered;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,23 +97,87 @@
 
         var admin = await db.Users.SingleAsync(u => u.Id == aspNetUserId);
 
-
-        sinceUtc = admin.PreviousLoginAtUtc;
-
+        
+        var startOfTodayUtc = DateTime.UtcNow.Date;
 
         if (sinceUtc != null)
         {
             NewUsersCount = await db.Users
-                .CountAsync(u => u.CreatedAtUtc > sinceUtc.Value);
+                .CountAsync(u => u.CreatedAtUtc > startOfTodayUtc);
         }
         else
         {
             NewUsersCount = 0;
         }
+
         pendingRestaurants = await db.Restaurant
             .CountAsync(r => r.Status == Restaurant.ApprovalStatus.Pending);
         pendingReviews = await db.Review
             .CountAsync(rev => rev.Status == Review.ApprovalStatusReviews.Published);
 
+
+        var startUtc = DateTime.UtcNow.Date.AddDays(-6);     // 7 days incl today (UTC dates)
+        var endUtcExclusive = DateTime.UtcNow.Date.AddDays(1);
+
+        var daily = await db.Users
+            .Where(u => u.CreatedAtUtc >= startUtc && u.CreatedAtUtc < endUtcExclusive)
+            .GroupBy(u => u.CreatedAtUtc.Date)
+            .Select(g => new { Day = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+
+        var map = daily.ToDictionary(x => x.Day, x => x.Count);
+
+        newUserLabels = Enumerable.Range(0, 7)
+            .Select(i => startUtc.AddDays(i).ToString("dd MMM"))
+            .ToArray();
+
+        newUserCounts = Enumerable.Range(0, 7)
+            .Select(i =>
+            {
+                var day = startUtc.AddDays(i);
+                return map.TryGetValue(day, out var c) ? c : 0;
+            })
+            .ToArray();
+
+        await InvokeAsync(StateHasChanged);
+
+        var dailyRestaurants = await db.Restaurant
+    .Where(r => r.CreatedAtUtc >= startUtc && r.CreatedAtUtc < endUtcExclusive)
+    .GroupBy(r => r.CreatedAtUtc.Date)
+    .Select(g => new { Day = g.Key, Count = g.Count() })
+    .ToListAsync();
+
+        var restaurantMap = dailyRestaurants.ToDictionary(x => x.Day, x => x.Count);
+
+        restaurantLabels = Enumerable.Range(0, 7)
+            .Select(i => startUtc.AddDays(i).ToString("dd MMM"))
+            .ToArray();
+
+        restaurantCounts = Enumerable.Range(0, 7)
+            .Select(i =>
+            {
+                var day = startUtc.AddDays(i);
+                return restaurantMap.TryGetValue(day, out var c) ? c : 0;
+            })
+            .ToArray();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_chartRendered) return;
+
+        // only run when canvas is actually in the DOM + data is ready
+        if (newUserLabels.Length == 7 && newUserCounts.Length == 7)
+        {
+            _chartRendered = true;
+            await JS.InvokeVoidAsync("renderNewUsersChart", newUserLabels, newUserCounts);
+            await JS.InvokeVoidAsync("renderRestaurantsChart", restaurantLabels, restaurantCounts);
+        }
 }
 }
+
+

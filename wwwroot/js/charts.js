@@ -2,6 +2,8 @@
     const canvas = document.getElementById("newUsersChart");
     if (!canvas) return;
 
+    if (typeof Chart === "undefined") return;
+
     if (window._newUsersChart) window._newUsersChart.destroy();
 
     window._newUsersChart = new Chart(canvas, {
@@ -67,39 +69,4 @@ window.renderRestaurantsChart = (labels, data) => {
         }
     });
 };
-
-window.renderReviewsChart = (labels, data) => {
-    const canvas = document.getElementById("reviewsChart");
-    if (!canvas) return;
-
-    if (window._reviewsChart) window._reviewsChart.destroy();
-
-    window._reviewsChart = new Chart(canvas, {
-        type: "line",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "New Reviews",
-                data: data,
-                borderColor: "#A855F7",
-                backgroundColor: "#A855F733",
-                fill: true,
-                borderWidth: 2,
-                tension: 0.35
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: { ticks: { color: "white" } },
-                y: { ticks: { color: "white" }, beginAtZero: true }
-            },
-            plugins: {
-                legend: { labels: { color: "white" } }
-            }
-        }
-    });
-};
-
 
