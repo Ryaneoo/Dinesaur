@@ -9,6 +9,9 @@
 @inject AuthenticationStateProvider Auth
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject Dinesaur.Data.DinesaurContext DbContext
+@inject IJSRuntime JS
+
+
 @inject UserManager<DinesaurUser> UserManager
 
 <div style="display: flex; flex-direction: column; padding: 30px; font-family: Consolas;">
@@ -85,11 +88,18 @@
         </button>
     }
 
+    <AuthorizeView Roles="RestaurantStaff">
+        <Authorized>
+            <button class="btn btn-success" style="margin-top: 30px;" onclick="@SaveAndGoHome">
+                Back
+            </button>
+        </Authorized>
+    </AuthorizeView>
 
     <button class="btn btn-success" style="margin-top: 30px;" onclick="@SaveAndGoHome">
         Confirm
     </button>
-
+    
 </div>
 
 
@@ -183,14 +193,17 @@
     {
         StateHasChanged();
         await using var db = await DbFactory.CreateDbContextAsync();
-        NavigationManager.NavigateTo(url);
         await db.SaveChangesAsync();
+        await JS.InvokeVoidAsync("alert", "Booking is Confirmed!");
+        NavigationManager.NavigateTo("#");
+        
+
     }
     private async Task EditPreOrdering()
     {
 
         NavigationManager.NavigateTo($"/Reservation/Create/PreOrder/{id}");
-        
+
     }
     private async Task DeletePreOrder()
     {
@@ -199,32 +212,32 @@
 
         await using var db = await DbFactory.CreateDbContextAsync();
 
-       
+
         var preOrder = await db.PreOrder
             .FirstOrDefaultAsync(p => p.PreOrderID == preOrderID.Value);
 
         if (preOrder == null)
             return;
 
-        
+
         var items = await db.PreOrderItem
             .Where(i => i.PreOrderID == preOrderID.Value)
             .ToListAsync();
 
         db.PreOrderItem.RemoveRange(items);
 
-        
+
         db.PreOrder.Remove(preOrder);
 
         await db.SaveChangesAsync();
 
-        
+
         orderRows.Clear();
         totalCost = 0;
         preOrderID = null;
 
         NavigationManager.NavigateTo("/MyBookings");
-        
+
     }
     private bool CanEditPreOrder
     {
@@ -233,13 +246,13 @@
             if (selectedReservation?.Date == null)
                 return false;
 
-            
+
             var reservationDate = selectedReservation.Date.Value.Date;
 
-            
+
             var cutoff = reservationDate.AddDays(-1);
 
-            
+
             return DateTime.Now < cutoff;
         }
     }

@@ -18,6 +18,8 @@ namespace Dinesaur.Configurations.Entities
                     AdminID = 1,
                     OpeningHours = new TimeOnly(9, 0),
                     ClosingHours = new TimeOnly(22, 0),
+                    Logo = new List<string>(),
+                    RestaurantOwnerID = "3",
                     Logo = ["/Images/DinesaurLandingPage.jpg"],
                     RestaurantOwnerID = "3",
                     Contact = 12340987,

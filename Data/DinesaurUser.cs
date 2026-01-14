@@ -15,6 +15,5 @@ namespace Dinesaur.Data
 
         public DateTime? LastLoginAtUtc { get; set; }
 
-        public DateTime? PreviousLoginAtUtc { get; set; }
     }
 }
