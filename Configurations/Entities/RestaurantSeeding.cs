@@ -20,6 +20,10 @@ namespace Dinesaur.Configurations.Entities
                     ClosingHours = new TimeOnly(22, 0),
                     Logo = new List<string>(),
                     RestaurantOwnerID = "3",
+                    Logo = ["/Images/DinesaurLandingPage.jpg"],
+                    RestaurantOwnerID = "3",
+                    Contact = 12340987,
+                    Email = "seededRest@gmail.com",
                     Status = Restaurant.ApprovalStatus.Approved
                 });
         }

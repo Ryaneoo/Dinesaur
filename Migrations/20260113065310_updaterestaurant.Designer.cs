@@ -4,6 +4,7 @@ using Dinesaur.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dinesaur.Migrations
 {
     [DbContext(typeof(DinesaurContext))]
-    partial class DinesaurContextModelSnapshot : ModelSnapshot
+    [Migration("20260113065310_updaterestaurant")]
+    partial class updaterestaurant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,6 +79,9 @@ namespace Dinesaur.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("PreviousLoginAtUtc")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -103,9 +109,9 @@ namespace Dinesaur.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8b7b171b-94d9-4036-982f-96fd16f66a65",
+                            ConcurrencyStamp = "509de758-fe47-4b95-8459-c540b2d6b2bf",
                             Contact = 91234567,
-                            CreatedAtUtc = new DateTime(2026, 1, 13, 6, 27, 11, 646, DateTimeKind.Utc).AddTicks(7330),
+                            CreatedAtUtc = new DateTime(2026, 1, 13, 6, 53, 10, 387, DateTimeKind.Utc).AddTicks(7845),
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
@@ -131,9 +137,6 @@ namespace Dinesaur.Migrations
                             Name = "User",
                             NormalizedEmail = "USER@LOCALHOST.COM",
                             NormalizedUserName = "USER@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOjk+nkEkfd7T+tB3mYxc0sa84v0izSHjvCPyoU41uanAgiUJa2nheP34SgdT0LikA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "30b741e1-894b-403e-981c-f7ec8fd7e5a2",
                             PasswordHash = "AQAAAAIAAYagAAAAEGmEsJMoUXEdfGotgQMlZ/QbMZzd2Dovc7G6VvGXhPTveHi7okpvVWkEf4p+o160yw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "26279c87-4d2a-4131-98d9-269e313a97d0",
@@ -153,9 +156,9 @@ namespace Dinesaur.Migrations
                             Name = "RestaurantStaff",
                             NormalizedEmail = "RESTAURANTSTAFF@LOCALHOST.COM",
                             NormalizedUserName = "RESTAURANTSTAFF@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFcD6810jZfCW6EW9LlkKiQq69NhIkkMNw1qfPz5X30KKFh+JLttu/IhUFmiBiXjnw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJtk2iqDO/OVvSFUNr4S+Wyp0VqUXRTcLq5VUE7GqV3qutEFGwr/buTTimXEuPLVLw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c02185b5-7f1e-4d03-a473-020549a91a2c",
+                            SecurityStamp = "8a49e861-9047-40ba-864a-d302bd3742e8",
                             TwoFactorEnabled = false,
                             UserName = "restaurantstaff@localhost.com"
                         });
@@ -525,9 +528,6 @@ namespace Dinesaur.Migrations
                     b.Property<int?>("Contact")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -582,9 +582,6 @@ namespace Dinesaur.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("CustomerID")
                         .HasColumnType("nvarchar(max)");
 
@@ -616,9 +613,8 @@ namespace Dinesaur.Migrations
                         new
                         {
                             ReviewID = 1,
-                            CreatedAtUtc = new DateTime(2026, 1, 13, 6, 27, 11, 646, DateTimeKind.Utc).AddTicks(6993),
                             CustomerID = "2",
-                            Date = new DateTime(2026, 1, 13, 14, 27, 11, 646, DateTimeKind.Local).AddTicks(7000),
+                            Date = new DateTime(2026, 1, 13, 14, 53, 10, 387, DateTimeKind.Local).AddTicks(7700),
                             Description = "Bad",
                             Rating = 2.5,
                             RestaurantID = 1,

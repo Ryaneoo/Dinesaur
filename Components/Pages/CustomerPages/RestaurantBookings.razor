@@ -70,7 +70,21 @@
         @if (BookingTab.Count == 0)
         {
             <h2><em>No Bookings</em></h2>
-            <a style="padding: 20px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/User/Home"> Find Restaurants</a>
+            <AuthorizeView Roles="User" Context="userAuth">
+                <Authorized Context="userAuth">
+                    @if (userAuth.User.IsInRole("RestaurantStaff"))
+                    {
+                        
+                    }
+
+                    else if (userAuth.User.IsInRole("User"))
+                    {
+                        <a style="padding: 20px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/User/Home"> Find Restaurants</a>
+                    }
+
+                </Authorized>
+            </AuthorizeView>
+            
         }
         else
         {
