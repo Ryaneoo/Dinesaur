@@ -130,7 +130,7 @@
         await using var db = await DbFactory.CreateDbContextAsync();
 
         reviews = await db.Review
-            .Where(r => r.Status == Review.ApprovalStatusReviews.Published)
+            .Where(r => r.Status == Review.ApprovalStatusReviews.Published || r.Status == Review.ApprovalStatusReviews.Reported)
             .ToListAsync();
         reviews.Sort((x, y) => Nullable.Compare<DateTime>(x.Date, y.Date));
 

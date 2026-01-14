@@ -69,7 +69,17 @@
     </div>
 </div>
     <div style="margin: 20px 80px;">
-        <h3>Recent Reviews</h3>
+        <div style="display: flex; gap: 15px; align-items: baseline"> 
+            <h3>Recent Reviews</h3>
+            <InputSelect @bind-Value="ratingTab" style="width: 50px; background: #386641; height: 100%; color: yellow; font-weight: bold; border-radius: 10px; padding 5px;">
+                <option style="color: yellow; padding: 5px;" value="5">5 ★</option>
+                <option style="color: yellow; padding: 5px;" value="4">4 ★</option>
+                <option style="color: yellow; padding: 5px;" value="3">3 ★</option>
+                <option style="color: yellow; padding: 5px;" value="2">2 ★</option>
+                <option style="color: yellow; padding: 5px;" value="1">1 ★</option>
+            </InputSelect>
+        </div>
+        
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; justify-content: left">
             @if (reviews == null)
             {
@@ -77,9 +87,8 @@
             }
             else
             {
-                
-
-                @foreach (var review in reviews)
+                var reviewsTab = reviews.Where(r => r.Rating == ratingTab).OrderByDescending(r => r.Date).ToList();
+                @foreach (var review in reviewsTab)
                 {
                     using var context = DbFactory.CreateDbContext();
                     var user = context.DinesaurUser.FirstOrDefault(r => r.DinesaurUserID == review.CustomerID);
@@ -87,15 +96,26 @@
                         <div style="z-index: 1000; position: relative; cursor: pointer;">
                             <div style="width: 500px; height: auto; background-color: #386641; border-radius: 15px; pointer-events: none; padding: 15px;">
                                 <div style="display: display; flex-direction: column">
-                                    <div style=" display: grid; grid-template-columns: 90% 1fr">
+                                    <div style=" display: grid; grid-template-columns: 90% 1fr; align-items:baseline">
                                         <div style="display: flex; flex-direction: column; gap: 5px;">
                                             <h4 style="font-weight: bold; color: #88E788">@review.ReviewTitle</h4>
-                                            <h6>@user.DinesaurUserName: @review.Date.ToString("dd MMMM yyyy") - @review.Date.ToString("hh:mm tt")</h6>
+                                            <h6 style="font-weight: bold">@user.DinesaurUserName - @review.Date.ToString("dd MMMM yyyy")</h6>
                                         </div>
-                                        <h5 style="color:yellow">@review.Rating ★</h5>
+                                        <h5 style="color:yellow; font-weight:bold">@review.Rating ★</h5>
                                     </div>
                                     <div>
-                                        <p style="color: white; font-weight: normal">@review.Description</p>
+                                        @if (review.Description.Length > 50)
+                                        {
+                                            <p style="color: white; font-weight: normal">
+                                                @(string.IsNullOrWhiteSpace(review.Description) ? "N/A" : review.Description.Substring(0, 50))...
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p style="color: white; font-weight: normal">
+                                                @(string.IsNullOrWhiteSpace(review.Description) ? "N/A" : review.Description)
+                                            </p>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -162,45 +182,41 @@
     @*Show Review Pop Up*@
     @if (reviewPopUp)
     {
-        <div class="modal-backdrop" @onclick="CloseReviewPopUp">
 
+        <div class="modal-backdrop" @onclick="CloseReviewPopUp">
             <div class="modal-card" @onclick:stopPropagation>
                 <button class="close-btn" @onclick="CloseReviewPopUp">✕</button>
-                <h2 style="color: #88E788">Review</h2>
-
-                <div class="reservation-detail">
-                    <span class="reservation-label">Title:</span>
-                    <span class="reservation-value">@selectedReview.ReviewTitle</span>
+                <div style="display: flex; gap: 20px; align-items: baseline">
+                    <h2 style="font-weight: bold; color: #88E788">@selectedReview.ReviewTitle</h2>
+                    <div style="display: flex; gap: 5px; align-items: baseline">
+                    @for (int i = 1; i <= selectedReview.Rating; i++)
+                        {
+                        <h5 style="color: yellow; font: bold">★</h5>
+                        }
+                    </div>
+                    
                 </div>
 
-                <div class="reservation-detail">
-                    <span class="reservation-label">Reservation Slot:</span>
-                    <span class="reservation-value">
-                        @selectedReservation.Date.Value.ToString("dd MMMM yyyy") - @selectedReservation.Time.Value.ToString("hh:mm tt")
-                    </span>
+                <div style="display: flex; gap: 30px;">
+                    <div style="display: flex; flex-direction:column">
+                        <h6 style="font-weight: bold">Diner:</h6>
+                        <h6 style="font-weight: bold">Posted On:</h6>
+                    </div>
+                    <div style="display: flex; flex-direction:column">
+                        <h6> @selectedUser.DinesaurUserName </h6>
+                        <h6>@selectedReview.Date.ToString("dd MMMM yyyy")</h6>
+                    </div>
                 </div>
 
-                <div class="reservation-detail">
-                    <span class="reservation-label">Rating:</span>
-                    <span style="color:yellow " class="reservation-value">@selectedReview.Rating ★</span>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="reservation-detail">
+                        <span class="reservation-label">Description:</span>
+                    </div>
+                    <p style="color: white;">
+                        @(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description)
+                    </p>
                 </div>
-
-                <div class="reservation-detail">
-                    <span class="reservation-label">Description:</span>
-                    @if (selectedReview.Description.Length > 50)
-                    {
-                        <span class="reservation-value">
-                            @(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description.Substring(0, 50))...
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="reservation-value">
-                            @(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description)
-                        </span>
-                    }
-                </div>
-
+                
                 <div class="modal-buttons">
                     <a class="secondary-btn" @onclick="CloseReviewPopUp">
                         Back
@@ -220,12 +236,13 @@
     Restaurant? selectedRestaurant;
     Review? selectedReview;
     Menu? selectedMenu;
+    DinesaurUserModel? selectedUser;
     Reservation? selectedReservation;
     private List<Food> foods;
     private List<Review> reviews;
     private bool showPopup = false;
     private Food? popupFood;
-
+    private int ratingTab = 5;
     protected override async Task OnInitializedAsync()
     {
         selectedRestaurant = DbContext.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
@@ -254,6 +271,8 @@
     private void OpenReviewPopUp(Review review)
     {
         selectedReview = review;
+        using var context = DbFactory.CreateDbContext();
+        selectedUser = context.DinesaurUser.FirstOrDefault(r => r.DinesaurUserID == review.CustomerID);
         selectedReservation = DbContext.Reservation.FirstOrDefault(m => m.ReviewID == selectedReview.ReviewID);
         reviewPopUp = true;
     }
@@ -263,6 +282,7 @@
         reviewPopUp = false;
         selectedReview = null;
         selectedReservation = null;
+        selectedUser = null;
     }
 }
     
