@@ -20,7 +20,7 @@ namespace Dinesaur.Domain
             Reported = 1,
             Removed = 2
         }
-        public ApprovalStatusReviews Status { get; set; } = ApprovalStatusReviews.Pending;
+        public ApprovalStatusReviews Status { get; set; } = ApprovalStatusReviews.Published;
     }
 
 }

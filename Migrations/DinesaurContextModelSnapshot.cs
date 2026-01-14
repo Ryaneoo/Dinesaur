@@ -103,18 +103,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8b7b171b-94d9-4036-982f-96fd16f66a65",
+                            ConcurrencyStamp = "3fbeacaa-9df0-4bbd-b97e-00c141e2c056",
                             Contact = 91234567,
-                            CreatedAtUtc = new DateTime(2026, 1, 13, 6, 27, 11, 646, DateTimeKind.Utc).AddTicks(7330),
+                            CreatedAtUtc = new DateTime(2026, 1, 13, 7, 16, 20, 911, DateTimeKind.Utc).AddTicks(6417),
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "Admin",
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKQZJ2zJyKnhdroLN2jV+hZ/vcBwQnjgjQmVqZM/2pTYGUPSCx8Jugm3pHBhV00UfA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEACqEuJeH6dkXqOZ9Lhqjdh7ELJre896qz863QgVu1QUOJ4ftIvLvRw6PYPR75TcKw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4f012195-6517-4371-8f95-433adf34b2f5",
+                            SecurityStamp = "72a366bb-228b-4fd1-bfae-565408af1963",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         },
@@ -122,18 +122,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e34bb915-f406-454c-b2eb-bb821febae0f",
+                            ConcurrencyStamp = "fced2c66-777e-4d5e-b3cc-5fb00f82bfe8",
                             Contact = 91234568,
-                            CreatedAtUtc = new DateTime(2026, 1, 13, 6, 27, 11, 724, DateTimeKind.Utc).AddTicks(3873),
+                            CreatedAtUtc = new DateTime(2026, 1, 13, 7, 16, 20, 986, DateTimeKind.Utc).AddTicks(8308),
                             Email = "user@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "User",
                             NormalizedEmail = "USER@LOCALHOST.COM",
                             NormalizedUserName = "USER@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOjk+nkEkfd7T+tB3mYxc0sa84v0izSHjvCPyoU41uanAgiUJa2nheP34SgdT0LikA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIq23xXivHJERv68afJy4eOVA3nw4DYLcNlvlBrWPwVHLPIov0sTY5I2oEqI5n8a+g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "30b741e1-894b-403e-981c-f7ec8fd7e5a2",
+                            SecurityStamp = "7ca02e97-f2c0-467b-9d14-74ffb627062c",
                             TwoFactorEnabled = false,
                             UserName = "user@localhost.com"
                         },
@@ -141,18 +141,18 @@ namespace Dinesaur.Migrations
                         {
                             Id = "3",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c9d238df-173c-4a8c-93a7-79168f135d8f",
+                            ConcurrencyStamp = "794ba7c6-5b45-4401-969d-e293f341f8c2",
                             Contact = 91234560,
-                            CreatedAtUtc = new DateTime(2026, 1, 13, 6, 27, 11, 805, DateTimeKind.Utc).AddTicks(8991),
+                            CreatedAtUtc = new DateTime(2026, 1, 13, 7, 16, 21, 62, DateTimeKind.Utc).AddTicks(7244),
                             Email = "restaurantstaff@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "RestaurantStaff",
                             NormalizedEmail = "RESTAURANTSTAFF@LOCALHOST.COM",
                             NormalizedUserName = "RESTAURANTSTAFF@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFcD6810jZfCW6EW9LlkKiQq69NhIkkMNw1qfPz5X30KKFh+JLttu/IhUFmiBiXjnw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAfxNMtZAHULn2ANQNBQnXqVFXGeU9m+1p1U2X3xj0F3GkWFEELr+cn3zWqaYGIqQQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c02185b5-7f1e-4d03-a473-020549a91a2c",
+                            SecurityStamp = "cc50d896-08d9-4aaf-ac87-d7bddd4c566b",
                             TwoFactorEnabled = false,
                             UserName = "restaurantstaff@localhost.com"
                         });
@@ -560,7 +560,7 @@ namespace Dinesaur.Migrations
                             AdminID = 1,
                             Category = "Western",
                             ClosingHours = new TimeOnly(22, 0, 0),
-                            CreatedAtUtc = new DateTime(2026, 1, 13, 6, 27, 11, 646, DateTimeKind.Utc).AddTicks(6824),
+                            CreatedAtUtc = new DateTime(2026, 1, 13, 7, 16, 20, 911, DateTimeKind.Utc).AddTicks(5766),
                             Location = "Orchard",
                             Logo = "[]",
                             OpeningHours = new TimeOnly(9, 0, 0),
@@ -577,9 +577,6 @@ namespace Dinesaur.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerID")
                         .HasColumnType("nvarchar(max)");
@@ -612,9 +609,8 @@ namespace Dinesaur.Migrations
                         new
                         {
                             ReviewID = 1,
-                            CreatedAtUtc = new DateTime(2026, 1, 13, 6, 27, 11, 646, DateTimeKind.Utc).AddTicks(6993),
                             CustomerID = "2",
-                            Date = new DateTime(2026, 1, 13, 14, 27, 11, 646, DateTimeKind.Local).AddTicks(7000),
+                            Date = new DateTime(2026, 1, 13, 15, 16, 20, 911, DateTimeKind.Local).AddTicks(5952),
                             Description = "Bad",
                             Rating = 2.5,
                             RestaurantID = 1,

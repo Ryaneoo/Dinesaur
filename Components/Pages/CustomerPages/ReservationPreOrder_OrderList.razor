@@ -87,16 +87,19 @@
 
     <AuthorizeView Roles="RestaurantStaff">
         <Authorized>
-            <button class="btn btn-success" style="margin-top: 30px;" onclick="@SaveAndGoHome">
+            <button class="btn btn-success" style="margin-top: 30px;" onclick="@Back">
                 Back
             </button>
         </Authorized>
-    </AuthorizeView>
+    
 
+    
+   <NotAuthorized>
     <button class="btn btn-success" style="margin-top: 30px;" onclick="@SaveAndGoHome">
         Confirm Booking
     </button>
-    
+        </NotAuthorized>
+    </AuthorizeView>
 </div>
 
 
@@ -173,8 +176,12 @@
         await db.SaveChangesAsync();
         await JS.InvokeVoidAsync("alert", "Booking is Confirmed!");
         NavigationManager.NavigateTo("#");
-        
 
+
+    }
+    private async Task Back()
+    {
+        NavigationManager.NavigateTo("/Restaurant/Bookings");
     }
     private async Task EditPreOrdering()
     {
