@@ -1,7 +1,11 @@
 ﻿@page "/"
+@using Dinesaur.Data
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @inject AuthenticationStateProvider Auth
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
+@inject UserManager<DinesaurUser> UserManager
+
 <PageTitle>Dinesaur Home</PageTitle>
 <style>
     h1 {
@@ -43,7 +47,7 @@
     <h1 style="margin-top: 150px;font-size: 150px">Dinesaur</h1>
     <h2 > Dining In Made Easier</h2>
    
-    <a href=@url class="btn"; >View Restaurants</a>
+    <a href=@url class="btn"; > @text </a>
 
     
    
@@ -53,16 +57,42 @@
 
 @code {
     private string? url;
+    private string text = "View Restaurants";
+    private DinesaurContext context = default!;
+    private DinesaurUser? role;
     protected override async Task OnInitializedAsync()
     {
+
         var user = (await Auth.GetAuthenticationStateAsync()).User;
-        if (!user.Identity?.IsAuthenticated ?? true)
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        context = DbFactory.CreateDbContext();
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var email = await db.Users
+        .Where(u => u.Id == aspNetUserId)
+        .Select(u => u.Email)
+        .SingleOrDefaultAsync();
+        if (email != null)
+        {
+            var userrole = await UserManager.FindByEmailAsync(email);
+            role = userrole;
+        }
+        if (!user.Identity?.IsAuthenticated ?? true && email == null)
         {
             url = "Account/login";
         }
         else
         {
-            url = "User/Home";
+            if (await UserManager.IsInRoleAsync(role, "RestaurantStaff"))
+            {
+                url = "/RestaurantStaff/Home";
+                text = "To Restaurant Staff Page";
+            }
+            else
+            {
+                url = "User/Home";
+                text = "View Restaurants";
+            }
+            
         }
     }
 }
