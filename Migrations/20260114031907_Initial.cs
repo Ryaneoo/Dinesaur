@@ -8,11 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Dinesaur.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:Migrations/20260112193826_abc.cs
-    public partial class abc : Migration
-========
-    public partial class menu : Migration
->>>>>>>> 7b53f5fe706081e7f4bd6403642448172e35cb72:Migrations/20260114025525_menu.cs
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -324,15 +320,9 @@ namespace Dinesaur.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Contact", "CreatedAtUtc", "Email", "EmailConfirmed", "LastLoginAtUtc", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-<<<<<<<< HEAD:Migrations/20260112193826_abc.cs
-                    { "1", 0, "50dc7ded-e553-437d-afc7-731c96b2d75e", 91234567, new DateTime(2026, 1, 12, 19, 38, 25, 360, DateTimeKind.Utc).AddTicks(6972), "admin@localhost.com", true, null, false, null, "Admin", "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEFWXht1pdDBAOeq5QcN4JhgkBTKGBB87WenMsGg7Rkdcb7NKIQ12o42OSBkqCEzkhw==", null, false, null, "42e6af37-a63e-4549-ab9a-6345b86ac04b", false, "admin@localhost.com" },
-                    { "2", 0, "ae78815f-b85f-4c3e-aa96-586ea73cbcc5", 91234568, new DateTime(2026, 1, 12, 19, 38, 25, 417, DateTimeKind.Utc).AddTicks(8916), "user@localhost.com", true, null, false, null, "User", "USER@LOCALHOST.COM", "USER@LOCALHOST.COM", "AQAAAAIAAYagAAAAEPJcaExXkujuWeZo0tyuN0s7dZnaKTtgiK7PWuIc8zrQt+wgwafIeUJK2n0SSsiNlg==", null, false, null, "450ebd9a-4953-444e-8f23-51eb96367b58", false, "user@localhost.com" },
-                    { "3", 0, "81638c62-7ee0-4e71-97a5-e2ae190c353c", 91234560, new DateTime(2026, 1, 12, 19, 38, 25, 472, DateTimeKind.Utc).AddTicks(7137), "restaurantstaff@localhost.com", true, null, false, null, "RestaurantStaff", "RESTAURANTSTAFF@LOCALHOST.COM", "RESTAURANTSTAFF@LOCALHOST.COM", "AQAAAAIAAYagAAAAEJYN8UqOhE/GtQ+CAMX6OHc72btKW+QWhmq79q9FCUKu7Tx1cwQeFlQlFqan6h7LnQ==", null, false, null, "e504226e-d70b-4df8-951b-ee80b4c17d44", false, "restaurantstaff@localhost.com" }
-========
-                    { "1", 0, "2632840d-d675-45b4-8798-d52dbf6309d3", 91234567, new DateTime(2026, 1, 14, 2, 55, 24, 861, DateTimeKind.Utc).AddTicks(2132), "admin@localhost.com", true, null, false, null, "Admin", "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEFMAXbMgdh2Yyu1487WZo3dR8vIa5wCPNl0UgIlX4se2xaV1ic4pt27Mb3zatKYiKQ==", null, false, "a3287fe0-3ada-41ff-a437-7575566630c4", false, "admin@localhost.com" },
-                    { "2", 0, "0d04f4d6-7ae0-40ef-8d4e-ad92e4dcc650", 91234568, new DateTime(2026, 1, 14, 2, 55, 24, 919, DateTimeKind.Utc).AddTicks(550), "user@localhost.com", true, null, false, null, "User", "USER@LOCALHOST.COM", "USER@LOCALHOST.COM", "AQAAAAIAAYagAAAAEKvqCNWJvksgo9mGZGoLQZqxa/V6ViV4lEm4JCMgT3CUlxsF7448xElf6PCCrsB3dQ==", null, false, "dffe57c3-7162-4b9e-9b39-4380358da5ba", false, "user@localhost.com" },
-                    { "3", 0, "eab6b783-7897-4621-9bd9-93d8c93028a7", 91234560, new DateTime(2026, 1, 14, 2, 55, 24, 973, DateTimeKind.Utc).AddTicks(9443), "restaurantstaff@localhost.com", true, null, false, null, "RestaurantStaff", "RESTAURANTSTAFF@LOCALHOST.COM", "RESTAURANTSTAFF@LOCALHOST.COM", "AQAAAAIAAYagAAAAEOmoqxxb6KcN6IrqF2/HyzAXHRlyg3SX0JvnB8f/fRpsuBwqEjXvAD+ol2bE4dD8oQ==", null, false, "5f5000f5-d23d-4351-b218-5b06e246dba0", false, "restaurantstaff@localhost.com" }
->>>>>>>> 7b53f5fe706081e7f4bd6403642448172e35cb72:Migrations/20260114025525_menu.cs
+                    { "1", 0, "f667f959-2dcf-4217-82b3-ec15c305bda1", 91234567, new DateTime(2026, 1, 14, 3, 19, 5, 670, DateTimeKind.Utc).AddTicks(8380), "admin@localhost.com", true, null, false, null, "Admin", "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEBgBO9xkfIhwfqsVBCW8cqkdMxIH/uPxTKIuINHy3Z3VaPgvyhE7P+4ZAFbg0tCazQ==", null, false, "2d97f472-f52f-4d64-ab57-abd34d5052a2", false, "admin@localhost.com" },
+                    { "2", 0, "7dff44a9-c8a5-41e4-87f9-2308e1f67f24", 91234568, new DateTime(2026, 1, 14, 3, 19, 5, 729, DateTimeKind.Utc).AddTicks(6588), "user@localhost.com", true, null, false, null, "User", "USER@LOCALHOST.COM", "USER@LOCALHOST.COM", "AQAAAAIAAYagAAAAEOwFAa6Us+ew/cwvRUOsFK45tVJGjqMjQE5egcmWk2Y1OFLHucL0QvU2BPyqAZl9zg==", null, false, "70898c27-ca7b-46f1-88c4-c2030fcc05a8", false, "user@localhost.com" },
+                    { "3", 0, "b18c700a-bf46-4002-8ce3-d2a674cb2a3d", 91234560, new DateTime(2026, 1, 14, 3, 19, 5, 788, DateTimeKind.Utc).AddTicks(1932), "restaurantstaff@localhost.com", true, null, false, null, "RestaurantStaff", "RESTAURANTSTAFF@LOCALHOST.COM", "RESTAURANTSTAFF@LOCALHOST.COM", "AQAAAAIAAYagAAAAEFopyhLJ0PbXFVPdp/u1og/sF3tpRXz2YKtS57f6UlWAwVaaJqh4L3NAUHT8lEknxg==", null, false, "5615041b-e461-456f-a853-b3034b94018c", false, "restaurantstaff@localhost.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -394,16 +384,12 @@ namespace Dinesaur.Migrations
             migrationBuilder.InsertData(
                 table: "Restaurant",
                 columns: new[] { "RestaurantID", "AdminID", "Category", "ClosingHours", "Contact", "CreatedAtUtc", "Email", "Location", "Logo", "OpeningHours", "RestaurantName", "RestaurantOwnerID", "Status" },
-                values: new object[] { 1, 1, "Western", new TimeOnly(22, 0, 0), 12340987, new DateTime(2026, 1, 14, 2, 55, 24, 861, DateTimeKind.Utc).AddTicks(1836), "seededRest@gmail.com", "Orchard", "[\"/Images/DinesaurLandingPage.jpg\"]", new TimeOnly(9, 0, 0), "WesternBanana", "3", 1 });
+                values: new object[] { 1, 1, "Western", new TimeOnly(22, 0, 0), 12340987, new DateTime(2026, 1, 14, 3, 19, 5, 670, DateTimeKind.Utc).AddTicks(7722), "seededRest@gmail.com", "Orchard", "[\"/Images/DinesaurLandingPage.jpg\"]", new TimeOnly(9, 0, 0), "WesternBanana", "3", 1 });
 
             migrationBuilder.InsertData(
                 table: "Review",
                 columns: new[] { "ReviewID", "CustomerID", "Date", "Description", "Rating", "RestaurantID", "ReviewTitle", "Status" },
-<<<<<<<< HEAD:Migrations/20260112193826_abc.cs
-                values: new object[] { 1, "2", new DateTime(2026, 1, 13, 3, 38, 25, 360, DateTimeKind.Local).AddTicks(6691), "Bad", 2.5, 1, "Bad", 0 });
-========
-                values: new object[] { 1, "2", new DateTime(2026, 1, 14, 10, 55, 24, 861, DateTimeKind.Local).AddTicks(1929), "Bad", 2.5, 1, "Bad", 0 });
->>>>>>>> 7b53f5fe706081e7f4bd6403642448172e35cb72:Migrations/20260114025525_menu.cs
+                values: new object[] { 1, "2", new DateTime(2026, 1, 14, 11, 19, 5, 670, DateTimeKind.Local).AddTicks(7924), "Bad", 2.5, 1, "Bad", 0 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",

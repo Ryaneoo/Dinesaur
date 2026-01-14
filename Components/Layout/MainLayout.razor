@@ -18,8 +18,7 @@
                                         <a class="nav-link" href="/admin/restaurant/manage">Restaurants</a>
                                     </Authorized>
                                 </AuthorizeView>
-                                @* Normal User Menu (only if NOT admin) *@
-                                <AuthorizeView Roles="User" Context="userAuth"> 
+                                <AuthorizeView Roles="User, RestaurantStaff" Context="userAuth"> 
                                     <Authorized Context="userAuth">
                                         @if (userAuth.User.IsInRole("RestaurantStaff"))
                                         {

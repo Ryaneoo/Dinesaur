@@ -129,6 +129,8 @@
 
           
 
+    }
+
     @*Show Details Pop Up*@
     @if (ShowPopUp && SelectedReservation != null)
     {
@@ -164,15 +166,16 @@
                 </div>
 
                 <div class="modal-buttons">
-                        <a class="secondary-btn" @onclick="@ViewPreOrderReceipt">
-                            View Pre-Order
-                        </a>
-                    @switch (SelectedReservation.Status) {
+                    <a class="secondary-btn" @onclick="@ViewPreOrderReceipt">
+                        View Pre-Order
+                    </a>
+                    @switch (SelectedReservation.Status)
+                    {
                         case Reservation.ReservationStatus.Pending:
                             <a class="primary-btn" @onclick="ChangeReservationStatus">
                                 Confirm Booking
                             </a>
-                            <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
+                            <a class="danger-btn" @onclick="ShowCancelReservation">
                                 Cancel Booking
                             </a>
                             break;
@@ -180,34 +183,32 @@
                             <a class="primary-btn" @onclick="ChangeReservationStatus">
                                 Start Booking
                             </a>
-                            <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
+                            <a class="danger-btn" @onclick="ShowCancelReservation">
                                 Cancel Booking
                             </a>
                             break;
                         case Reservation.ReservationStatus.Ongoing:
                             <a class="primary-btn" @onclick="ChangeReservationStatus">
                                 Complete Booking
-                             </a>
+                            </a>
                             break;
                     }
                 </div>
             </div>
         </div>
- 
-
     }
 
     @*Show Cancel Confirm Pop Up*@
-    @if (showCancelReservationConfirm)
+    @if (showCancelReservation)
     {
-        <div class="modal-backdrop" @onclick="CloseCancelReservationConfirm">
+        <div class="modal-backdrop" @onclick="CloseCancelReservation">
 
             <div class="modal-card" @onclick:stopPropagation>
-                <button class="close-btn" @onclick="CloseCancelReservationConfirm">✕</button>
+                <button class="close-btn" @onclick="CloseCancelReservation">✕</button>
                 <h2 style="color: #88E788">Cancel Booking:</h2>
                 <p style="color: white">Are you sure of cancelling this booking?</p>
                 <div class="modal-buttons">
-                    <button class="secondary-btn" @onclick="CloseCancelReservationConfirm">Back</button>
+                    <button class="secondary-btn" @onclick="CloseCancelReservation">Back</button>
                     <button class="danger-btn" @onclick="() => CancelReservation(0)">Cancel</button>
                     <button class="danger-btn" @onclick="() => CancelReservation(1)">No-Show</button>
                 </div>
@@ -215,7 +216,21 @@
         </div>
 
     }
+    @if (cancelReservationConfirmationPopUp)
+    {
+        <div class="modal-backdrop" @onclick="CloseCancelReservationConfirmationPopUp">
+
+            <div class="modal-card" @onclick:stopPropagation>
+                <h2 style="color: #88E788">Booking Cancelled</h2>
+                <p style="color: white">Booking has been successfully cancelled.</p>
+                <div class="modal-buttons">
+                    <button class="secondary-btn" @onclick="CloseCancelReservationConfirmationPopUp">Back</button>
+                </div>
+            </div>
+        </div>
+
     }
+    
 </div>
 
 
@@ -259,7 +274,6 @@
             hasRestaurant = false;
         }
 
-
     }
 
     @*Navigate to Restaurant Page*@
@@ -291,17 +305,17 @@
         SelectedUser = null;
     }
 
-    public bool showCancelReservationConfirm = false;
+    public bool showCancelReservation = false;
 
-    private void ShowCancelReservationConfirm()
+    private void ShowCancelReservation()
     {
-        showCancelReservationConfirm = true;
+        showCancelReservation = true;
     }
 
 
-    private void CloseCancelReservationConfirm()
+    private void CloseCancelReservation()
     {
-        showCancelReservationConfirm = false;
+        showCancelReservation = false;
     }
 
     private async Task CancelReservation(int state)
@@ -318,8 +332,9 @@
         using var context = DbFactory.CreateDbContext();
         context.Attach(SelectedReservation!).State = EntityState.Modified;
         await context.SaveChangesAsync();
-        showCancelReservationConfirm = false;
-        NavigationManager.NavigateTo("/Restaurant/Bookings", forceLoad: true);
+        CloseDetails();
+        CloseCancelReservation();
+        OpenCancelReservationConfirmationPopUp();
     }
 
     private async Task GetBookings(int tab)
@@ -375,6 +390,18 @@
         }
         context.Attach(SelectedReservation!).State = EntityState.Modified;
         await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Restaurant/Bookings", forceLoad: true);
+    }
+
+    public bool cancelReservationConfirmationPopUp = false;
+    private void OpenCancelReservationConfirmationPopUp()
+    {
+        cancelReservationConfirmationPopUp = true;
+    }
+
+    private void CloseCancelReservationConfirmationPopUp()
+    {
+        cancelReservationConfirmationPopUp = false;
         NavigationManager.NavigateTo("/Restaurant/Bookings", forceLoad: true);
     }
 }   

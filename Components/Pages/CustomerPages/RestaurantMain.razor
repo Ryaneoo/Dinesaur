@@ -69,9 +69,10 @@
     </div>
 </div>
     <div style="margin: 20px 80px;">
-        <div style="display: flex; gap: 15px; align-items: baseline"> 
-            <h3>Recent Reviews</h3>
-            <InputSelect @bind-Value="ratingTab" style="width: 50px; background: #386641; height: 100%; color: yellow; font-weight: bold; border-radius: 10px; padding 5px;">
+        <div style="display: flex; gap: 15px; align-content: baseline"> 
+            <h3>Reviews</h3>
+            <InputSelect @bind-Value="ratingTab" style="width: 75px; background: #386641; height: 100%; color: yellow; font-weight: bold; border-radius: 10px; padding: 5px;">
+                <option selected style="color: yellow; padding: 5px;" value="0">All</option>
                 <option style="color: yellow; padding: 5px;" value="5">5 ★</option>
                 <option style="color: yellow; padding: 5px;" value="4">4 ★</option>
                 <option style="color: yellow; padding: 5px;" value="3">3 ★</option>
@@ -87,7 +88,14 @@
             }
             else
             {
-                var reviewsTab = reviews.Where(r => r.Rating == ratingTab).OrderByDescending(r => r.Date).ToList();
+                if (ratingTab > 0)
+                {
+                    reviewsTab = reviews.Where(r => r.Rating == ratingTab).OrderByDescending(r => r.Date).ToList();
+                    
+                } else
+                {
+                    reviewsTab = reviews.OrderByDescending(r => r.Rating).ToList();
+                }
                 @foreach (var review in reviewsTab)
                 {
                     using var context = DbFactory.CreateDbContext();
@@ -96,12 +104,14 @@
                         <div style="z-index: 1000; position: relative; cursor: pointer;">
                             <div style="width: 500px; height: auto; background-color: #386641; border-radius: 15px; pointer-events: none; padding: 15px;">
                                 <div style="display: display; flex-direction: column">
-                                    <div style=" display: grid; grid-template-columns: 90% 1fr; align-items:baseline">
+                                    <div style=" display: grid; grid-template-columns: 85% 1fr; align-items:baseline">
                                         <div style="display: flex; flex-direction: column; gap: 5px;">
                                             <h4 style="font-weight: bold; color: #88E788">@review.ReviewTitle</h4>
                                             <h6 style="font-weight: bold">@user.DinesaurUserName - @review.Date.ToString("dd MMMM yyyy")</h6>
                                         </div>
-                                        <h5 style="color:yellow; font-weight:bold">@review.Rating ★</h5>
+                                        <div>
+                                            <h5 style="color:yellow; font-weight:bold; text-align: right">@review.Rating ★</h5>
+                                        </div>
                                     </div>
                                     <div>
                                         @if (review.Description.Length > 50)
@@ -212,15 +222,47 @@
                     <div class="reservation-detail">
                         <span class="reservation-label">Description:</span>
                     </div>
-                    <p style="color: white;">
+                    <p style="color: white; border-bottom: 1px solid; padding: 5px;">
                         @(string.IsNullOrWhiteSpace(selectedReview.Description) ? "N/A" : selectedReview.Description)
                     </p>
                 </div>
-                
                 <div class="modal-buttons">
                     <a class="secondary-btn" @onclick="CloseReviewPopUp">
                         Back
                     </a>
+                    <a class="danger-btn" @onclick="OpenReportPopUp">Report</a>
+                </div>
+            </div>
+        </div>
+
+    }
+
+    @if (reportPopUp)
+    {
+        <div class="modal-backdrop" @onclick="CloseReportPopUp">
+
+            <div class="modal-card" @onclick:stopPropagation>
+                <button class="close-btn" @onclick="CloseReportPopUp">✕</button>
+                <h2 style="color: #88E788">Report Review:</h2>
+                <p style="color: white">Are you sure you want to report this review?</p>
+                <div class="modal-buttons">
+                    <button class="danger-btn" @onclick="ReportReview">Yes</button>
+                    <button class="secondary-btn" @onclick="CloseReportPopUp">No</button>
+                </div>
+            </div>
+        </div>
+
+    }
+
+    @if (reportConfirmationPopUp)
+    {
+        <div class="modal-backdrop" @onclick="CloseReportConfirmationPopUp">
+
+            <div class="modal-card" @onclick:stopPropagation>
+                <h2 style="color: #88E788">Thank You!</h2>
+                <p style="color: white">Review has been reported, thank you for your feedback.</p>
+                <div class="modal-buttons">
+                    <button class="secondary-btn" @onclick="CloseReportConfirmationPopUp">Back</button>
                 </div>
             </div>
         </div>
@@ -242,7 +284,8 @@
     private List<Review> reviews;
     private bool showPopup = false;
     private Food? popupFood;
-    private int ratingTab = 5;
+    private int ratingTab = 0;
+    private List<Review> reviewsTab = new();
     protected override async Task OnInitializedAsync()
     {
         selectedRestaurant = DbContext.Restaurant.FirstOrDefault(x => x.RestaurantID == id);
@@ -283,6 +326,41 @@
         selectedReview = null;
         selectedReservation = null;
         selectedUser = null;
+    }
+
+    public bool reportPopUp = false;
+    private void OpenReportPopUp()
+    {
+        reportPopUp = true;
+    }
+
+    private void CloseReportPopUp()
+    {
+        reportPopUp = false;
+    }
+
+    private async Task ReportReview()
+    {
+        if (selectedReview != null)
+        {
+            selectedReview.Status = Review.ApprovalStatusReviews.Reported;
+            DbContext.Review.Update(selectedReview);
+            await DbContext.SaveChangesAsync();
+        }
+        CloseReviewPopUp();
+        CloseReportPopUp();
+        reportConfirmationPopUp = true;
+    }
+
+    public bool reportConfirmationPopUp = false;
+    private void OpenReportConfirmationPopUp()
+    {
+        reportConfirmationPopUp = true;
+    }
+
+    private void CloseReportConfirmationPopUp()
+    {
+        reportConfirmationPopUp = false;
     }
 }
     
