@@ -8,63 +8,142 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject Dinesaur.Data.DinesaurContext DbContext
+@rendermode InteractiveServer
+
 <PageTitle>Menu</PageTitle>
-<container >
-    <h1 style="margin-top:40px;">Restaurant Menu</h1>
-@if (HasMenu == true){
-    @* Display Menu*@
-    <div style=" text-align: center;">
-        <a href="/foods/create" class="btn-primary" style="padding: 15px 32px; ">Add food to Menu</a>
-        <a href="/menus/create" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Add more categories to Menu</a>
-            <a href="/menus/delete" class="btn-primary" style="padding: 15px 32px; margin-left:10px; ">Remove categories from Menu</a>
-        <hr />
-  </div>
-    
-        <div style="display: grid; grid-template-columns: repeat(5,1fr) ;">
+
+<div style="max-width:1100px; margin:0 auto;">
+
+    <!-- Header -->
+    <div style="text-align:center; color:white;">
+        <h1 style="margin-top:40px;">Restaurant Menu</h1>
+        <h2 style="margin: 10px 0 30px 0; color:#cfcfcf;">
+            Manage your menu items and categories.
+        </h2>
+        <h3 style="margin: 10px 0 30px 0; color:#cfcfcf; font-size:20px;">
+            (Note: Please Create A Category Before trying to add food)
+        </h3>
+    </div>
+
+    @if (HasMenu == true)
+    {
+        <!-- Actions card -->
+        <div style="
+                    background:#111;
+                    border-radius: 18px;
+                    padding: 22px;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                    color:white;
+                    margin-bottom: 18px;
+                ">
+            <h3 style="margin:0 0 12px 0;">Menu Actions</h3>
+            <p style="margin:0 0 16px 0; color:#cfcfcf; font-size:14px;">
+                Add foods or manage your menu categories.
+            </p>
+
+            <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+                <a href="/foods/create" class="btn btn-primary" style="padding: 12px 18px; font-weight:600;">
+                    Add food to Menu
+                </a>
+                <a href="/menus/create" class="btn btn-primary" style="padding: 12px 18px; font-weight:600;">
+                    Add more categories to Menu
+                </a>
+                <a href="/menus/delete" class="btn btn-danger" style="padding: 12px 18px; font-weight:600;">
+                    Remove categories from Menu
+                </a>
+            </div>
+        </div>
+
+        <!-- Food grid (no media queries) -->
+        <div style="
+                    display:grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 18px;
+                    align-items: stretch;
+                ">
             @foreach (var fooditem in menuFood)
             {
-                
-                <div style=" text-align: justify; margin-left:40px;">
-                    <h6> Food Image:</h6>
-                    <div style="width: 60%;  display: flex;  align-items: center;color: none">
-                        <img src="@fooditem.Image.FirstOrDefault()" style="width: 80%; height: auto; align-content: center; border: 5px solid white; border-radius: 5px;" alt="Uploaded Image" />
+                <div style="
+                                background:#111;
+                                border-radius: 18px;
+                                padding: 16px;
+                                box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                                color:white;
+                                display:flex;
+                                flex-direction:column;
+                                gap: 10px;
+                            ">
+                    <div style="color:#cfcfcf; font-size:13px;">Food Image</div>
+
+                    <div style="
+                                    border-radius: 16px;
+                                    overflow:hidden;
+                                    border: 1px solid rgba(255,255,255,0.12);
+                                    background:#000;
+                                    height: 160px;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                ">
+                        <img src="@fooditem.Image.FirstOrDefault()"
+                             style="width:100%; height:100%; object-fit:cover;"
+                             alt="Food Image" />
                     </div>
-                    <h6> Food Name: @fooditem.FoodName</h6>
-                    <h6> Food Cost: $ @fooditem.Cost</h6>
-                    <h6> Food Category: @fooditem.Category </h6>
-                    <a href="/foods/delete/@fooditem.FoodID" class="btn btn-danger"  style="padding: 15px 32px;">Delete </a>
-                    <a href="/foods/edit/@fooditem.FoodID" class="btn btn-danger" style="padding: 15px 32px;">Edit </a>
+
+                    <div style="display:grid; gap: 6px; font-size: 15px;">
+                        <div><b style="color:#cfcfcf;">Food Name:</b> @fooditem.FoodName</div>
+                        <div><b style="color:#cfcfcf;">Food Cost:</b> @fooditem.Cost</div>
+                        <div><b style="color:#cfcfcf;">Food Category:</b> @fooditem.Category</div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:auto;">
+                        <a href="/foods/edit/@fooditem.FoodID" class="btn btn-primary" style="padding: 10px 14px; font-weight:600;">
+                            Edit
+                        </a>
+                        <a href="/foods/delete/@fooditem.FoodID" class="btn btn-danger" style="padding: 10px 14px; font-weight:600;">
+                            Delete
+                        </a>
+                    </div>
                 </div>
-                
             }
         </div>
-        
     }
-    
-else
+    else
     {
-        <h2 style="color: #88E788; text-align:center;"> Your Restaurant does not have a Menu</h2>
-        <br />
-        <a href="/menus/create" class="btn-primary" style="padding: 15px 32px; margin-left:650px;">Create Menu</a>
-    }
-</container>
-@* <QuickGrid Class="table" Items="context.Menu">
-    
-    <PropertyColumn Property="menu => menu.RestaurantID" />
+        <!-- No menu state (centered card) -->
+        <div style="
+                    background:#111;
+                    border-radius: 18px;
+                    padding: 28px;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                    color:white;
+                    text-align:center;
+                    margin-top: 18px;
+                ">
+            <h2 style="color:#88E788; font-size:40px; margin:0 0 10px 0;">
+                Your Restaurant does not have a Menu
+            </h2>
+            <p style="color:#cfcfcf; margin: 0 0 18px 0;">
+                Create a menu to start adding food items.
+            </p>
 
-    <TemplateColumn Context="menu">
-        <a href="@($"menus/edit?menuid={menu.MenuID}")">Edit</a> |
-        <a href="@($"menus/details?menuid={menu.MenuID}")">Details</a> |
-        <a href="@($"menus/delete?menuid={menu.MenuID}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid> *@
+            <button type="button" @onclick="NavigateToCreate"
+                    class="btn btn-primary"
+                    style="padding: 12px 22px; font-weight:600;">
+                Create Menu
+            </button>
+        </div>
+    }
+
+</div>
+
 
 @code {
     private DinesaurContext context = default!;
     private bool HasMenu;
     private List<Food> menuFood = new();
     private int CheckMenu;
-   
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -94,6 +173,11 @@ else
         menuFood = context.Food.Where(f => f.MenuID == CheckMenu)
         .ToList();
     }
-        
+
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
+
+    private void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo("/menus/create");
+    }
 }

@@ -10,51 +10,231 @@
 @rendermode InteractiveServer
 
 <PageTitle>Restaurant</PageTitle>
-<container style="text-align: center;">
-<h1 style="margin-top:40px">My Restaurant</h1>
-@if(HasRestaurant == true)
-{   
-    <br />
-        @if(Status == Restaurant.ApprovalStatus.Pending)
-        {
-            <h2 style="color:lightgreen;">Status: Your restaurant is waiting to be approved.</h2>
-        }
-        @if(Status == Restaurant.ApprovalStatus.Rejected)
-        {
-            <h2 style="color:lightgreen;">Status: Your restaurant has been rejected, contact admin@localhost.com for an appeal.</h2>
-        }
-        @if(@Lo == null)
-        {
-            <h2>No Restaurant Logo</h2>
-        }
-        else{
-        <h2> Restaurant Logo:</h2>
-    <div style="width: 100%;  display: flex; justify-content: center; align-items: center; color: none">
-            <img src="@Lo" style="width: 50%; height: auto; align-content: center; border: 5px solid white; border-radius: 5px;" alt="Uploaded Image" />
+
+<div style="max-width:1100px; margin:0 auto;">
+
+    <!-- Header -->
+    <div style="text-align:center; color:white;">
+        <h1 style="margin-top:40px;">My Restaurant</h1>
+        <h2 style="margin: 10px 0 30px 0; color:#cfcfcf;">
+            View your restaurant details, status, and manage your restaurant.
+        </h2>
     </div>
+
+    @if (HasRestaurant == true)
+    {
+        <!-- Status banner -->
+        @if (Status == Restaurant.ApprovalStatus.Pending)
+        {
+            <div style="
+                                background: rgba(255,255,255,0.06);
+                                border: 1px solid rgba(255,255,255,0.12);
+                                border-radius: 16px;
+                                padding: 14px 16px;
+                                color: #cfcfcf;
+                                margin-bottom: 18px;
+                                text-align:center;
+                            ">
+                <b style="color:#88E788;">Status:</b> Your restaurant is waiting to be approved.
+            </div>
         }
-        <h2> Restaurant Name:  @RestaurantName </h2>
-        <h2> Restaurant Contact Number: @Contact </h2>
-        <h2> Restaurant Location: @Location </h2>
-        <h2> Restaurant Category: @Catergory </h2>
-        <h2> Restaurant Email: @Email </h2>
-        <h2> Restuarant Opening Hour: @Oh</h2>
-        <h2> Restaurant Closing Hour: @Ch</h2>
-        <br />
-        @if(Status == Restaurant.ApprovalStatus.Approved){
-        <a href="/menus" class="btn-primary" style="padding: 15px 32px;">Restaurant's Menu</a>
-        <a href="/restaurants/edit/@Id" class="btn-primary" style="padding: 15px 32px;">Edit Your Restaurant</a>
-        <a href="/Restaurant/Bookings" class="btn-primary" style="padding: 15px 32px;">View Bookings Made</a>
-        <a href="/restaurants/delete" class="btn-primary" style="padding: 15px 32px;">Delete Restaurant</a>
-}
-}
-else
-{
-        <h2 style="color: #88E788;"> You do not have a Restaurant</h2>
-        <br />
-        <a href="/restaurants/create" class="btn-primary" style="padding: 15px 32px;">Create Restaurant</a>
-}
-</container>
+        @if (Status == Restaurant.ApprovalStatus.Rejected)
+        {
+            <div style="
+                                background: rgba(255,255,255,0.06);
+                                border: 1px solid rgba(255,255,255,0.12);
+                                border-radius: 16px;
+                                padding: 14px 16px;
+                                color: #cfcfcf;
+                                margin-bottom: 18px;
+                                text-align:center;
+                            ">
+                <b style="color:#ff6b6b;">Status:</b> Rejected. Contact <b>admin@localhost.com</b> for an appeal.
+            </div>
+        }
+        @if (Status == Restaurant.ApprovalStatus.Approved)
+        {
+            <div style="
+                                background: rgba(255,255,255,0.06);
+                                border: 1px solid rgba(255,255,255,0.12);
+                                border-radius: 16px;
+                                padding: 14px 16px;
+                                color: #cfcfcf;
+                                margin-bottom: 18px;
+                                text-align:center;
+                            ">
+                <b style="color:#88E788;">Status:</b> Approved ✅ Your restaurant is live.
+            </div>
+        }
+
+        <div style="
+                    display:grid;
+                    grid-template-columns: 1.2fr 0.8fr;
+                    gap: 24px;
+                    align-items:start;
+                ">
+
+            <!-- LEFT: Details card -->
+            <div style="
+                        background:#111;
+                        border-radius: 18px;
+                        padding: 22px;
+                        box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                        color:white;
+                    ">
+                <h3 style="margin:0 0 12px 0;">Restaurant Details</h3>
+                <p style="margin:0 0 18px 0; color:#cfcfcf; font-size:14px;">
+                    This information is shown to customers once your restaurant is approved.
+                </p>
+
+                <div style="display:grid; gap: 10px; font-size: 16px;">
+                    <div><b style="color:#cfcfcf;">Name:</b> @RestaurantName</div>
+                    <div><b style="color:#cfcfcf;">Contact:</b> @Contact</div>
+                    <div><b style="color:#cfcfcf;">Location:</b> @Location</div>
+                    <div><b style="color:#cfcfcf;">Category:</b> @Catergory</div>
+                    <div><b style="color:#cfcfcf;">Email:</b> @Email</div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                        <div style="
+                                    background: rgba(255,255,255,0.06);
+                                    border: 1px solid rgba(255,255,255,0.10);
+                                    border-radius: 14px;
+                                    padding: 12px;
+                                ">
+                            <div style="color:#cfcfcf; font-size:13px;">Opening Hour</div>
+                            <div style="font-size:16px; margin-top:4px;">@Oh</div>
+                        </div>
+                        <div style="
+                                    background: rgba(255,255,255,0.06);
+                                    border: 1px solid rgba(255,255,255,0.10);
+                                    border-radius: 14px;
+                                    padding: 12px;
+                                ">
+                            <div style="color:#cfcfcf; font-size:13px;">Closing Hour</div>
+                            <div style="font-size:16px; margin-top:4px;">@Ch</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div style="
+                            margin-top: 18px;
+                            display:flex;
+                            flex-wrap: wrap;
+                            gap: 10px;
+                        ">
+                    @if (Status == Restaurant.ApprovalStatus.Approved)
+                    {
+                        <a href="/menus" class="btn btn-primary" style="padding: 12px 18px; font-weight:600;">
+                            Restaurant's Menu
+                        </a>
+
+                        <a href="/Restaurant/Bookings" class="btn btn-primary" style="padding: 12px 18px; font-weight:600;">
+                            View Bookings Made
+                        </a>
+                    }
+
+                    <a href="/restaurants/edit/@Id" class="btn btn-primary" style="padding: 12px 18px; font-weight:600;">
+                        Edit Restaurant
+                    </a>
+
+                    <a href="/restaurants/delete" class="btn btn-danger" style="padding: 12px 18px; font-weight:600;">
+                        Delete Restaurant
+                    </a>
+                </div>
+
+                @if (Status != Restaurant.ApprovalStatus.Approved)
+                {
+                    <div style="
+                                        margin-top: 14px;
+                                        padding: 14px;
+                                        background: rgba(255,255,255,0.06);
+                                        border: 1px solid rgba(255,255,255,0.10);
+                                        border-radius: 14px;
+                                        color:#ddd;
+                                        font-size: 14px;
+                                        line-height: 1.5;
+                                    ">
+                        <b style="color:white;">Tip:</b>
+                        While pending/rejected, you can still update details. Menu + bookings access is enabled after approval.
+                    </div>
+                }
+            </div>
+
+            <!-- RIGHT: Logo card -->
+            <div style="
+                        background:#111;
+                        border-radius: 18px;
+                        padding: 22px;
+                        box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                        color:white;
+                    ">
+                <h4 style="margin:0 0 12px 0;">Restaurant Logo</h4>
+                <p style="margin:0 0 14px 0; color:#cfcfcf; font-size:14px;">
+                    A clear square logo looks best.
+                </p>
+
+                @if (Lo == null)
+                {
+                    <div style="
+                                        height: 280px;
+                                        border-radius: 16px;
+                                        border: 1px dashed rgba(255,255,255,0.25);
+                                        display:flex;
+                                        align-items:center;
+                                        justify-content:center;
+                                        color:#aaa;
+                                        text-align:center;
+                                        padding: 14px;
+                                        background:#000;
+                                    ">
+                        No logo uploaded yet.
+                    </div>
+                }
+                else
+                {
+                    <div style="
+                                        border-radius: 16px;
+                                        overflow:hidden;
+                                        border: 1px solid rgba(255,255,255,0.12);
+                                        background:#000;
+                                    ">
+                        <img src="@Lo"
+                             style="width:100%; height: 280px; object-fit: cover;"
+                             alt="Restaurant Logo" />
+                    </div>
+                }
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <!-- No restaurant state (centered card) -->
+        <div style="
+                    background:#111;
+                    border-radius: 18px;
+                    padding: 28px;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                    color:white;
+                    text-align:center;
+                    margin-top: 18px;
+                ">
+            <h2 style="color:#88E788; font-size:40px; margin:0 0 10px 0;">
+                You do not have a Restaurant
+            </h2>
+            <p style="color:#cfcfcf; margin: 0 0 18px 0;">
+                Create one to start receiving bookings and build your menu.
+            </p>
+
+            <a href="/restaurants/create" class="btn btn-primary"
+               style="padding: 12px 22px; font-weight:600;">
+                Create Restaurant
+            </a>
+        </div>
+    }
+
+</div>
 
 @code {
     private bool HasRestaurant;

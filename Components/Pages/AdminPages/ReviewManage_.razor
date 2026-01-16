@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div style="margin-top:40px;">
-                <h2 style="font-size:70px;">Pending Reviews</h2>
+                <h2 style="font-size:70px;">Reported Reviews</h2>
 
                 @if (isLoading)
                 {
@@ -64,6 +64,8 @@
                                                     @onclick="() => SetStatusAsync(r.ReviewID, Review.ApprovalStatusReviews.Removed)">
                                                 Remove
                                             </button>
+                                          
+
                                         </div>
                                     </td>
                                 </tr>
@@ -162,7 +164,7 @@
 
             reviews.RemoveAll(r => r.ReviewID == reviewId);
 
-            message = "Review Taken Down";
+            message = "Review has been removed";
         }
         catch (Exception ex)
         {

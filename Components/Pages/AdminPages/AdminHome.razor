@@ -22,13 +22,16 @@
             display:grid;
             grid-template-columns:1fr auto;
             align-items: start;">
-
+            
+           
+            <!-- Display Name -->
             <div style="display: flex; flex-direction:column; gap:40px;">
                 <div>
                     <h1 style="text-align: left">Welcome,</h1>
                     <h1 style="text-align: left">@displayName!</h1>
                 </div>
 
+                <!--Show The Overview of users, restaurants and reviews for admin-->
                 <div style="
                     color:white;
                     font-size:60px;
@@ -40,6 +43,8 @@
                     
                 </div>
             </div>
+
+            <!--Charts to visualise traffic on the site-->
             <div style="width:500px;height:400px;margin-left:auto;margin-top:30px;">
                 <h3 style="font-size:35px;">New Users (Last 7 Days)</h3>
                 <canvas id="newUsersChart"></canvas>
@@ -68,6 +73,9 @@
 </AuthorizeView>
 
 @code {
+
+    // Fields / State
+
     private string? displayName;
     private int NewUsersCount;
     private DateTime? sinceUtc;
@@ -81,9 +89,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var user = (await Auth.GetAuthenticationStateAsync()).User;
-        if (!user.Identity?.IsAuthenticated ?? true) return;
 
+        var user = (await Auth.GetAuthenticationStateAsync()).User;
+     
         var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
         await using var db = await DbFactory.CreateDbContextAsync();
@@ -93,9 +101,6 @@
             .SingleOrDefaultAsync();
 
         displayName = identityUser ?? user.Identity?.Name;
-
-
-        var admin = await db.Users.SingleAsync(u => u.Id == aspNetUserId);
 
         
         var startOfTodayUtc = DateTime.UtcNow.Date;
