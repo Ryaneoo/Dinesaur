@@ -52,7 +52,7 @@
     <div style="display: flex; gap: 25px; flex-direction: column; padding: 50px;">
         @if (BookingTab.Count == 0)
         {
-            <h2><em>No Bookings</em></h2>
+            <h2><em>No @tabHeader Bookings</em></h2>
             <a style="padding: 20px; font-size: 25px; font-weight: bold; background-color: black; color: white; border-radius: 15px;" href="/User/Home"> Find Restaurants</a>
         } 
         
@@ -139,7 +139,7 @@
                             <a class="primary-btn" @onclick="EditEligibility">
                                 Edit Booking
                             </a>
-                            <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
+                            <a class="danger-btn" @onclick="ShowCancelReservation">
                                 Cancel Booking
                             </a>
                             break;
@@ -147,7 +147,7 @@
                             <a class="primary-btn" @onclick="EditEligibility">
                                 Edit Booking
                             </a>
-                            <a class="danger-btn" @onclick="ShowCancelReservationConfirm">
+                            <a class="danger-btn" @onclick="ShowCancelReservation">
                                 Cancel Booking
                             </a>
                             break;
@@ -218,7 +218,7 @@
                     <a class="primary-btn" href="/Review/Edit/@SelectedReview.ReviewID">
                         Edit
                     </a>
-                    <a class="danger-btn" @onclick="ShowCancelReviewConfirm">
+                    <a class="danger-btn" @onclick="ShowCancelReview">
                         Remove
                     </a>
                 </div>
@@ -242,34 +242,64 @@
     }
 
     @*Show Cancel Confirm Pop Up*@
-    @if (showCancelReservationConfirm)
+    @if (showCancelReservation)
     {
-        <div class="modal-backdrop" @onclick="CloseCancelReservationConfirm">
+        <div class="modal-backdrop" @onclick="CloseCancelReservation">
 
             <div class="modal-card" @onclick:stopPropagation>
-                <button class="close-btn" @onclick="CloseCancelReservationConfirm">✕</button>
+                <button class="close-btn" @onclick="CloseCancelReservation">✕</button>
                 <h2 style="color: #88E788">Cancel Booking:</h2>
                 <p style="color: white">Are you sure of cancelling this booking?</p>
                 <div class="modal-buttons">
                     <button class="danger-btn" @onclick="CancelReservation">Yes</button>
-                    <button class="secondary-btn" @onclick="CloseCancelReservationConfirm">No</button>
+                    <button class="secondary-btn" @onclick="CloseCancelReservation">No</button>
                 </div>
             </div>
         </div>
 
     }
 
-    @if (showCancelReviewConfirm)
+    @if (showCancelReview)
     {
-        <div class="modal-backdrop" @onclick="CloseCancelReviewConfirm">
+        <div class="modal-backdrop" @onclick="CloseCancelReview">
 
             <div class="modal-card" @onclick:stopPropagation>
-                <button class="close-btn" @onclick="CloseCancelReviewConfirm">✕</button>
+                <button class="close-btn" @onclick="CloseCancelReview">✕</button>
                 <h2 style="color: #88E788">Remove Review:</h2>
                 <p style="color: white">Are you sure you want to remove this review?</p>
                 <div class="modal-buttons">
                     <button class="danger-btn" @onclick="CancelReview">Yes</button>
-                    <button class="secondary-btn" @onclick="CloseCancelReviewConfirm">No</button>
+                    <button class="secondary-btn" @onclick="CloseCancelReview">No</button>
+                </div>
+            </div>
+        </div>
+
+    }
+
+    @if (cancelReservationConfirmationPopUp)
+    {
+        <div class="modal-backdrop" @onclick="CloseCancelReservationConfirmationPopUp">
+
+            <div class="modal-card" @onclick:stopPropagation>
+                <h2 style="color: #88E788">Booking Cancelled</h2>
+                <p style="color: white">Booking has been successfully cancelled.</p>
+                <div class="modal-buttons">
+                    <button class="secondary-btn" @onclick="CloseCancelReservationConfirmationPopUp">Back</button>
+                </div>
+            </div>
+        </div>
+
+    }
+
+    @if (removeReviewConfirmationPopUp)
+    {
+        <div class="modal-backdrop" @onclick="CloseRemoveReviewConfirmationPopUp">
+
+            <div class="modal-card" @onclick:stopPropagation>
+                <h2 style="color: #88E788">Review Removed</h2>
+                <p style="color: white">Booking has been successfully removed.</p>
+                <div class="modal-buttons">
+                    <button class="secondary-btn" @onclick="CloseRemoveReviewConfirmationPopUp">Back</button>
                 </div>
             </div>
         </div>
@@ -365,39 +395,40 @@
         }
     }
 
-    public bool showCancelReservationConfirm = false;
+    public bool showCancelReservation = false;
 
-    private void ShowCancelReservationConfirm()
+    private void ShowCancelReservation()
     {
-        showCancelReservationConfirm = true;
+        showCancelReservation = true;
     }
 
 
-    private void CloseCancelReservationConfirm()
+    private void CloseCancelReservation()
     {
-        showCancelReservationConfirm = false;
+        showCancelReservation = false;
     }
 
     private async Task CancelReservation()
     {
-        showCancelReservationConfirm = false;
         using var context = DbFactory.CreateDbContext();
         context.Reservation.Remove(SelectedReservation);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
+        CloseDetails();
+        CloseCancelReservation();
+        OpenCancelReservationConfirmationPopUp();
     }
 
-    public bool showCancelReviewConfirm = false;
+    public bool showCancelReview = false;
 
-    private void ShowCancelReviewConfirm()
+    private void ShowCancelReview()
     {
-        showCancelReviewConfirm = true;
+        showCancelReview= true;
     }
 
 
-    private void CloseCancelReviewConfirm()
+    private void CloseCancelReview()
     {
-        showCancelReviewConfirm = false;
+        showCancelReview = false;
     }
 
     private async Task CancelReview()
@@ -407,8 +438,9 @@
         SelectedReservation.ReviewID = null;
         context.Attach(SelectedReservation!).State = EntityState.Modified;
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/MyBookings?from=completed", forceLoad: true);
-        showCancelReviewConfirm = false;
+        CloseCancelReview();
+        CloseReviewPopUp();
+        OpenRemoveReviewConfirmationPopUp();
     }
 
     private string userSelect = "Upcoming";
@@ -451,5 +483,28 @@
     private async Task ViewPreOrderReceipt()
     {
         NavigationManager.NavigateTo($"/Reservation/OrderList/{SelectedReservation.ReservationID}");
+    }
+
+    public bool cancelReservationConfirmationPopUp = false;
+    private void OpenCancelReservationConfirmationPopUp()
+    {
+        cancelReservationConfirmationPopUp = true;
+    }
+
+    private void CloseCancelReservationConfirmationPopUp()
+    {
+        cancelReservationConfirmationPopUp = false;
+        NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
+    }
+
+    public bool removeReviewConfirmationPopUp = false;
+    private void OpenRemoveReviewConfirmationPopUp()
+    {
+        removeReviewConfirmationPopUp = true;
+    }
+
+    private void CloseRemoveReviewConfirmationPopUp()
+    {
+        removeReviewConfirmationPopUp = false;
     }
 }

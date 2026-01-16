@@ -5,7 +5,7 @@
 @using Dinesaur.Domain
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager NavigationManager
-@implements IDisposable
+
 @inject AuthenticationStateProvider Auth
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject Dinesaur.Data.DinesaurContext DbContext
@@ -66,7 +66,7 @@
         
         <div>
            
-        @*<div style="display: grid; grid-template-columns: repeat(5,1fr) ;"> *@
+        @* *@
                 @if (restaurants.Count == 0)
                 {
                     <p><em>Loading...</em></p>
@@ -85,7 +85,8 @@
                 {
                     <h3>Searched Restaurants by Search Bar</h3>
                     
-                <div style="display: flex; gap: 25px; justify-content: left">
+                
+                <div style="display: grid; grid-template-columns: repeat(5,1fr) ;">
                  @foreach (var restaurant in searchedRestaurants)
                      {
                         <a href="/Restaurants/@restaurant.RestaurantID">
@@ -114,7 +115,8 @@
                 {
                 <h3>Searched Restaurants by Filter</h3>
 
-                <div style="display: flex; gap: 25px; justify-content: left">
+                <div style="display: grid; grid-template-columns: repeat(5,1fr) ;">
+                    
                     @foreach (var restaurant in filteredRestaurants)
                     {
                         <a href="/Restaurants/@restaurant.RestaurantID">
@@ -142,7 +144,7 @@
             if (!filteredRestaurants.Any() && !searchedRestaurants.Any())
             { 
                     <h3>Restaurants Avaliable</h3>
-                <div style="display: flex; gap: 25px; justify-content: left">
+                <div style="display: grid; grid-template-columns: repeat(5,1fr) ;">
                 @foreach( var restaurant in randomRestaurants)
                     {
                         
@@ -217,10 +219,6 @@
     private List<Restaurant>? filteredrestaurants = new();
     private string? Category,filterCategory;
     private bool hasSearched,showFilter;
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
 
     protected override async Task OnInitializedAsync()
     {

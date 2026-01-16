@@ -4,6 +4,7 @@ using Dinesaur.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dinesaur.Migrations
 {
     [DbContext(typeof(DinesaurContext))]
-    partial class DinesaurContextModelSnapshot : ModelSnapshot
+    [Migration("20260114031907_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,9 +312,6 @@ namespace Dinesaur.Migrations
                     b.Property<int>("MenuID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ReservationID")
                         .HasColumnType("int");
 
@@ -325,7 +325,6 @@ namespace Dinesaur.Migrations
                             PreOrderID = 1,
                             Cost = 3.5,
                             MenuID = 1,
-                            Remarks = "Please remove the onions",
                             ReservationID = 1
                         },
                         new
@@ -333,7 +332,6 @@ namespace Dinesaur.Migrations
                             PreOrderID = 2,
                             Cost = 4.0,
                             MenuID = 2,
-                            Remarks = "Please remove all vegetables",
                             ReservationID = 2
                         });
                 });
@@ -570,7 +568,7 @@ namespace Dinesaur.Migrations
                             CreatedAtUtc = new DateTime(2026, 1, 14, 3, 19, 5, 670, DateTimeKind.Utc).AddTicks(7722),
                             Email = "seededRest@gmail.com",
                             Location = "Orchard",
-                            Logo = "[]",
+                            Logo = "[\"/Images/DinesaurLandingPage.jpg\"]",
                             OpeningHours = new TimeOnly(9, 0, 0),
                             RestaurantName = "WesternBanana",
                             RestaurantOwnerID = "3",
