@@ -23,12 +23,12 @@ else
                 <ValidationSummary role="alert"/>
                 <input type="hidden" name="Food.FoodID" value="@Food.FoodID" />
                 <div class="mb-3">
-                    <label for="foodname" class="form-label">FoodName:</label>
+                    <label for="foodname" class="form-label">Food Name:</label>
                     <InputText id="foodname" @bind-Value="Food.FoodName" class="form-control" />
                     <ValidationMessage For="() => Food.FoodName" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="cost" class="form-label">Cost:</label>
+                    <label for="cost" class="form-label">Cost: ($)</label>
                     <InputNumber id="cost" @bind-Value="Food.Cost" class="form-control" />
                     <ValidationMessage For="() => Food.Cost" class="text-danger" />
                 </div>

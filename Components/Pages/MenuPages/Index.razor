@@ -30,7 +30,7 @@
                         <img src="@fooditem.Image.FirstOrDefault()" style="width: 80%; height: auto; align-content: center; border: 5px solid white; border-radius: 5px;" alt="Uploaded Image" />
                     </div>
                     <h6> Food Name: @fooditem.FoodName</h6>
-                    <h6> Food Cost: @fooditem.Cost</h6>
+                    <h6> Food Cost: $ @fooditem.Cost</h6>
                     <h6> Food Category: @fooditem.Category </h6>
                     <a href="/foods/delete/@fooditem.FoodID" class="btn btn-danger"  style="padding: 15px 32px;">Delete </a>
                     <a href="/foods/edit/@fooditem.FoodID" class="btn btn-danger" style="padding: 15px 32px;">Edit </a>
