@@ -6,51 +6,122 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider authenticationStateProvider
 @rendermode InteractiveServer
-<PageTitle>Create</PageTitle>
-<container style="text-align: center;">
-<h1 style="margin-top:40px;">Create Menu</h1>
+
+<PageTitle>Create Menu</PageTitle>
 
 
-<hr />
-    <div class="row justify-content-center">
-    <div class="col-md-4">
+    <div style="max-width: 1100px; margin: 40px auto;">
+        <div style="text-align:center; color:white;">
+            <h1 style="margin:0;">Create Menu</h1>
+            <p style="margin: 12px 0 28px 0; color:#cfcfcf;">
+                Add categories to your restaurant menu (one at a time).
+            </p>
+        </div>
+
         <EditForm method="post" Model="Menu" OnValidSubmit="AddItemtoMenu" FormName="create" Enhance>
             <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
-                <div class="mb-3">
-                    <label for="Categoryid" class="form-label" style="color:white;">Create Category for Menu: (Insert one at a time)</label>
-                    <InputText id="Categoryid" @bind-Value="Menu.Category" class="form-control" />
-                    <ValidationMessage For="() => Menu.Category" class="text-danger" />
-                </div>
-                 <div class="mb-3" hidden>
-                <label for="menurestaurantid" class="form-label">RestaurantID:</label> 
-                <InputNumber id="menurestaurantid" @bind-Value="Menu.RestaurantID" class="form-control" /> 
-                <ValidationMessage For="() => Menu.RestaurantID" class="text-danger" /> 
-            </div>  
-            
-            <button type="submit" class="btn btn-primary">Create</button>
-            
-        </EditForm> 
+            <ValidationSummary class="text-danger" role="alert" />
 
-    </div> 
-        @if (Catergoriess.Any()){
-         <div class="alert alert-danger col-4 mb-3" role="alert" style="">
-            Categories in your Restaurant Menu:
-            <ul>
-                @foreach (var cat in Catergoriess.Skip(1))
-                {
-                    <li>@cat</li>
-                }
-            </ul>
-        </div> 
-        }
-        <br />
-        <br />
-        <div>
-            <a href="/menus" class="btn-primary" style="padding: 15px 32px; margin-top:50px;">Back</a>
-        </div> 
-</div>
-</container>
+            <div style="
+                display:grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+                align-items:start;
+            ">
+
+                <!-- LEFT: Form Card -->
+                <div style="
+                    background:#111;
+                    border-radius: 18px;
+                    padding: 22px;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                ">
+                    <h4 style="color:white; margin:0 0 12px 0;">New Category</h4>
+                    <p style="color:#cfcfcf; margin: 0 0 16px 0; font-size: 14px;">
+                        Example: Western, Dessert, Fine Dining
+                    </p>
+
+                    <div class="mb-3">
+                        <label for="Categoryid" class="form-label" style="color:white;">
+                            Category name
+                        </label>
+                        <InputText id="Categoryid" @bind-Value="Menu.Category" class="form-control" placeholder="e.g. Dessert" />
+                        <ValidationMessage For="() => Menu.Category" class="text-danger" />
+                    </div>
+
+                    <div class="mb-3" hidden>
+                        <label for="menurestaurantid" class="form-label">RestaurantID</label>
+                        <InputNumber id="menurestaurantid" @bind-Value="Menu.RestaurantID" class="form-control" />
+                        <ValidationMessage For="() => Menu.RestaurantID" class="text-danger" />
+                    </div>
+
+                    <div style="display:flex; gap: 12px; justify-content:flex-end; margin-top: 14px;">
+                        <a href="/menus" class="btn btn-secondary" style="padding: 10px 18px; font-weight:600;">
+                            Back
+                        </a>
+
+                        <button type="submit" class="btn btn-primary" style="padding: 10px 22px; font-weight:600;">
+                            Add Category
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Categories Card -->
+                <div style="
+                    background:#111;
+                    border-radius: 18px;
+                    padding: 22px;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                ">
+                    <h4 style="color:white; margin:0 0 12px 0;">Current Categories</h4>
+
+                    @if (Catergoriess != null && Catergoriess.Any() && Catergoriess.Count > 1)
+                    {
+                        <div style="
+                                border: 1px solid rgba(255,255,255,0.12);
+                                border-radius: 14px;
+                                padding: 14px;
+                                background: rgba(255,255,255,0.04);
+                            ">
+                            <ul style="margin:0; padding-left: 18px; color:#e6e6e6;">
+                                @foreach (var cat in Catergoriess.Skip(1))
+                                {
+                                    <li style="margin: 6px 0;">@cat</li>
+                                }
+                            </ul>
+                        </div>
+
+                        <div style="
+                                margin-top: 14px;
+                                color:#cfcfcf;
+                                font-size: 13px;
+                                line-height: 1.5;
+                            ">
+                            Tip: Keep names short and consistent (e.g. “Hotpot” vs “HotPot”).
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="
+                                height: 180px;
+                                border-radius: 16px;
+                                border: 1px dashed rgba(255,255,255,0.25);
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                color:#aaa;
+                                text-align:center;
+                                padding: 14px;
+                            ">
+                            No categories added yet.
+                            Add one on the left to start building your menu.
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </EditForm>
+    </div>
 
 @code {
     [SupplyParameterFromForm]

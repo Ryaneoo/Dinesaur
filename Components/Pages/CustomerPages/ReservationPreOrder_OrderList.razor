@@ -197,7 +197,7 @@
         StateHasChanged();
         await using var db = await DbFactory.CreateDbContextAsync();
         await db.SaveChangesAsync();
-        await JS.InvokeVoidAsync("alert", "Booking is Confirmed!");
+        await JS.InvokeVoidAsync("alert", "Pre-Order is Confirmed!");
         NavigationManager.NavigateTo("#");
 
 
@@ -242,6 +242,8 @@
         orderRows.Clear();
         totalCost = 0;
         preOrderID = null;
+
+        await JS.InvokeVoidAsync("alert", "Your Pre-Order Has Been Deleted");
 
         NavigationManager.NavigateTo("/MyBookings");
 

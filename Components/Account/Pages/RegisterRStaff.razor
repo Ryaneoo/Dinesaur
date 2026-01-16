@@ -40,21 +40,6 @@
                 <label for= "email" > Name </label >
                 <ValidationMessage For = "() => InputRStaff.Name" class= "text-danger" />
             </div >
-            
-
-
-            <div class= "form-floating mb-3" >
-                <InputText @bind-Value = "InputRStaff.RestaurantName" class= "form-control"
-                            aria - required = "true" placeholder = "Gates" />
-                <label for= "email" > Restaurant Name </label >
-                <ValidationMessage For = "() => InputRStaff.RestaurantName" class= "text-danger" />
-            </div >
-            <div class= "form-floating mb-3" >
-                <InputText @bind-Value = "InputRStaff.IncomeAmount" class= "form-control"
-                            aria - required = "true" placeholder = "Gates" />
-                <label for= "email" > Income Amount </label >
-                <ValidationMessage For = "() => InputRStaff.IncomeAmount" class= "text-danger" />
-            </div >
             <div class= "form-floating mb-3" >
                 <InputText type = "password" @bind-Value = "InputRStaff.Password" class= "form-control" autocomplete = "new-password" aria - required = "true" placeholder = "password" />
                 <label for= "password" > Password </label >
@@ -182,14 +167,6 @@ private sealed class InputModelRStaff
     [EmailAddress]
     [Display(Name = "Email")]
     public string Email { get; set; } = "";
-
-    [Required]
-    [Display(Name = "Restaurant Name")]
-    public string RestaurantName { get; set; } = "";
-
-    [Required]
-    [Display(Name = "Average Monthly Income Amount")]
-    public string IncomeAmount { get; set; } = "";
 
     [Required]
     [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]

@@ -9,5 +9,7 @@
         public int MenuID { get; set; }
 
         public int ReservationID { get; set; }
+
+        public string? Remarks { get; set; }
     }
 }
