@@ -32,7 +32,8 @@
 </div>
 <div style="margin: 20px 80px;">
     <h3>Top Selling Dishes</h3>
-    <div style="display: flex; gap: 25px; justify-content: left; color:white; font-size: 25px;">
+        
+            <div style="display: grid; gap: 25px; grid-template-columns: repeat(5,1fr) ;  color:white; font-size: 25px;">
         @if (foods == null)
         {
             <p><em>No dishes available</em></p>

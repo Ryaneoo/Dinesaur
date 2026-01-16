@@ -9,7 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject Dinesaur.Data.DinesaurContext DbContext
 @rendermode InteractiveServer
-
+@* Can add/remove categories for their menu and the overall state of their menu also add food and more categories *@
 <PageTitle>Menu</PageTitle>
 
 <div style="max-width:1100px; margin:0 auto;">
@@ -108,7 +108,7 @@
             }
         </div>
     }
-    else
+    else //if no categories created yet means no menu has been created hence
     {
         <!-- No menu state (centered card) -->
         <div style="
@@ -145,7 +145,7 @@
     private int CheckMenu;
 
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //gets details of the restaurant owner logged in and checks if user has already created a menu
     {
         context = DbFactory.CreateDbContext();
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
@@ -176,7 +176,7 @@
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
 
-    private void NavigateToCreate()
+    private void NavigateToCreate() //create categories
     {
         NavigationManager.NavigateTo("/menus/create");
     }

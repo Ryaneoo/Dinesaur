@@ -6,9 +6,10 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider authenticationStateProvider
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 <PageTitle>Create</PageTitle>
 
-
+@* Here they create the restaurant and add all details of it  *@
 
     <div style="
         max-width: 1100px;
@@ -188,13 +189,17 @@
         </EditForm>
     </div>
 
-
+<script>
+    function showAlert() {
+        alert("Image uploaded is not allowed pick another");
+    }
+</script>
 @code {
     [SupplyParameterFromForm]
     private Restaurant Restaurant { get; set; } = new();
-    private const int maxLogoFileSize = 5242880;
+    private const int maxLogoFileSize = 5000000;
     private List<string> FileErrors = new List<string>();
-    private async Task LoadFiles(InputFileChangeEventArgs e)
+    private async Task LoadFiles(InputFileChangeEventArgs e) //convert image (restaurant logo) uploaded to string and then add to database and then display
     {
         FileErrors.Clear();
         var files = e.GetMultipleFiles();
@@ -223,17 +228,24 @@
         }
         StateHasChanged();
     }
-    private async Task AddRestaurant()
+    private async Task AddRestaurant() //if image not allowed prevent creation
     {
-        Restaurant.RestaurantOwnerID = Id;
-        Restaurant.AdminID = 1; 
-        // Restaurant.Status = 0; (Seeded) Yet to be approved by Admin
-        using var context = DbFactory.CreateDbContext();
-        context.Restaurant.Add(Restaurant);
-        await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/RestaurantStaff/Home");
+        
+        if (FileErrors.Any())
+        {
+            await JS.InvokeVoidAsync("showAlert");
+        }
+        else
+        {
+            Restaurant.RestaurantOwnerID = Id;
+            Restaurant.AdminID = 1;
+            using var context = DbFactory.CreateDbContext();
+            context.Restaurant.Add(Restaurant);
+            await context.SaveChangesAsync();
+            NavigationManager.NavigateTo("/RestaurantStaff/Home");
+        }
     }
-    private List<String> Categories = new List<String>
+    private List<String> Categories = new List<String> //default categories of restaurant to fall in
     {
          "",
          "Western",
@@ -244,7 +256,7 @@
          "Others",
     };
     private string Id = "System";
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //get user id so when creation occurs the restaurant owner id is auto assigned
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;

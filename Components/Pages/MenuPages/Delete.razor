@@ -7,7 +7,7 @@
 @rendermode InteractiveServer
 <PageTitle>Delete</PageTitle>
 <div style="max-width:1100px; margin:0 auto;">
-
+@* Allow removal of categories from menu *@
     <!-- Header -->
     <div style="text-align:center; color:white;">
         <h1 style="margin-top:40px;">Remove Menu Category</h1>
@@ -117,7 +117,7 @@
     private Menu Menu { get; set; } = new();
     private int? RestaurantId, MenuId;
     private List<string?> Catergories = new List<string?>();
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //get details of the restaurant owner logged in to see what categories user already created
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -141,7 +141,7 @@
         MenuId = MenuDetails.MenuID;
     }
 
-    private async Task DeleteItemfromMenu()
+    private async Task DeleteItemfromMenu() //deletes the category from menu  and updates the page
     {
         await using var db = await DbFactory.CreateDbContextAsync();
         using var context = DbFactory.CreateDbContext();

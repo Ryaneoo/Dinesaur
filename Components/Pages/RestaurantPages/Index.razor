@@ -24,7 +24,7 @@
     @if (HasRestaurant == true)
     {
         <!-- Status banner -->
-        @if (Status == Restaurant.ApprovalStatus.Pending)
+        @if (Status == Restaurant.ApprovalStatus.Pending) //Checks status before giving the appropriate notification
         {
             <div style="
                                 background: rgba(255,255,255,0.06);
@@ -73,8 +73,8 @@
                     gap: 24px;
                     align-items:start;
                 ">
-
-            <!-- LEFT: Details card -->
+            @* Show restaurant details *@
+            <!-- LEFT: Details card --> 
             <div style="
                         background:#111;
                         border-radius: 18px;
@@ -115,7 +115,7 @@
                         </div>
                     </div>
                 </div>
-
+                @* Restaurant Actions (add food, add categories & etc) *@
                 <!-- Actions -->
                 <div style="
                             margin-top: 18px;
@@ -160,7 +160,7 @@
                     </div>
                 }
             </div>
-
+            @* Show restaurant logo *@
             <!-- RIGHT: Logo card -->
             <div style="
                         background:#111;
@@ -170,9 +170,7 @@
                         color:white;
                     ">
                 <h4 style="margin:0 0 12px 0;">Restaurant Logo</h4>
-                <p style="margin:0 0 14px 0; color:#cfcfcf; font-size:14px;">
-                    A clear square logo looks best.
-                </p>
+                
 
                 @if (Lo == null)
                 {
@@ -210,6 +208,7 @@
     }
     else
     {
+        @* Ask to create restaurant if dont have one yet *@
         <!-- No restaurant state (centered card) -->
         <div style="
                     background:#111;
@@ -250,7 +249,7 @@
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value; //gets the current user login id
         context = DbFactory.CreateDbContext();
         await using var db = await DbFactory.CreateDbContextAsync();
         var userIdClaim = user.FindFirst("userId");
@@ -259,14 +258,14 @@
         {
             userId = userIdClaim.Value;
         }
-        var CheckForRestaurantId = await db.Restaurant
+        var CheckForRestaurantId = await db.Restaurant // checks if current user logged in has a restaurant
         .Where(r => r.RestaurantOwnerID == aspNetUserId)
         .Select(r=> r.RestaurantOwnerID)
         .SingleOrDefaultAsync();
         
-        if(CheckForRestaurantId == null)
+        if(CheckForRestaurantId == null) // if have can modify, if not create one
         {
-            HasRestaurant = false;
+            HasRestaurant = false; 
         }
         else
         {
@@ -274,7 +273,7 @@
         }
         if (HasRestaurant == true)
         {
-            var Details = await db.Restaurant
+            var Details = await db.Restaurant //get all details of the restaurant of the owner logged in
             .Where(d => d.RestaurantOwnerID == aspNetUserId)
               .Select(d => new
               {

@@ -6,7 +6,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider authenticationStateProvider
 @rendermode InteractiveServer
-
+@* Allows creation of categories for menu for food classification *@
 <PageTitle>Create Menu</PageTitle>
 
 
@@ -130,9 +130,8 @@
     
     private int RestaurantId,MenuId;
     private bool MenuExist;
-    private async Task AddItemtoMenu()
+    private async Task AddItemtoMenu() //add category to database and create menu tied to restaurant owner
     {
-        //StateHasChanged();
         await using var db = await DbFactory.CreateDbContextAsync();
         using var context = DbFactory.CreateDbContext();
         if (MenuExist == false)
@@ -168,7 +167,7 @@
     }
     
    
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //get restaurant owner details
     {
 
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
@@ -187,7 +186,7 @@
         )
         .SingleOrDefaultAsync();
         MenuId = MenuDetails;
-        if(MenuId != 0) 
+        if(MenuId != 0) //checks if a menu already exists
         {
             MenuExist = true;
         }
