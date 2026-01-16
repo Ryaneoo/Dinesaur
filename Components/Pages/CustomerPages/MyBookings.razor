@@ -216,10 +216,10 @@
                         Back
                     </a>
                     <a class="primary-btn" href="/Review/Edit/@SelectedReview.ReviewID">
-                        Edit
+                        Edit Review
                     </a>
                     <a class="danger-btn" @onclick="ShowCancelReview">
-                        Remove
+                        Delete Review
                     </a>
                 </div>
             </div>
@@ -336,6 +336,9 @@
         userReviews = await context.Review.Where(a => a.CustomerID == aspNetUserId).ToListAsync();
         restaurants = await context.Restaurant.ToListAsync();
 
+        
+        StateHasChanged();
+
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
 
@@ -348,7 +351,7 @@
             GetBookings(1);
         }
 
-        StateHasChanged();
+        
     }
 
     @*Navigate to Restaurant Page*@

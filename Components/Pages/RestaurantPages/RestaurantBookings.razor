@@ -76,7 +76,7 @@
     <div style="display: flex; gap: 25px; flex-direction: column; padding: 50px;">
         @if (BookingTab.Count == 0)
         {
-            <h2><em>No Bookings</em></h2>
+            <h2 style="font-weight: bold">No @tabHeader Bookings</h2>
             <AuthorizeView Roles="User" Context="userAuth">
                 <Authorized Context="userAuth">
                     @if (userAuth.User.IsInRole("RestaurantStaff"))
@@ -274,6 +274,48 @@
             hasRestaurant = false;
         }
 
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+        GetBookings(1);
+
+
+        switch (query["to"])
+        {
+            case "new": {
+                    await GetBookings(1);
+                    break;
+                }
+            case "confirmed":
+                {
+                    await GetBookings(2);
+                    break;
+                }
+            case "ongoing":
+                {
+                    await GetBookings(3);
+                    break;
+                }
+            case "completed":
+                {
+                    await GetBookings(4);
+                    break;
+                }
+            case "cancelled":
+                {
+                    await GetBookings(5);
+                    break;
+                }
+
+        }
+
+        if(query["id"] != null)
+        {
+            OpenDetails(restaurantBookings.FirstOrDefault(r => r.ReservationID == int.Parse(query["id"])));
+        }
+        
+
+
     }
 
     @*Navigate to Restaurant Page*@
@@ -374,23 +416,26 @@
 
     private async Task ChangeReservationStatus()
     {
+        
         using var context = DbFactory.CreateDbContext();
         if (SelectedReservation.Status == Reservation.ReservationStatus.Pending)
         {
             SelectedReservation.Status = Reservation.ReservationStatus.Confirmed;
+            NavigationManager.NavigateTo($"/Restaurant/Bookings?to=confirmed&id={SelectedReservation.ReservationID}", forceLoad: true);
         }
         else if (SelectedReservation.Status == Reservation.ReservationStatus.Confirmed)
         {
             SelectedReservation.Status = Reservation.ReservationStatus.Ongoing;
+            NavigationManager.NavigateTo($"/Restaurant/Bookings?to=ongoing&id={SelectedReservation.ReservationID}", forceLoad: true);
 
         } else if (SelectedReservation.Status == Reservation.ReservationStatus.Ongoing)
         {
             SelectedReservation.Status = Reservation.ReservationStatus.Completed;
+            NavigationManager.NavigateTo($"/Restaurant/Bookings?to=completed&id={SelectedReservation.ReservationID}", forceLoad: true);
 
         }
         context.Attach(SelectedReservation!).State = EntityState.Modified;
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/Restaurant/Bookings", forceLoad: true);
     }
 
     public bool cancelReservationConfirmationPopUp = false;

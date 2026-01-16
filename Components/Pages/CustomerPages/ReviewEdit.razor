@@ -46,8 +46,9 @@
                 <ValidationSummary />
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <a class="secondary-btn" href="/MyBookings">Back</a>
-                    <button type="submit" class="primary-btn">Submit</button>
+                    <a class="secondary-btn" href="/MyBookings?from=completed">Back</a>
+                    <button type="submit" class="primary-btn">Update</button>
+                    <a class="danger-btn" @onclick=OpenCancelReviewPopUp">Cancel Booking</a>
                 </div>
             </EditForm>
         </div>
@@ -108,27 +109,42 @@
 }
 
 @*Show Cancel Pop Up*@  
-@if (showCancelConfirm)
+@if (cancelReviewPopUp)
 {
-    <div class="modal-backdrop" @onclick="CloseCancelConfirm">
+    <div class="modal-backdrop" @onclick="CloseCancelReviewPopUp">
 
         <div class="modal-card" @onclick:stopPropagation>
-            <button class="close-btn" @onclick="CloseCancelConfirm">✕</button>
-            <h2 style="color: #88E788">Cancel Booking:</h2>
-            <p style="color:white">Are you sure of cancelling this booking?</p>
+            <button class="close-btn" @onclick="CloseCancelReviewPopUp">✕</button>
+            <h2 style="color: #88E788">Cancel Review:</h2>
+            <p style="color:white">Are you sure of removing this review?</p>
             <div class="modal-buttons">
                 <button class="danger-btn" @onclick="ConfirmCancel">Yes</button>
-                <button class="secondary-btn" @onclick="CloseCancelConfirm">No</button>
+                <button class="secondary-btn" @onclick="CloseCancelReviewPopUp">No</button>
+            </div>
+        </div>
+    </div>
+
+
+}
+@if (cancelReviewConfirmationPopUp)
+{
+    <div class="modal-backdrop">
+
+        <div class="modal-card" @onclick:stopPropagation>
+            <h2 style="color: #88E788">Review Removed</h2>
+            <p style="color: white">Review has been successfully removed.</p>
+            <div class="modal-buttons">
+                <a class="secondary-btn" @onclick = "CloseCancelReviewConfirmationPopUp">Back</a>
             </div>
         </div>
     </div>
 
 }
 
-    @code {
-        Restaurant? selectedRestaurant;
-        Reservation? selectedReservation;
-        Review? selectedReview;
+@code {
+    Restaurant? selectedRestaurant;
+    Reservation? selectedReservation;
+    Review? selectedReview;
 
     [Parameter]
     public int id { get; set; }
@@ -161,7 +177,7 @@
             return;
         }
 
-        
+
     }
 
     public bool reviewUpdatedPopUp = false;
@@ -176,31 +192,46 @@
         context.Attach(selectedReview!).State = EntityState.Modified;
         await context.SaveChangesAsync();
         OpenReviewUpdatedPopUp();
-       
+
     }
 
-    
-    public bool showCancelConfirm = false;
 
-    private void ShowCancelConfirm()
+    public bool cancelReviewPopUp = false;
+
+    private void OpenCancelReviewPopUp()
     {
-        showCancelConfirm = true;
+        cancelReviewPopUp = true;
     }
 
-    
-    private void CloseCancelConfirm()
+
+    private void CloseCancelReviewPopUp()
     {
-        showCancelConfirm = false;
+        cancelReviewPopUp = false;
     }
 
     private async Task ConfirmCancel()
     {
-        showCancelConfirm = false;
         using var context = DbFactory.CreateDbContext();
-        context.Reservation.Remove(selectedReservation);
+        context.Review.Remove(selectedReview);
+        selectedReservation.ReviewID = null;
+        context.Attach(selectedReservation!).State = EntityState.Modified;
         await context.SaveChangesAsync();
-        CloseCancelConfirm();
-        
+        CloseCancelReviewPopUp();
+        OpenCancelReviewConfirmationPopUp();
+    }
+
+    public bool cancelReviewConfirmationPopUp = false;
+
+    private void OpenCancelReviewConfirmationPopUp()
+    {
+        cancelReviewConfirmationPopUp = true;
+    }
+
+
+    private void CloseCancelReviewConfirmationPopUp()
+    {
+        cancelReviewConfirmationPopUp = false;
+        NavigationManager.NavigateTo("/MyBookings?from=completed", forceLoad: true);
     }
 
     @*Set Rating Value*@

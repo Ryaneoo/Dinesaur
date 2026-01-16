@@ -27,11 +27,14 @@
                                Min="@DateTime.Today" />
                     <ValidationMessage For="@(() => Reservation.Date)" />
 
-                    <h4 class="mt-2">Time:</h4>
-                    <InputDate @bind-value="Reservation.Time"
-                               Type="InputDateType.Time"
-                               class="form-control"
-                               step="1800"/>
+                    <h4 class="mt-2">Time: (Hours: @selectedRestaurant.OpeningHours.ToString("hh:mmtt") - @selectedRestaurant.ClosingHours.ToString("hh:mmtt"))</h4>
+                    <input type="time"
+                           class="form-control"
+                           step="900"
+                           min="@selectedRestaurant?.OpeningHours.ToString("HH:mm")"
+                           max="@selectedRestaurant?.ClosingHours.ToString("HH:mm")"
+                           value="@UiTime.ToString("HH:mm")"
+                           @onchange="OnTimeInput" />
                     <ValidationMessage For="@(() => Reservation.Time)" />
 
                     <h4 class="mt-2">Diners (Pax):</h4>
@@ -142,27 +145,23 @@
 
         // Default date
         Reservation.Date = DateTime.Today;
-
-        // Default time → round current time to nearest 30 minutes
-        var now = DateTime.Now;
-        Reservation.Time = RoundUpToNext30Min(now);
-        
         Reservation.Pax = 1;
+        Reservation.Time = selectedRestaurant.OpeningHours;
     }
 
     private async Task AddReservation()
     {
         //Assign Values to properties in Reservation
-        NormalizeTime();
+        @*NormalizeTime();*@
         Reservation.RestaurantID = selectedRestaurant.RestaurantID;
         Reservation.Status = Reservation.ReservationStatus.Pending;
         using var context = DbFactory.CreateDbContext();
         context.Reservation.Add(Reservation);
         await context.SaveChangesAsync();
         OpenReservationPopUp();
-        
+
     }
-    
+
     public bool reservationPopUp = false;
     private void OpenReservationPopUp()
     {
@@ -175,42 +174,21 @@
         NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
     }
 
-    private void NormalizeTime()
+    DateTime UiTime
     {
-        if (Reservation.Time.HasValue)
-        {
-            var time = Reservation.Time.Value;
-            var roundedMinutes = (int)(Math.Round(time.Minute / 30.0) * 30);
+        get => DateTime.Today.Add(Reservation.Time.Value.ToTimeSpan());
+        set => Reservation.Time = TimeOnly.FromDateTime(value);
+    }
 
-            Reservation.Time = new DateTime(
-                time.Year,
-                time.Month,
-                time.Day,
-                time.Hour,
-                roundedMinutes % 60,
-                0);
+
+
+    void OnTimeInput(ChangeEventArgs e)
+    {
+        if (TimeOnly.TryParse(e.Value?.ToString(), out var time))
+        {
+            Reservation.Time = time;
         }
     }
 
-    private DateTime RoundUpToNext30Min(DateTime dt)
-    {
-        // total minutes past the hour
-        int minutes = dt.Minute;
-
-        // if minutes == 0 → same hour
-        // else round up to next 30-min slot
-        int addMinutes = 0;
-        if (minutes == 0 || minutes <= 30)
-        {
-            addMinutes = 30 - minutes;
-        }
-        else
-        {
-            addMinutes = 60 - minutes;
-        }
-
-        return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0)
-            .AddMinutes(addMinutes);
-    }
 
 }

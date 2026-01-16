@@ -24,11 +24,13 @@
                                class="form-control" Min="@DateTime.Today" />
 
                     <h4 class="mt-2">Time:</h4>
-                    <InputDate @bind-Value="selectedReservation.Time"
-                               Type="InputDateType.Time"
-                               class="form-control"
-                               step="1800" />
-
+                    <input type="time"
+                           class="form-control"
+                           step="900"
+                           min="@selectedRestaurant?.OpeningHours.ToString("HH:mm")"
+                           max="@selectedRestaurant?.ClosingHours.ToString("HH:mm")"
+                           value="@UiTime.ToString("HH:mm")"
+                           @onchange="OnTimeInput" />
                     <ValidationMessage For="@(() => selectedReservation.Time)" />
                     <h4 class="mt-2">Diners (Pax):</h4>
                     <InputNumber @bind-Value="selectedReservation.Pax" class="form-control" Min="1"/>
@@ -125,6 +127,21 @@
 
 }
 
+@if (cancelReservationConfirmationPopUp)
+{
+    <div class="modal-backdrop">
+
+        <div class="modal-card" @onclick:stopPropagation>
+            <h2 style="color: #88E788">Booking Cancelled</h2>
+            <p style="color: white">Booking has been successfully cancelled.</p>
+            <div class="modal-buttons">
+                <a class="secondary-btn" @onclick="CloseCancelReservationConfirmationPopUp">Back</a>
+            </div>
+        </div>
+    </div>
+
+}
+
 @code {
     Restaurant? selectedRestaurant;
     Reservation? selectedReservation;
@@ -151,7 +168,7 @@
             return;
         }
 
-        
+
     }
 
     public bool reservationPopUp = false;
@@ -187,14 +204,14 @@
         }
 
         OpenReservationPopUp();
-       
+
     }
 
     private bool ReservationExists(int reservationid)
-        {
-            using var context = DbFactory.CreateDbContext();
-            return context.Reservation.Any(e => e.ReservationID == reservationid);
-        }
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Reservation.Any(e => e.ReservationID == reservationid);
+    }
 
     public bool showCancelConfirm = false;
 
@@ -203,7 +220,7 @@
         showCancelConfirm = true;
     }
 
-    
+
     private void CloseCancelConfirm()
     {
         showCancelConfirm = false;
@@ -216,6 +233,35 @@
         context.Reservation.Remove(selectedReservation);
         await context.SaveChangesAsync();
         CloseCancelConfirm();
-        
+        OpenCancelReservationConfirmationPopUp();
+
+    }
+
+    public bool cancelReservationConfirmationPopUp = false;
+    private void OpenCancelReservationConfirmationPopUp()
+    {
+        cancelReservationConfirmationPopUp = true;
+    }
+
+    private void CloseCancelReservationConfirmationPopUp()
+    {
+        cancelReservationConfirmationPopUp = false;
+        NavigationManager.NavigateTo("/MyBookings", forceLoad: true);
+    }
+
+    DateTime UiTime
+    {
+        get => DateTime.Today.Add(selectedReservation.Time.Value.ToTimeSpan());
+        set => selectedReservation.Time = TimeOnly.FromDateTime(value);
+    }
+
+
+
+    void OnTimeInput(ChangeEventArgs e)
+    {
+        if (TimeOnly.TryParse(e.Value?.ToString(), out var time))
+        {
+            selectedReservation.Time = time;
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace Dinesaur.Domain
         public DateTime? Date { get; set; }
 
         [Required(ErrorMessage = "Booking time is required")]
-        public DateTime? Time { get; set; }
+        public TimeOnly? Time { get; set; }
 
         [Required(ErrorMessage = "PAX is required")]
         [Range(1, 20, ErrorMessage = "PAX must be between 1 and 20")]
@@ -42,7 +42,7 @@ namespace Dinesaur.Domain
             if (Date.HasValue && Time.HasValue)
             {
                 var combined =
-                    Date.Value.Date + Time.Value.TimeOfDay;
+                    Date.Value.Date.Add(Time.Value.ToTimeSpan());
 
                 if (combined <= DateTime.Now)
                 {
