@@ -11,12 +11,13 @@
 @inject UserManager<DinesaurUser> UserManager
 @inject SignInManager<DinesaurUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
-@inject IdentityRedirectManager RedirectManager
+@inject NavigationManager NavigationManager
 @inject ILogger<DeletePersonalData> Logger
+@inject IJSRuntime JS
 <PageTitle>Delete</PageTitle>
 <container style="text-align: center;">
 <h1 style="margin-top:40px;">Delete Restaurant</h1>
-
+@* Deleting Restaurant also means deleting the account as the restaurant would be tied to the account holder *@
 <hr />
 <div>
     <h2> Your Restaurant is tied to your account </h2>
@@ -37,11 +38,17 @@
             <button class="w-100 btn btn-lg btn-danger" type="submit">Delete restaurant and account</button>
         </EditForm>
     </div>
+    <br />
+    @if(WrongPassword == true)
+    {
+        <div class="alert alert-success"> Wrong Password has been entered</div>
+    }
 </container>
+
 @code {
-    private string? message;
+
     private DinesaurUser user = default!;
-    private bool requirePassword;
+    private bool requirePassword,WrongPassword;
     private Restaurant restaurants = new();
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -49,7 +56,7 @@
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //gets all the details needed for deleting
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var userr = authState.User;
@@ -65,11 +72,11 @@
         restaurants = restaurant;
     }
 
-    private async Task OnValidSubmitAsync()
+    private async Task OnValidSubmitAsync() //deletes both restaurant and restaurant owner account
     {
         if (requirePassword && !await UserManager.CheckPasswordAsync(user, Input.Password))
         {
-            message = "Error: Incorrect password.";
+            WrongPassword = true;
             return;
         }
         using var context = DbFactory.CreateDbContext();
@@ -80,7 +87,7 @@
         await context.SaveChangesAsync();
         if (!result.Succeeded)
         {
-            throw new InvalidOperationException("Unexpected error occurred deleting user.");
+            throw new InvalidOperationException("Unexpected error occurred deleting.");
         }
 
         await SignInManager.SignOutAsync();
@@ -88,7 +95,7 @@
         var userId = await UserManager.GetUserIdAsync(user);
         Logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
 
-        RedirectManager.RedirectToCurrentPage();
+        NavigationManager.NavigateTo("/");
     }
 
     private sealed class InputModel

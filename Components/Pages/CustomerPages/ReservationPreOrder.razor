@@ -75,23 +75,36 @@
 
         </div>
     </div>
-    <a href="#"
-       style="
-       display:block;
+    <div style=" display:flex;
+       flex-direction:column;
        width: 200px;
        text-align:center;
-       padding:12px 0;
-       background-color:green;
+       padding:12px;
        color:white;
        font-weight:bold;
        border-radius:10px;
        cursor:pointer;
        text-decoration:none;
-       margin:100px auto;"
-       @onclick="() => SaveAndGoToOrderList(id)"
+       margin:100px auto;">
+
+
+        <button style="background:none;
+            border:none;
+            color:white;
+            background-color:green;
+            font-weight:bold;
+            cursor:pointer;
+            padding:10px 0;
+            margin-top:70px;
+            width:500px;
+            transform:translateX(-165px);"
+        @onclick="() => Save(id)"
        @onclick:preventDefault="true">
         Order List
-    </a>
+    </button>
+
+
+    </div>
 
     @if (showPopup && popupFood != null)
     {
@@ -155,6 +168,45 @@
             </div>
         </div>
     }
+    @if (showPopUpRemarks == true)
+    {
+    <div style="
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;">
+        <div style="
+                width: 1400px;
+                height: 500px;
+                max-width: 95vw;
+                background-color: black;
+                border-radius: 18px;
+                overflow: hidden;"
+             @onclick:stopPropagation="true">
+                <label style="color:white; margin-left:30px;font-size:30px;">Before proceeding please let us know if you have any general remarks concerning the food(e.g allergic to nuts)</label>
+
+            <div style="display:flex; justify-content:center; margin-top:5px;">
+                <label style="color:white;font-size:20px;">(Optional)</label>
+                </div>
+
+                <div style="display:flex; justify-content:center; margin-top:150px;">
+                    <label style="color:white; transform:translateX(-30px); font-size:20px;">Remarks:</label>
+                    <input id="Text1" type="text" @bind="Remarks" style="width:600px;" />
+
+                
+                </div>
+                <div style="display:flex; justify-content:center; margin-top:140px;">
+                    <button style="width:150px;height:40px;" @onclick="ClosePopupRemarks">
+                        Confirm
+                    </button>
+
+                </div>
+        </div>
+    </div>
+    }
 
 
 
@@ -182,8 +234,10 @@
     Menu? selectedMenu;
     private string? selectedCategory;
     private bool showPopup = false;
+    private bool showPopUpRemarks = false;
+    private string? Remarks;
     private Food? popupFood;
-    
+
 
     private List<Food> food = new();
     private readonly Dictionary<int, int> itemCounts = new();
@@ -197,6 +251,7 @@
         var preOrder = await DbContext.PreOrder.FirstOrDefaultAsync(p => p.ReservationID == id);
         var authState = await Auth.GetAuthenticationStateAsync();
         var user = authState.User;
+
 
         if (!user.Identity?.IsAuthenticated ?? true)
         {
@@ -242,27 +297,28 @@
 
         var existingItemsCat = selectedMenu?.Catergories;
 
-        
+
 
 
         foreach (var it in existingItems)
             itemCounts[it.FoodID] = it.Quantity;
 
-        
+
 
         var aspNetUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
         Reservation.CustomerID = aspNetUserId;
 
-        
+
     }
 
-    private async Task SaveAndGoToOrderList(int id)
+    private async Task Save(int id)
     {
         await using var db = await DbFactory.CreateDbContextAsync();
         var items = await db.PreOrderItem
             .Where(i => i.PreOrderID == preOrderID)
             .ToListAsync();
+
 
         double total = 0;
         total = await (
@@ -275,10 +331,14 @@
         var preOrder = await db.PreOrder.FirstAsync(p => p.PreOrderID == preOrderID);
         preOrder.Cost = total;
 
+
         await db.SaveChangesAsync();
 
-        // ✅ now navigate
-        NavigationManager.NavigateTo($"/Reservation/OrderList/{id}");
+        showPopUpRemarks = true;
+
+
+
+
     }
 
 
@@ -299,7 +359,7 @@
 
     private string GetFoodName(Food f) => f.FoodName;       
     private decimal GetFoodPrice(Food f) => (decimal)f.Cost;
-    
+
     /*private int GetCountCat(int Categories) =>*/
 
     async Task AddtoPreOrder(int foodId, int qty)
@@ -353,6 +413,19 @@
         showPopup = false;
         popupFood = null;
     }
+    private async Task ClosePopupRemarks()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var preOrder = await db.PreOrder.FirstOrDefaultAsync(p => p.ReservationID == id);
+
+        preOrder.Remarks = Remarks;
+        await db.SaveChangesAsync();
+
+        showPopUpRemarks = false;
+        NavigationManager.NavigateTo($"/Reservation/OrderList/{id}");
+
+    }
+
 
 
 

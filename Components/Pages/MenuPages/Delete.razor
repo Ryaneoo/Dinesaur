@@ -6,53 +6,118 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @rendermode InteractiveServer
 <PageTitle>Delete</PageTitle>
-<container style="text-align: center;">
-<h1 style="margin-top:40px;">Delete</h1>
-<div class="row justify-content-center">
-<div class="col-md-4">
+<div style="max-width:1100px; margin:0 auto;">
+@* Allow removal of categories from menu *@
+    <!-- Header -->
+    <div style="text-align:center; color:white;">
+        <h1 style="margin-top:40px;">Remove Menu Category</h1>
+        <h2 style="margin: 10px 0 30px 0; color:#cfcfcf;">
+            Select a category to remove from your menu.
+        </h2>
+    </div>
+
     @if (Catergories.Any())
     {
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-7 col-lg-5">
 
-        <EditForm method="post" Model="Menu" OnValidSubmit="DeleteItemfromMenu" FormName="delete" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="mb-3">
-                <label for="category" class="form-label" style="color:white;">Insert Category to be Deleted:</label>
-                <InputSelect id="itemcategory" @bind-Value="Menu.Category" class="form-select">
+                <!-- Card -->
+                <div style="
+                        background:#111;
+                        border-radius: 18px;
+                        padding: 22px;
+                        box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                        color:white;
+                    ">
+                    <h3 style="margin:0 0 12px 0;">Delete Category</h3>
+                    <p style="margin:0 0 16px 0; color:#cfcfcf; font-size:14px;">
+                        This only removes the category from your menu list.
+                    </p>
 
-                    @foreach (string category in Catergories)
-                    {
-                        <option value="@category">@category</option>
-                    }
+                    <EditForm method="post" Model="Menu" OnValidSubmit="DeleteItemfromMenu" FormName="delete" Enhance>
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" role="alert" />
 
-                </InputSelect>
+                        <div class="mb-3">
+                            <label for="itemcategory" class="form-label" style="color:white;">
+                                Category to delete
+                            </label>
+                            <InputSelect id="itemcategory" @bind-Value="Menu.Category" class="form-select">
+                                @foreach (string category in Catergories)
+                                {
+                                    <option value="@category">@category</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="mb-3" hidden>
+                            <label for="menurestaurantid" class="form-label">RestaurantID:</label>
+                            <InputNumber id="menurestaurantid" @bind-Value="Menu.RestaurantID" class="form-control" />
+                            <ValidationMessage For="() => Menu.RestaurantID" class="text-danger" />
+                        </div>
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 16px;">
+                            <button type="submit" class="btn btn-danger" style="padding: 12px 18px; font-weight:600;">
+                                Delete
+                            </button>
+
+                            <a href="/menus" class="btn btn-outline-light" style="padding: 12px 18px; font-weight:600; background-color:grey;">
+                                Back
+                            </a>
+                        </div>
+
+                        <div style="
+                                margin-top: 14px;
+                                padding: 14px;
+                                background: rgba(255,255,255,0.06);
+                                border: 1px solid rgba(255,255,255,0.10);
+                                border-radius: 14px;
+                                color:#ddd;
+                                font-size: 14px;
+                                line-height: 1.5;
+                            ">
+                            <b style="color:white;">Tip:</b>
+                            If a category is still used by foods, remove or edit those foods first (if your logic requires it).
+                        </div>
+                    </EditForm>
+                </div>
+
             </div>
-            <div class="mb-3" hidden>
-                <label for="menurestaurantid" class="form-label">RestaurantID:</label>
-                <InputNumber id="menurestaurantid" @bind-Value="Menu.RestaurantID" class="form-control" />
-                <ValidationMessage For="() => Menu.RestaurantID" class="text-danger" />
-            </div>
-            <button type="submit" class="btn btn-primary">Delete</button>
-        </EditForm>
-    }
-        else
-        {
-            <h2> You dont have any categories to delete from your menu</h2>
-            
-        }
-        <br />
-        <div>
-            <a href="/menus" class="btn-primary" style="padding: 15px 32px; ">Back</a>
         </div>
-    </div>
-    </div>
-</container>
+    }
+    else
+    {
+        <!-- Empty state -->
+        <div style="
+                    background:#111;
+                    border-radius: 18px;
+                    padding: 28px;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                    color:white;
+                    text-align:center;
+                    margin-top: 18px;
+                ">
+            <h2 style="color:#88E788; font-size:34px; margin:0 0 10px 0;">
+                No categories to delete
+            </h2>
+            <p style="color:#cfcfcf; margin: 0 0 18px 0;">
+                Your menu does not have any categories available for removal.
+            </p>
+
+            <a href="/menus" class="btn btn-primary" style="padding: 12px 22px; font-weight:600;">
+                Back to Menu
+            </a>
+        </div>
+    }
+
+</div>
+
 @code {
     [SupplyParameterFromForm]
     private Menu Menu { get; set; } = new();
     private int? RestaurantId, MenuId;
     private List<string?> Catergories = new List<string?>();
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //get details of the restaurant owner logged in to see what categories user already created
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -76,7 +141,7 @@
         MenuId = MenuDetails.MenuID;
     }
 
-    private async Task DeleteItemfromMenu()
+    private async Task DeleteItemfromMenu() //deletes the category from menu  and updates the page
     {
         await using var db = await DbFactory.CreateDbContextAsync();
         using var context = DbFactory.CreateDbContext();

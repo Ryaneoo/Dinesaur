@@ -4,119 +4,248 @@
 @inject IDbContextFactory<Dinesaur.Data.DinesaurContext> DbFactory
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 <PageTitle>Edit</PageTitle>
-<container style="text-align:center; margin-top:40px; color:white;">
-<h1 >Edit Your Restaurant</h1>
+@*Edit page for Restaurant *@
+<div style="max-width:1100px; margin:0 auto;">
 
-<hr />
-@if (Restaurant is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="row">
-            <div class="col-md-4 offset-md-4">
-            <EditForm method="post" Model="Restaurant" OnValidSubmit="UpdateRestaurant" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary role="alert"/>
-                <input type="hidden" name="Restaurant.RestaurantID" value="@Restaurant.RestaurantID" />
-                <div class="mb-3">
-                    <label for="restaurantname" class="form-label">RestaurantName:</label>
-                    <InputText id="restaurantname" @bind-Value="Restaurant.RestaurantName" class="form-control" />
-                    <ValidationMessage For="() => Restaurant.RestaurantName" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Location:</label>
-                    <InputText id="location" @bind-Value="Restaurant.Location" class="form-control" />
-                    <ValidationMessage For="() => Restaurant.Location" class="text-danger" />
-                </div>
-                    <div class="mb-3">
-                        <label for="category" class="form-label" style="color:white;">Category:</label>
-                        <InputSelect id="itemcategory" @bind-Value="Restaurant.Category" class="form-select">
-                            @foreach (string category in Categories.Skip(1))
-                            {
-                                <option value="@category">@category</option>
-                            }
-
-                        </InputSelect>
-                        <ValidationMessage For="() => Restaurant.Category" class="text-danger" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="openinghours" class="form-label" style="color:white;"> Opening Hour: </label>
-                        <InputDate @bind-value="Restaurant.OpeningHours"
-                                   Type="InputDateType.Time"
-                                   class="form-control"
-                                   step="1800" />
-                        <ValidationMessage For="() => Restaurant.OpeningHours" class="text-danger" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="openinghours" class="form-label" style="color:white;"> Closing Hour: </label>
-                        <InputDate @bind-value="Restaurant.ClosingHours"
-                                   Type="InputDateType.Time"
-                                   class="form-control"
-                                   step="1800" />
-                        <ValidationMessage For="() => Restaurant.ClosingHours" class="text-danger" />
-                    </div>
-                <div class="mb-3" hidden>
-                    <label for="adminid" class="form-label">AdminID:</label>
-                    <InputNumber id="adminid" @bind-Value="Restaurant.AdminID" class="form-control" />
-                    <ValidationMessage For="() => Restaurant.AdminID" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="contact" class="form-label">Contact:</label>
-                    <InputNumber id="contact" @bind-Value="Restaurant.Contact" class="form-control" />
-                    <ValidationMessage For="() => Restaurant.Contact" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email:</label>
-                    <InputText id="email" @bind-Value="Restaurant.Email" class="form-control" />
-                    <ValidationMessage For="() => Restaurant.Email" class="text-danger" />
-                </div>
-                    <container>
-                        <div class="mb-3">
-                            <label for="logo" class="form-label" style="color:white;"> Upload Image of Logo: </label>
-                            <InputFile id="image" OnChange="@LoadFiles" class="form-control" />
-                        </div>
-                        @if (FileErrors.Any())
-                        {
-                            <br />
-                            <div class="alert alert-danger mb-3" role="alert" style="">
-                                **Errors in Uploading Logo:**
-                                <ul>
-                                    @foreach (var err in FileErrors)
-                                    {
-                                        <li>@err</li>
-                                    }
-                                </ul>
-                            </div>
-                        }
-                        @if (Restaurant.Logo.Any())
-                        {
-                            <br />
-                            <div class="mb-3">Logo of Restaurant to be updated</div>
-                            <div class="d-flex flex_wrap gap-3">
-
-                                <div class="card p-2" style="width: 480px">
-                                    <img src="@Restaurant.Logo.FirstOrDefault()" style="width: 100%; height: auto; object-fit: cover" alt="Uploaded Image" />
-                                </div>
-
-                            </div>
-                            <br />
-                        }
-                    </container>
-                <button type="submit" class="btn btn-primary">Save</button> 
-                <br />
-                    <a href="/RestaurantStaff/Home">  Back to Restaurant</a>
-            </EditForm>
-        </div>
+    <!-- Header -->
+    <div style="text-align:center; color:white;">
+        <h1 style="margin-top:40px;">Edit Your Restaurant</h1>
+        <h2 style="margin: 10px 0 30px 0; color:#cfcfcf;">
+            Update your restaurant details and logo.
+        </h2>
     </div>
-}
 
-<div>
-    
+    @if (Restaurant is null)
+    {
+        <div style="
+                    background:#111;
+                    border-radius: 18px;
+                    padding: 28px;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                    color:white;
+                    text-align:center;
+                    margin-top: 18px;
+                ">
+            <p style="margin:0; color:#cfcfcf;"><em>Loading...</em></p>
+        </div>
+    }
+    else
+    {
+        @* For the Restaurant Owner to change their restaurant *@
+        <EditForm method="post" Model="Restaurant" OnValidSubmit="UpdateRestaurant" FormName="edit" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            <input type="hidden" name="Restaurant.RestaurantID" value="@Restaurant.RestaurantID" />
+
+            <div style="
+                    display:grid;
+                    grid-template-columns: 1.2fr 0.8fr;
+                    gap: 24px;
+                    align-items:start;
+                ">
+
+                <!-- LEFT: Details card -->
+                <div style="
+                        background:#111;
+                        border-radius: 18px;
+                        padding: 22px;
+                        box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                        color:white;
+                    ">
+                    <h3 style="margin:0 0 12px 0;">Restaurant Details</h3>
+                    <p style="margin:0 0 18px 0; color:#cfcfcf; font-size:14px;">
+                        This information is shown to customers once your restaurant is approved.
+                    </p>
+
+                    <div style="display:grid; gap: 12px; font-size: 16px;">
+                        <div>
+                            <div style="color:#cfcfcf; font-size:13px; margin-bottom:6px;">Name</div>
+                            <InputText id="restaurantname" @bind-Value="Restaurant.RestaurantName" class="form-control" />
+                            <ValidationMessage For="() => Restaurant.RestaurantName" class="text-danger" />
+                        </div>
+
+                        <div>
+                            <div style="color:#cfcfcf; font-size:13px; margin-bottom:6px;">Location</div>
+                            <InputText id="location" @bind-Value="Restaurant.Location" class="form-control" />
+                            <ValidationMessage For="() => Restaurant.Location" class="text-danger" />
+                        </div>
+
+                        <div>
+                            <div style="color:#cfcfcf; font-size:13px; margin-bottom:6px;">Category</div>
+                            <InputSelect id="category" @bind-Value="Restaurant.Category" class="form-select">
+                                @foreach (string category in Categories.Skip(1))
+                                {
+                                    <option value="@category">@category</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => Restaurant.Category" class="text-danger" />
+                        </div>
+
+                        <div>
+                            <div style="color:#cfcfcf; font-size:13px; margin-bottom:6px;">Email</div>
+                            <InputText id="email" @bind-Value="Restaurant.Email" class="form-control" />
+                            <ValidationMessage For="() => Restaurant.Email" class="text-danger" />
+                        </div>
+
+                        <div>
+                            <div style="color:#cfcfcf; font-size:13px; margin-bottom:6px;">Contact</div>
+                            <InputNumber id="contact" @bind-Value="Restaurant.Contact" class="form-control" />
+                            <ValidationMessage For="() => Restaurant.Contact" class="text-danger" />
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px;">
+                            <div style="
+                                    background: rgba(255,255,255,0.06);
+                                    border: 1px solid rgba(255,255,255,0.10);
+                                    border-radius: 14px;
+                                    padding: 12px;
+                                ">
+                                <div style="color:#cfcfcf; font-size:13px;">Opening Hour</div>
+                                <InputDate id="openinghours"
+                                           @bind-value="Restaurant.OpeningHours"
+                                           Type="InputDateType.Time"
+                                           class="form-control"
+                                           step="1800"
+                                           style="margin-top:6px;" />
+                                <ValidationMessage For="() => Restaurant.OpeningHours" class="text-danger" />
+                            </div>
+
+                            <div style="
+                                    background: rgba(255,255,255,0.06);
+                                    border: 1px solid rgba(255,255,255,0.10);
+                                    border-radius: 14px;
+                                    padding: 12px;
+                                ">
+                                <div style="color:#cfcfcf; font-size:13px;">Closing Hour</div>
+                                <InputDate id="closinghours"
+                                           @bind-value="Restaurant.ClosingHours"
+                                           Type="InputDateType.Time"
+                                           class="form-control"
+                                           step="1800"
+                                           style="margin-top:6px;" />
+                                <ValidationMessage For="() => Restaurant.ClosingHours" class="text-danger" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3" hidden>
+                        <label for="adminid" class="form-label">AdminID</label>
+                        <InputNumber id="adminid" @bind-Value="Restaurant.AdminID" class="form-control" />
+                        <ValidationMessage For="() => Restaurant.AdminID" class="text-danger" />
+                    </div>
+
+                    @* Save changes done or return if misclick *@
+                    <div style="
+                            margin-top: 18px;
+                            display:flex;
+                            flex-wrap: wrap;
+                            gap: 10px;
+                        ">
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 18px; font-weight:600;">
+                            Save
+                        </button>
+
+                        <a href="/RestaurantStaff/Home" class="btn btn-outline-light" style="padding: 12px 18px; font-weight:600;">
+                            Back to Restaurant
+                        </a>
+                    </div>
+
+                    <div style="
+                            margin-top: 14px;
+                            padding: 14px;
+                            background: rgba(255,255,255,0.06);
+                            border: 1px solid rgba(255,255,255,0.10);
+                            border-radius: 14px;
+                            color:#ddd;
+                            font-size: 14px;
+                            line-height: 1.5;
+                        ">
+                        <b style="color:white;">Tip:</b>
+                        Make sure your opening/closing hours are correct — customers will see these once you’re approved.
+                    </div>
+                </div>
+
+                <!-- RIGHT: Logo card -->
+                <div style="
+                        background:#111;
+                        border-radius: 18px;
+                        padding: 22px;
+                        box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                        color:white;
+                    ">
+                    <h4 style="margin:0 0 12px 0;">Restaurant Logo</h4>
+                    
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label" style="color:white;">Upload Image of Logo</label>
+                        <InputFile id="image" OnChange="@LoadFiles" class="form-control" />
+                    </div>
+
+                    @if (FileErrors.Any())
+                    {
+                        <div style="
+                                    background: rgba(255,255,255,0.06);
+                                    border: 1px solid rgba(255,255,255,0.12);
+                                    border-radius: 16px;
+                                    padding: 14px 16px;
+                                    color: #cfcfcf;
+                                    margin-bottom: 18px;
+                                    text-align:left;
+                                ">
+                            <b style="color:#ff6b6b;">Errors in Uploading Logo:</b>
+                            <ul style="margin:8px 0 0 18px;">
+                                @foreach (var err in FileErrors)
+                                {
+                                    <li>@err</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    @if (Restaurant.Logo.Any())
+                    {
+                        <div style="
+                                    border-radius: 16px;
+                                    overflow:hidden;
+                                    border: 1px solid rgba(255,255,255,0.12);
+                                    background:#000;
+                                ">
+                            <img src="@Restaurant.Logo.FirstOrDefault()"
+                                 style="width:100%; height: 280px; object-fit: cover;"
+                                 alt="Restaurant Logo" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="
+                                    height: 280px;
+                                    border-radius: 16px;
+                                    border: 1px dashed rgba(255,255,255,0.25);
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    color:#aaa;
+                                    text-align:center;
+                                    padding: 14px;
+                                    background:#000;
+                                ">
+                            No logo uploaded yet.
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </EditForm>
+    }
+
 </div>
-</container>
+<script>
+    function noIMG() {
+        alert("Image uploaded is not allowed pick another");
+    }
+</script>
 @code {
     [Parameter]
     public int id { get; set; } Restaurant? restaurant;
@@ -131,36 +260,41 @@ else
 
         if (Restaurant is null)
         {
-            NavigationManager.NavigateTo("notfound");
+            NavigationManager.NavigateTo("notfound"); //if restaurant does not exist , cannot be edited
         }
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task UpdateRestaurant()
     {
-        using var context = DbFactory.CreateDbContext();
-        context.Attach(Restaurant!).State = EntityState.Modified;
-
-        try
+        if (FileErrors.Any()) //prevents update if uploaded file is not compatible
         {
-            await context.SaveChangesAsync();
+            await JS.InvokeVoidAsync("noIMG");
         }
-        catch (DbUpdateConcurrencyException)
+        else
         {
-            if (!RestaurantExists(Restaurant!.RestaurantID))
-            {
-                NavigationManager.NavigateTo("notfound");
-            }
-            else
-            {
-                throw;
-            }
-        }
+            using var context = DbFactory.CreateDbContext();
+            context.Attach(Restaurant!).State = EntityState.Modified; //attaches the changes to the respective restaurant
 
-        NavigationManager.NavigateTo("/RestaurantStaff/Home");
+            try
+            {
+                await context.SaveChangesAsync();// saves change made
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!RestaurantExists(Restaurant!.RestaurantID))
+                {
+                    NavigationManager.NavigateTo("notfound");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            NavigationManager.NavigateTo("/RestaurantStaff/Home");
+        }
     }
-    private List<String> Categories = new List<String>
+    private List<String> Categories = new List<String> //default categories set for the restaurants to have
     {
          "",
          "Western",
@@ -170,7 +304,7 @@ else
          "HotPot",
          "Others",
     };
-    private async Task LoadFiles(InputFileChangeEventArgs e)
+    private async Task LoadFiles(InputFileChangeEventArgs e) //to show the image and rendered it as well as save to database, prevent non image uploads
     {
         FileErrors.Clear();
         var files = e.GetMultipleFiles();
@@ -190,7 +324,7 @@ else
             await Logo.OpenReadStream(maxLogoFileSize).CopyToAsync(ms);
             var fileBytes = ms.ToArray();
             String base64String = Convert.ToBase64String(fileBytes);
-            string imageUri = $"data:{Logo.ContentType};base64,{base64String}";
+            string imageUri = $"data:{Logo.ContentType};base64,{base64String}"; //converts img uploaded to string to render it and add to list before calling it as an actual img
             if (Restaurant.Logo.Count() > 0)
             {
                 Restaurant.Logo.Clear();
@@ -202,6 +336,6 @@ else
     private bool RestaurantExists(int restaurantid)
     {
         using var context = DbFactory.CreateDbContext();
-        return context.Restaurant.Any(e => e.RestaurantID == restaurantid);
+        return context.Restaurant.Any(e => e.RestaurantID == restaurantid);//gets the restaurant details base on which restaurant it is suppose to get
     }
 }

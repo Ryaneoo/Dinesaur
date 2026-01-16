@@ -5,10 +5,11 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider authenticationStateProvider
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 <PageTitle>Edit</PageTitle>
 <container style="text-align:center; margin-top:40px; color:white;">
 <h1>Edit Food</h1>
-
+@* Page to edit the food (any component of it) *@
 <hr />
 @if (Food is null)
 {
@@ -23,12 +24,12 @@ else
                 <ValidationSummary role="alert"/>
                 <input type="hidden" name="Food.FoodID" value="@Food.FoodID" />
                 <div class="mb-3">
-                    <label for="foodname" class="form-label">FoodName:</label>
+                    <label for="foodname" class="form-label">Food Name:</label>
                     <InputText id="foodname" @bind-Value="Food.FoodName" class="form-control" />
                     <ValidationMessage For="() => Food.FoodName" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="cost" class="form-label">Cost:</label>
+                    <label for="cost" class="form-label">Cost: ($)</label>
                     <InputNumber id="cost" @bind-Value="Food.Cost" class="form-control" />
                     <ValidationMessage For="() => Food.Cost" class="text-danger" />
                 </div>
@@ -100,6 +101,11 @@ else
     <a href="/menus">Back to List</a>
 </div>
 </container>
+<script>
+    function noIMG() {
+        alert("Image uploaded is not allowed pick another");
+    }
+</script>
 @code {
     [Parameter]
     public int id { get; set; } Food? food;
@@ -108,9 +114,9 @@ else
     private Food? Food { get; set; }
     private int RId;
     private string? ROwnerId;
-    private const int maxIMGFileSize = 5242880;
+    private const int maxIMGFileSize = 5000000;
     private List<string> Errors = new List<string>();
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //get all details to pre set the input boxes with the current details 
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -137,7 +143,7 @@ else
             NavigationManager.NavigateTo("notfound");
         }
     }
-    private async Task LoadIMG(InputFileChangeEventArgs f)
+    private async Task LoadIMG(InputFileChangeEventArgs f) //load image uploaded and display warning if uploaded file is not suitable
     {
         Errors.Clear();
         var files = f.GetMultipleFiles();
@@ -166,33 +172,40 @@ else
         }
         StateHasChanged();
     }
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
-    private async Task UpdateFood()
+
+    private async Task UpdateFood() //update details of food, if image is not allowed, does not update
     {
-        using var context = DbFactory.CreateDbContext();
-        context.Attach(Food!).State = EntityState.Modified;
-
-        try
+        if (Errors.Any())
         {
-            await context.SaveChangesAsync();
+            await JS.InvokeVoidAsync("noIMG");
         }
-        catch (DbUpdateConcurrencyException)
+        else
         {
-            if (!FoodExists(Food!.FoodID))
-            {
-                NavigationManager.NavigateTo("notfound");
-            }
-            else
-            {
-                throw;
-            }
-        }
+            using var context = DbFactory.CreateDbContext();
+            context.Attach(Food!).State = EntityState.Modified;
 
-        NavigationManager.NavigateTo("/menus");
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!FoodExists(Food!.FoodID))
+                {
+                    NavigationManager.NavigateTo("notfound");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            NavigationManager.NavigateTo("/menus");
+        }
+       
     }
 
-    private bool FoodExists(int foodid)
+    private bool FoodExists(int foodid) // get details on the current food item to be edited and check if it does exist in the database
     {
         using var context = DbFactory.CreateDbContext();
         return context.Food.Any(e => e.FoodID == foodid);

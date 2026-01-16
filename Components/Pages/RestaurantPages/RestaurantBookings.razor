@@ -14,7 +14,8 @@
 
 @*Container*@
 <div style="display: flex; flex-direction:column">
-    @if(hasRestaurant == false)
+    @* If try to access without a restaurant, will be told to create one first *@
+    @if(hasRestaurant == false) 
     {
         <container style="text-align:center;">
         <h1 style="margin-top:40px;"> No Restaurant</h1>
@@ -22,7 +23,7 @@
         </container>
     }
     else{
-    @*Banner*@
+    @*Banner of booking states*@
     <div style="background-color: black; height: auto; text-align: left; display: flex; flex-direction: column; padding: 30px; background-color: rgb(0,0,0,60%)">
         <h1 style="margin-top: 100px; margin-bottom: 20px; text-align: left">@SelectedRestaurant.RestaurantName Bookings</h1>
         <div style="background-color: white; display: grid; grid-template-columns:repeat(auto-fit, minmax(10px, 1fr)); gap: 10px; border-radius: 10px;  padding: 5px;">
@@ -266,7 +267,7 @@
         }
         if (restaurantBookings != null)
         {
-            restaurantBookings.Sort((x, y) => Nullable.Compare(x.Date, y.Date));
+            restaurantBookings.Sort((x, y) => Nullable.Compare(x.Date, y.Date)); //sorts the restaurant bookings by a first come first serve
         }
         restaurants = await context.Restaurant.ToListAsync();
         if(SelectedRestaurant == null)

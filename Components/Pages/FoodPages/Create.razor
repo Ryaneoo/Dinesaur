@@ -7,64 +7,109 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @rendermode InteractiveServer
 @inject IJSRuntime JS
-<PageTitle>Create</PageTitle>
-<container style="text-align: center;">
-<h1 style="margin-top:40px;">Add Food</h1>
+@* Creation of food item into the menu of the restaurant *@
+<PageTitle>Add Food</PageTitle>
 
-<hr />
-    <div class="row justify-content-center">
-    <div class="col-md-4">
+    <div style="max-width: 1100px; margin: 40px auto;">
+        <div style="text-align:center; color:white;">
+            <h1 style="margin:0;">Add Food</h1>
+            <p style="margin: 12px 0 28px 0; color:#cfcfcf;">
+                Add a new food item to your menu. Upload an image on the right.
+            </p>
+        </div>
+
         <EditForm method="post" Model="Food" OnValidSubmit="AddFood" FormName="create" Enhance>
             <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
-            <div class="mb-3">
-                <label for="foodname" class="form-label" style="color:white;">Food Name:</label> 
-                <InputText id="foodname" @bind-Value="Food.FoodName" class="form-control" /> 
-                <ValidationMessage For="() => Food.FoodName" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                    <label for="cost" class="form-label" style="color:white;">Cost: ($)</label>
-                <InputNumber id="cost" @bind-Value="Food.Cost" class="form-control" /> 
-                <ValidationMessage For="() => Food.Cost" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                    <label for="description" class="form-label" style="color:white;">Description:</label>
-                <InputText id="description" @bind-Value="Food.Description" class="form-control" /> 
-                <ValidationMessage For="() => Food.Description" class="text-danger" /> 
-            </div>               
-            <div class="mb-3">
-                    <label for="category" class="form-label" style="color:white;">Category:</label>
-                    <InputSelect id="itemcategory" @bind-Value="Food.Category" class="form-select">
-                        @foreach (string category in Categories)
-                        {
-                            <option value="@category">@category</option>
-                        }
+            <ValidationSummary class="text-danger" role="alert" />
 
-                    </InputSelect>
-                    <ValidationMessage For="() => Food.Category" class="text-danger" />
-            </div>
-             
-                     <div class="mb-3" hidden>
-                <label for="staffid" class="form-label">StaffID:</label> 
-                <InputText id="staffid" @bind-Value="Food.StaffID" class="form-control" /> 
-                <ValidationMessage For="() => Food.StaffID" class="text-danger" /> 
-            </div>        
-            <div class="mb-3" hidden>
-                <label for="menuid" class="form-label">MenuID:</label> 
-                <InputNumber id="menuid" @bind-Value="Food.MenuID" class="form-control" /> 
-                <ValidationMessage For="() => Food.MenuID" class="text-danger" /> 
-            </div>
-                <container>
+            <div style="
+                display:grid;
+                grid-template-columns: 1.2fr 0.8fr;
+                gap: 24px;
+                align-items:start;
+            ">
+
+                <!-- LEFT: Form Card -->
+                <div style="
+                    background:#111;
+                    border-radius: 18px;
+                    padding: 22px;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                ">
+                    <h4 style="color:white; margin:0 0 12px 0;">Food Details</h4>
+
                     <div class="mb-3">
-                        <label for="food" class="form-label" style="color:white;"> Upload Image of Food: </label>
-                        <InputFile id="image" OnChange="@LoadIMG" class="form-control" />
+                        <label for="foodname" class="form-label" style="color:white;">Food Name</label>
+                        <InputText id="foodname" @bind-Value="Food.FoodName" class="form-control" placeholder="e.g. Truffle Pasta" />
+                        <ValidationMessage For="() => Food.FoodName" class="text-danger" />
                     </div>
+
+                    <div class="mb-3">
+                        <label for="cost" class="form-label" style="color:white;">Cost (S$)</label>
+                        <InputNumber id="cost" @bind-Value="Food.Cost" class="form-control" />
+                        <ValidationMessage For="() => Food.Cost" class="text-danger" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label" style="color:white;">Description</label>
+                        <InputText id="description" @bind-Value="Food.Description" class="form-control" placeholder="Short description of the dish" />
+                        <ValidationMessage For="() => Food.Description" class="text-danger" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="itemcategory" class="form-label" style="color:white;">Category</label>
+                        <InputSelect id="itemcategory" @bind-Value="Food.Category" class="form-select">
+                            @foreach (string category in Categories)
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => Food.Category" class="text-danger" />
+                    </div>
+
+                    <div class="mb-3" hidden>
+                        <label for="staffid" class="form-label">StaffID</label>
+                        <InputText id="staffid" @bind-Value="Food.StaffID" class="form-control" />
+                        <ValidationMessage For="() => Food.StaffID" class="text-danger" />
+                    </div>
+
+                    <div class="mb-3" hidden>
+                        <label for="menuid" class="form-label">MenuID</label>
+                        <InputNumber id="menuid" @bind-Value="Food.MenuID" class="form-control" />
+                        <ValidationMessage For="() => Food.MenuID" class="text-danger" />
+                    </div>
+
+                    <div style="display:flex; gap: 12px; justify-content:flex-end; margin-top: 14px;">
+                        <a href="/menus" class="btn btn-secondary" style="padding: 10px 18px; font-weight:600;">
+                            Back
+                        </a>
+
+                        <button type="submit" class="btn btn-primary" style="padding: 10px 22px; font-weight:600;">
+                            Create
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Image Upload Card -->
+                <div style="
+                    background:#111;
+                    border-radius: 18px;
+                    padding: 22px;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                ">
+                    <h4 style="color:white; margin:0 0 12px 0;">Food Image</h4>
+                    <p style="color:#cfcfcf; margin: 0 0 14px 0; font-size: 14px;">
+                        Best results: square images (512×512 or 1024×1024). Max 5MB.
+                    </p>
+
+                    <label for="image" class="form-label" style="color:white;">Upload Image</label>
+                    <InputFile id="image" OnChange="@LoadIMG" class="form-control" />
+
                     @if (Errors.Any())
                     {
-                        <br />
-                        <div class="alert alert-danger mb-3" role="alert" style="">
-                            **Errors in Uploading Logo:**
-                            <ul>
+                        <div class="alert alert-danger mt-3 mb-0" role="alert">
+                            <b>Errors in Uploading Image:</b>
+                            <ul style="margin: 8px 0 0 0;">
                                 @foreach (var err in Errors)
                                 {
                                     <li>@err</li>
@@ -72,34 +117,45 @@
                             </ul>
                         </div>
                     }
+
                     @if (Food.Image.Any())
                     {
-                        <br />
-
-                        <div class="d-flex flex_wrap gap-3">
-
-                            <div class="card p-2" style="width: 480px">
-                                <img src="@Food.Image.FirstOrDefault()" style="width: 100%; height: auto; object-fit: cover" alt="Uploaded Image" />
-                            </div>
-
+                        <div style="
+                                margin-top: 16px;
+                                border-radius: 16px;
+                                overflow:hidden;
+                                border: 1px solid rgba(255,255,255,0.12);
+                                background:#000;
+                            ">
+                            <img src="@Food.Image.FirstOrDefault()"
+                                 style="width:100%; height: 280px; object-fit: cover;"
+                                 alt="Uploaded Food Image" />
                         </div>
-
                     }
-                </container>
-            <br />
-                <button type="submit" class="btn btn-primary " >Create</button>
-                <br />
-                <br />
-                
+                    else
+                    {
+                        <div style="
+                                margin-top: 16px;
+                                height: 280px;
+                                border-radius: 16px;
+                                border: 1px dashed rgba(255,255,255,0.25);
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                color:#aaa;
+                                text-align:center;
+                                padding: 14px;
+                            ">
+                            No image uploaded yet.
+                        </div>
+                    }
+                </div>
+
+            </div>
         </EditForm>
     </div>
-       
-</div>
-    <div>
-        <a href="/menus" class="btn-primary" style="padding: 15px 32px;">Back</a>
-    </div>
 
-</container>
+
 <script>
     function showAlert() {
         alert("Food Item created successfully");
@@ -107,7 +163,11 @@
     function showPic() {
         alert("Food Image uploaded successfully");
     }
+    function noIMG() {
+        alert("Image uploaded is not allowed pick another");
+    }
 </script>
+
 @code {
     [SupplyParameterFromForm]
     private Food Food { get; set; } = new();
@@ -118,18 +178,26 @@
     private List<string> Errors = new List<string>();
 
     private DinesaurContext context = default!;
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
-    private async Task AddFood()
+    
+    private async Task AddFood() //adds food item to database if no error like img uploaded
     {
-        Food.MenuID = MenuIds;
-        Food.StaffID = ROwnerId;
-        using var context = DbFactory.CreateDbContext();
-        context.Food.Add(Food);
-        await context.SaveChangesAsync();
-        await JS.InvokeVoidAsync("showAlert");
-        NavigationManager.NavigateTo("/menus");
+        if (Errors.Any())
+        {
+            await JS.InvokeVoidAsync("noIMG");
+        }
+        else
+        {
+            Food.MenuID = MenuIds;
+            Food.StaffID = ROwnerId;
+            using var context = DbFactory.CreateDbContext();
+            context.Food.Add(Food);
+            await context.SaveChangesAsync();
+            await JS.InvokeVoidAsync("showAlert");
+            NavigationManager.NavigateTo("/menus");
+        }
+        
     }
-    private async Task LoadIMG(InputFileChangeEventArgs f)
+    private async Task LoadIMG(InputFileChangeEventArgs f) //loads image uploaded and display warning if uploaded file is not suitable
     {
         Errors.Clear();
         var files = f.GetMultipleFiles();
@@ -159,7 +227,7 @@
         }
         StateHasChanged();
     }
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //ge details on the user/restaurant owner so can set the details needed for the food item
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
