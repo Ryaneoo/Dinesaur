@@ -6,6 +6,9 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+@inject ScaniiClient ScaniiClient
+@using System.Text.Json;
+@using System.Text.Json.Serialization
 <PageTitle>Edit</PageTitle>
 <container style="text-align:center; margin-top:40px; color:white;">
 <h1>Edit Food</h1>
@@ -105,6 +108,12 @@ else
     function noIMG() {
         alert("Image uploaded is not allowed pick another");
     }
+    function showCleanIMG() {
+        alert("Image uploaded is clean and saved");
+    }
+    function showBadIMG() {
+        alert("Image uploaded is not clean and rejected");
+    }
 </script>
 @code {
     [Parameter]
@@ -116,6 +125,12 @@ else
     private string? ROwnerId;
     private const int maxIMGFileSize = 5000000;
     private List<string> Errors = new List<string>();
+    private string? scanJson;
+    public class ScaniiResponse
+    {
+        [JsonPropertyName("findings")]
+        public List<object>? Findings { get; set; }
+    }
     protected override async Task OnInitializedAsync() //get all details to pre set the input boxes with the current details 
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
@@ -162,14 +177,33 @@ else
         {
             await IMG.OpenReadStream(maxIMGFileSize).CopyToAsync(mms);
             var fileBytes = mms.ToArray();
-            String base64String = Convert.ToBase64String(fileBytes);
-            string image = $"data:{IMG.ContentType};base64,{base64String}";
-            if (Food.Image.Count() > 0)
+            await using var scanStream = new MemoryStream(fileBytes);
+            scanJson = await ScaniiClient.ScanAsync( //get all details of the image uploaded
+                scanStream,
+                IMG.Name,
+                IMG.ContentType,
+                CancellationToken.None
+            );
+            var scan = JsonSerializer.Deserialize<ScaniiResponse>(scanJson); //gets the details of the scan of image but only the findings (the important part)
+            if (scan?.Findings != null && scan.Findings.Count > 0) //if image is bad, findings will have string in it
             {
-                Food.Image.Clear();
+                await JS.InvokeVoidAsync("showBadIMG");
+                Food.Image.Clear(); // ensure nothing is shown/saved
+
             }
-            Food.Image.Add(image);
+            else
+            {
+                String base64String = Convert.ToBase64String(fileBytes);
+                string image = $"data:{IMG.ContentType};base64,{base64String}";
+                if (Food.Image.Count() > 0)
+                {
+                    Food.Image.Clear();
+                }
+                Food.Image.Add(image);
+                await JS.InvokeVoidAsync("showCleanIMG"); //image uploaded is clean
+            }
         }
+        await JS.InvokeVoidAsync("console.log", scanJson); // be able to view the result
         StateHasChanged();
     }
 
