@@ -7,6 +7,9 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+@inject ScaniiClient ScaniiClient
+@using System.Text.Json;
+@using System.Text.Json.Serialization
 <PageTitle>Create</PageTitle>
 
 @* Here they create the restaurant and add all details of it  *@
@@ -193,12 +196,24 @@
     function showAlert() {
         alert("Image uploaded is not allowed pick another");
     }
+    function showCleanIMG() {
+        alert("Image uploaded is clean and saved");
+    }
+    function showBadIMG() {
+        alert("Image uploaded is not clean and rejected");
+    }
 </script>
 @code {
     [SupplyParameterFromForm]
     private Restaurant Restaurant { get; set; } = new();
     private const int maxLogoFileSize = 5000000;
     private List<string> FileErrors = new List<string>();
+    private string? scanJson;
+    public class ScaniiResponse
+    {
+        [JsonPropertyName("findings")]
+        public List<object>? Findings { get; set; }
+    }
     private async Task LoadFiles(InputFileChangeEventArgs e) //convert image (restaurant logo) uploaded to string and then add to database and then display
     {
         FileErrors.Clear();
@@ -214,18 +229,39 @@
         {
             FileErrors.Add($"File {Logo.Name} is not a supported image format.");
         }
+
         using (var ms = new MemoryStream())
         {
             await Logo.OpenReadStream(maxLogoFileSize).CopyToAsync(ms);
             var fileBytes = ms.ToArray();
-            String base64String = Convert.ToBase64String(fileBytes);
-            string imageUri = $"data:{Logo.ContentType};base64,{base64String}";
-            if (Restaurant.Logo.Count() > 0)
+            await using var scanStream = new MemoryStream(fileBytes);
+            scanJson = await ScaniiClient.ScanAsync( //get all details of the image uploaded
+                scanStream,
+                Logo.Name,
+                Logo.ContentType,
+                CancellationToken.None
+            );
+            var scan = JsonSerializer.Deserialize<ScaniiResponse>(scanJson); //gets the details of the scan of image but only the findings (the important part)
+            if (scan?.Findings != null && scan.Findings.Count > 0) //if image is bad, findings will have string in it
             {
-                Restaurant.Logo.Clear();
+                await JS.InvokeVoidAsync("showBadIMG");
+                Restaurant.Logo.Clear(); // ensure nothing is shown/saved
+
             }
-            Restaurant.Logo.Add(imageUri);
+            else
+            {
+                
+                String base64String = Convert.ToBase64String(fileBytes);
+                string imageUri = $"data:{Logo.ContentType};base64,{base64String}";
+                if (Restaurant.Logo.Count() > 0)
+                {
+                    Restaurant.Logo.Clear();
+                }
+                Restaurant.Logo.Add(imageUri);
+                await JS.InvokeVoidAsync("showCleanIMG"); //image uploaded is clean
+            }
         }
+        await JS.InvokeVoidAsync("console.log", scanJson); // be able to view the result
         StateHasChanged();
     }
     private async Task AddRestaurant() //if image not allowed prevent creation

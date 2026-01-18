@@ -18,6 +18,7 @@ builder.Services.AddQuickGridEntityFrameworkAdapter();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddAntiforgery();
+builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -45,7 +46,10 @@ builder.Services.AddIdentityCore<DinesaurUser>(options => options.SignIn.Require
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<DinesaurUser>, IdentityNoOpEmailSender>();
-
+builder.Services.AddHttpClient<ScaniiClient>(c =>
+{
+    c.Timeout = TimeSpan.FromSeconds(60);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
