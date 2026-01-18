@@ -86,7 +86,7 @@
                     <h3>Searched Restaurants by Search Bar</h3>
                     
                 
-                <div style="display: grid; grid-template-columns: repeat(5,1fr) ;">
+                <div style="display: grid; grid-template-columns: repeat(5,1fr) ; gap: 20px;">
                  @foreach (var restaurant in searchedRestaurants)
                      {
                         <a href="/Restaurants/@restaurant.RestaurantID">
@@ -115,7 +115,7 @@
                 {
                 <h3>Searched Restaurants by Filter</h3>
 
-                <div style="display: grid; grid-template-columns: repeat(5,1fr) ;">
+                <div style="display: grid; grid-template-columns: repeat(5,1fr) ;gap: 20px;">
                     
                     @foreach (var restaurant in filteredRestaurants)
                     {
@@ -144,7 +144,7 @@
             if (!filteredRestaurants.Any() && !searchedRestaurants.Any())
             { 
                     <h3>Restaurants Avaliable</h3>
-                <div style="display: grid; grid-template-columns: repeat(5,1fr) ;">
+                <div style="display: grid; grid-template-columns: repeat(5,1fr) ; gap: 20px;">
                 @foreach( var restaurant in randomRestaurants)
                     {
                         

@@ -11,15 +11,16 @@
 @inject Dinesaur.Data.DinesaurContext DbContext
 
 <div style="display: flex; flex-direction:column">
-<div id="start" style="background-color: dimgrey; height: 60vh; text-align: left; display: flex; flex-direction: column; padding-left: 50px;">
+    <div id="start"
+         class="dark-bg" style="height: auto; text-align: left; display: flex; flex-direction: column; padding-left: 50px;background-image: url(@selectedRestaurant.Logo[0])">
     <h1 style="padding-top: 100px; text-align: left">@selectedRestaurant?.RestaurantName</h1>
     <div style="display: flex; padding-top: 20px;">
-        <div>
+        <div style="width: 40%">
             <h3>Category: @selectedRestaurant?.Category</h3>
             
             <h3>Address: @selectedRestaurant?.Location</h3>
         </div>
-        <div style="padding-left: 100px;">
+        <div style="padding-left: 50px;">
                 <h3>Hours: @selectedRestaurant?.OpeningHours.ToString("hh:mm tt") - @selectedRestaurant?.ClosingHours.ToString("hh:mm tt")</h3>
             <h3>Contact: @selectedRestaurant?.Contact</h3>
             <h3>Email: @selectedRestaurant?.Email</h3>
@@ -138,6 +139,24 @@
             }
         </div>
     </div>
+
+    
+    <div style="margin: 20px 80px;">
+        <div style="display: flex; gap: 15px; align-content: baseline; flex-direction: column"> 
+        <h3>Location</h3>
+            <iframe width="100%"
+                    height="350"
+                    style="border:0; border-radius:15px;"
+                    loading="lazy"
+                    allowfullscreen
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps?q=@Uri.EscapeDataString(selectedRestaurant.Location)&output=embed">
+            </iframe>
+            </div>
+    </div>
+        
+        
+
     @if (showPopup && popupFood != null)
     {
         <div style="position:fixed; inset:0; background:rgba(0,0,0,0.75);

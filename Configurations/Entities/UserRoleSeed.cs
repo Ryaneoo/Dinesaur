@@ -23,6 +23,50 @@ namespace Dinesaur.Configurations.Entities
                 {
                     UserId = "3", // Restaurant Staff User
                     RoleId = "3"  // RestaurantStaff Role
+                },
+                new IdentityUserRole<string>
+                {
+                    UserId = "4", // Restaurant Staff User
+                    RoleId = "3"  // RestaurantStaff Role
+                },
+                new IdentityUserRole<string>
+                {
+                    UserId = "5", // Restaurant Staff User
+                    RoleId = "3"  // RestaurantStaff Role
+                },
+                new IdentityUserRole<string>
+                {
+                    UserId = "6", // Restaurant Staff User
+                    RoleId = "3"  // RestaurantStaff Role
+                },
+                new IdentityUserRole<string>
+                {
+                    UserId = "7", // Restaurant Staff User
+                    RoleId = "3"  // RestaurantStaff Role
+                },
+
+                new IdentityUserRole<string>
+                {
+                    UserId = "8", 
+                    RoleId = "2"  
+                },
+
+                new IdentityUserRole<string>
+                {
+                    UserId = "9", 
+                    RoleId = "2"  
+                },
+
+                new IdentityUserRole<string>
+                {
+                    UserId = "10", 
+                    RoleId = "2"  
+                },
+
+                new IdentityUserRole<string>
+                {
+                    UserId = "11", 
+                    RoleId = "3"  
                 }
             );
         }
